@@ -157,7 +157,7 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
-        $task->load(['assignee', 'creator', 'comments.user', 'attachments']);
+        $task->load(['assignee', 'creator', 'comments.user']);
 
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();
@@ -446,6 +446,14 @@ class TaskController extends Controller
             $query->where('project_id', $request->project);
         }
 
+        if ($request->filled('assignee')) {
+            if ($request->assignee === 'unassigned') {
+                $query->whereNull('assignee_id');
+            } else {
+                $query->where('assignee_id', $request->assignee);
+            }
+        }
+
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
@@ -465,7 +473,10 @@ class TaskController extends Controller
                 })->get();
         }
 
-        return view('tasks.global-index', compact('tasks', 'projects'));
+        // Get all users for assignee filter
+        $users = User::orderBy('name')->get();
+
+        return view('tasks.global-index', compact('tasks', 'projects', 'users'));
     }
 
     /**
@@ -666,7 +677,7 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this task.');
         }
 
-        $task->load(['project', 'assignee', 'creator', 'comments.user', 'attachments']);
+        $task->load(['project', 'assignee', 'creator', 'comments.user']);
 
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();

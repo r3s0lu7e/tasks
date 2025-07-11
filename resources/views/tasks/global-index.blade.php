@@ -20,7 +20,7 @@
             <!-- Filters -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('tasks.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <form method="GET" action="{{ route('tasks.index') }}" class="grid grid-cols-1 md:grid-cols-7 gap-4">
                         <div>
                             <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
                             <input type="text" name="search" id="search" value="{{ request('search') }}"
@@ -80,6 +80,22 @@
                                 <option value="bug" {{ request('type') == 'bug' ? 'selected' : '' }}>Bug</option>
                                 <option value="task" {{ request('type') == 'task' ? 'selected' : '' }}>Task</option>
                                 <option value="epic" {{ request('type') == 'epic' ? 'selected' : '' }}>Epic</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="assignee" class="block text-sm font-medium text-gray-700">Assignee</label>
+                            <select name="assignee" id="assignee"
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">All Assignees</option>
+                                <option value="unassigned" {{ request('assignee') == 'unassigned' ? 'selected' : '' }}>
+                                    Unassigned</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                            {{ request('assignee') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 

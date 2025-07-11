@@ -18,16 +18,6 @@ class Task extends Model
         parent::boot();
 
         static::deleting(function ($task) {
-            // Delete task attachments from storage
-            foreach ($task->attachments as $attachment) {
-                if (\Storage::disk('public')->exists($attachment->path)) {
-                    \Storage::disk('public')->delete($attachment->path);
-                }
-            }
-
-            // Delete task attachments records
-            $task->attachments()->delete();
-
             // Delete task comments
             $task->comments()->delete();
         });
@@ -99,13 +89,7 @@ class Task extends Model
         return $this->hasMany(TaskComment::class);
     }
 
-    /**
-     * Get the attachments for the task.
-     */
-    public function attachments()
-    {
-        return $this->hasMany(TaskAttachment::class);
-    }
+
 
     /**
      * Check if the task is overdue.

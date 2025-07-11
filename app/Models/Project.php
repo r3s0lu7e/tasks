@@ -20,15 +20,7 @@ class Project extends Model
         static::deleting(function ($project) {
             // Delete all tasks and their related data
             foreach ($project->tasks as $task) {
-                // Delete task attachments from storage
-                foreach ($task->attachments as $attachment) {
-                    if (\Storage::disk('public')->exists($attachment->path)) {
-                        \Storage::disk('public')->delete($attachment->path);
-                    }
-                }
 
-                // Delete task attachments records
-                $task->attachments()->delete();
 
                 // Delete task comments
                 $task->comments()->delete();

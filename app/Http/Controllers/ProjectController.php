@@ -20,11 +20,20 @@ class ProjectController extends Controller
 
         // Admin users can see all projects
         if ($user->isAdmin()) {
-            $projects = Project::with(['tasks', 'members', 'owner'])->get();
+            $projects = Project::with(['tasks', 'members', 'owner'])
+                ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->get();
         } else {
             // Get projects owned by user or user is a member of
-            $ownedProjects = $user->ownedProjects()->with(['tasks', 'members', 'owner'])->get();
-            $memberProjects = $user->projects()->with(['tasks', 'members', 'owner'])->get();
+            $ownedProjects = $user->ownedProjects()->with(['tasks', 'members', 'owner'])
+                ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->get();
+            $memberProjects = $user->projects()->with(['tasks', 'members', 'owner'])
+                ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
+                ->orderBy('name')
+                ->get();
             $projects = $ownedProjects->merge($memberProjects)->unique('id');
         }
 

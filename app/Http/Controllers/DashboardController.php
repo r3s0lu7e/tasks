@@ -13,8 +13,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Get all projects (user is the manager)
+        // Get active projects only
         $projects = Project::with(['tasks', 'members'])
+            ->where('status', 'active')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

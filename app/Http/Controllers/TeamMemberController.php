@@ -11,14 +11,41 @@ class TeamMemberController extends Controller
     /**
      * Display a listing of team members.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $teamMembers = User::where('id', '!=', auth()->id()) // Exclude the main user
-            ->withCount(['assignedTasks', 'createdTasks'])
-            ->orderBy('name')
-            ->get();
+        $query = User::where('id', '!=', auth()->id()) // Exclude the main user
+            ->withCount(['assignedTasks', 'createdTasks']);
 
-        return view('team.index', compact('teamMembers'));
+        // Apply status filter if provided
+        if ($request->filled('status')) {
+            if ($request->status !== 'all') {
+                $query->where('status', $request->status);
+            }
+        }
+
+        // Apply role filter if provided
+        if ($request->filled('role')) {
+            if ($request->role !== 'all') {
+                $query->where('role', $request->role);
+            }
+        }
+
+        // Apply search filter if provided
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%')
+                    ->orWhere('department', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $teamMembers = $query->orderBy('name')->get();
+
+        // Get available statuses and roles for filters
+        $statuses = ['active', 'inactive', 'vacation', 'busy'];
+        $roles = ['developer', 'designer', 'tester', 'project_manager', 'client'];
+
+        return view('team.index', compact('teamMembers', 'statuses', 'roles'));
     }
 
     /**

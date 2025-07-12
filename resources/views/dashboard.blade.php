@@ -44,7 +44,7 @@
             </div>
 
             <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
                 <div class="bg-white overflow-hidden shadow rounded-lg border-l-4 border-blue-500">
                     <div class="p-5">
                         <div class="flex items-center">
@@ -146,7 +146,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow rounded-lg border-l-4 border-indigo-500">
+                {{-- <div class="bg-white overflow-hidden shadow rounded-lg border-l-4 border-indigo-500">
                     <div class="p-5">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -165,7 +165,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="bg-white overflow-hidden shadow rounded-lg border-l-4 border-teal-500">
                     <div class="p-5">

@@ -128,7 +128,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('attachments', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'original_filename' => $file->getClientOriginalName(),
                     'path' => $path,
                     'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
@@ -241,7 +242,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('attachments', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'original_filename' => $file->getClientOriginalName(),
                     'path' => $path,
                     'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
@@ -556,7 +558,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('attachments', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'original_filename' => $file->getClientOriginalName(),
                     'path' => $path,
                     'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
@@ -652,7 +655,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('attachments', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'original_filename' => $file->getClientOriginalName(),
                     'path' => $path,
                     'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),
@@ -768,7 +772,8 @@ class TaskController extends Controller
                 $path = $file->storeAs('attachments', $filename, 'public');
 
                 $task->attachments()->create([
-                    'filename' => $file->getClientOriginalName(),
+                    'filename' => $filename,
+                    'original_filename' => $file->getClientOriginalName(),
                     'path' => $path,
                     'size' => $file->getSize(),
                     'mime_type' => $file->getMimeType(),

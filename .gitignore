@@ -19,4 +19,4 @@ yarn-error.log
 /start-project.bat 
 database/database.sqlite
 storage/logs/laravel.log
-storage/app/public/attachments
+storage

@@ -4,11 +4,14 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Search Header -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+            <div
+                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-2xl font-bold text-gray-900">Search Results</h1>
-                        <a href="{{ route('dashboard') }}" class="text-blue-600 hover:text-blue-800">Back to Dashboard</a>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Search Results</h1>
+                        <a href="{{ route('dashboard') }}"
+                           class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">Back to
+                            Dashboard</a>
                     </div>
 
                     <!-- Search Form -->
@@ -17,7 +20,7 @@
                             <div class="flex-1">
                                 <input type="text" name="q" value="{{ $query }}"
                                        placeholder="Search projects and tasks..."
-                                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +33,7 @@
                     </form>
 
                     @if ($query)
-                        <div class="mt-4 text-sm text-gray-600">
+                        <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
                             Found {{ $total }} results for "<strong>{{ $query }}</strong>"
                         </div>
                     @endif
@@ -41,37 +44,40 @@
                 <div class="space-y-6">
                     <!-- Projects Section -->
                     @if ($projects->count() > 0)
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                             class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="p-6">
-                                <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                                     Projects ({{ $projects->count() }})
                                 </h2>
                                 <div class="space-y-4">
                                     @foreach ($projects as $project)
                                         <div
-                                             class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                             class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                             <div class="flex items-center space-x-4">
                                                 <div class="w-4 h-4 rounded"
                                                      style="background-color: {{ $project->color }}"></div>
                                                 <div>
-                                                    <h3 class="font-medium text-gray-900">
+                                                    <h3 class="font-medium text-gray-900 dark:text-white">
                                                         <a href="{{ route('projects.show', $project) }}"
-                                                           class="hover:text-blue-600">
+                                                           class="hover:text-blue-600 dark:hover:text-blue-400">
                                                             {{ $project->name }}
                                                         </a>
                                                     </h3>
-                                                    <p class="text-sm text-gray-500">{{ $project->key }}</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $project->key }}
+                                                    </p>
                                                     @if ($project->description)
-                                                        <p class="text-sm text-gray-600 mt-1">
+                                                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                                             {{ Str::limit($project->description, 100) }}</p>
                                                     @endif
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-4">
-                                                <span class="text-sm text-gray-500">{{ $project->tasks->count() }}
+                                                <span
+                                                      class="text-sm text-gray-500 dark:text-gray-400">{{ $project->tasks->count() }}
                                                     tasks</span>
                                                 <span
-                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $project->status === 'active' ? 'green' : 'gray' }}-100 text-{{ $project->status === 'active' ? 'green' : 'gray' }}-800">
+                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $project->status === 'active' ? 'green' : 'gray' }}-100 dark:bg-{{ $project->status === 'active' ? 'green' : 'gray' }}-900 text-{{ $project->status === 'active' ? 'green' : 'gray' }}-800 dark:text-{{ $project->status === 'active' ? 'green' : 'gray' }}-200">
                                                     {{ ucfirst($project->status) }}
                                                 </span>
                                             </div>
@@ -84,28 +90,30 @@
 
                     <!-- Tasks Section -->
                     @if ($tasks->count() > 0)
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                             class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="p-6">
-                                <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                                     Tasks ({{ $tasks->count() }})
                                 </h2>
                                 <div class="space-y-3">
                                     @foreach ($tasks as $task)
                                         <div
-                                             class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                             class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                             <div class="flex items-center space-x-4">
                                                 <div class="w-2 h-2 rounded-full"
                                                      style="background-color: {{ $task->project->color }}"></div>
                                                 <div>
-                                                    <h3 class="font-medium text-gray-900">
+                                                    <h3 class="font-medium text-gray-900 dark:text-white">
                                                         <a href="{{ route('tasks.show', $task) }}"
-                                                           class="hover:text-blue-600">
+                                                           class="hover:text-blue-600 dark:hover:text-blue-400">
                                                             {{ $task->title }}
                                                         </a>
                                                     </h3>
-                                                    <p class="text-sm text-gray-500">{{ $task->project->name }}</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ $task->project->name }}</p>
                                                     @if ($task->description)
-                                                        <p class="text-sm text-gray-600 mt-1">
+                                                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                                             {{ Str::limit($task->description, 100) }}</p>
                                                     @endif
                                                 </div>
@@ -121,13 +129,14 @@
                                                 @if ($task->assignee)
                                                     <div class="flex items-center space-x-1">
                                                         <div
-                                                             class="h-6 w-6 rounded-full bg-gray-300 flex items-center justify-center">
-                                                            <span class="text-xs font-medium text-gray-700">
+                                                             class="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                                                            <span
+                                                                  class="text-xs font-medium text-gray-700 dark:text-gray-200">
                                                                 {{ strtoupper(substr($task->assignee->name, 0, 2)) }}
                                                             </span>
                                                         </div>
                                                         <span
-                                                              class="text-sm text-gray-600">{{ $task->assignee->name }}</span>
+                                                              class="text-sm text-gray-600 dark:text-gray-300">{{ $task->assignee->name }}</span>
                                                     </div>
                                                 @endif
                                             </div>
@@ -139,15 +148,16 @@
                     @endif
                 </div>
             @elseif($query && $total === 0)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
                              viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No results found</h3>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No results found</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             No projects or tasks match your search for "<strong>{{ $query }}</strong>".
                         </p>
                         <div class="mt-6">
@@ -161,15 +171,17 @@
                     </div>
                 </div>
             @else
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                        <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
                              viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Search your projects and tasks</h3>
-                        <p class="mt-1 text-sm text-gray-500">
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Search your projects and tasks
+                        </h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Enter a search term above to find projects and tasks.
                         </p>
                     </div>

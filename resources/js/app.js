@@ -6,6 +6,51 @@ window.Alpine = Alpine
 
 Alpine.start()
 
+// Dark Mode Toggle
+document.addEventListener("DOMContentLoaded", () => {
+	// Check for saved theme preference or respect OS preference
+	if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+		document.documentElement.classList.add("dark")
+	} else {
+		document.documentElement.classList.remove("dark")
+	}
+
+	// Add event listener for theme toggle button
+	const themeToggleBtn = document.getElementById("theme-toggle")
+	if (themeToggleBtn) {
+		themeToggleBtn.addEventListener("click", () => {
+			// Toggle theme
+			if (document.documentElement.classList.contains("dark")) {
+				document.documentElement.classList.remove("dark")
+				localStorage.theme = "light"
+			} else {
+				document.documentElement.classList.add("dark")
+				localStorage.theme = "dark"
+			}
+
+			// Update button icon
+			updateThemeToggleIcon()
+		})
+
+		// Set initial icon state
+		updateThemeToggleIcon()
+	}
+})
+
+function updateThemeToggleIcon() {
+	const themeToggleBtn = document.getElementById("theme-toggle")
+	const sunIcon = document.getElementById("theme-toggle-light-icon")
+	const moonIcon = document.getElementById("theme-toggle-dark-icon")
+
+	if (document.documentElement.classList.contains("dark")) {
+		sunIcon.classList.remove("hidden")
+		moonIcon.classList.add("hidden")
+	} else {
+		sunIcon.classList.add("hidden")
+		moonIcon.classList.remove("hidden")
+	}
+}
+
 // Custom Alpine.js components
 Alpine.data("taskBoard", () => ({
 	tasks: [],

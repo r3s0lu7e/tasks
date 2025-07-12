@@ -32,8 +32,15 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
-        // Get overdue tasks
-        $overdueTasks = Task::where('due_date', '<', now())
+        // Get tasks due today (not overdue)
+        $todayTasks = Task::whereDate('due_date', today())
+            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->with(['project', 'assignee'])
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        // Get overdue tasks (due before today, excluding today)
+        $overdueTasks = Task::whereDate('due_date', '<', today())
             ->whereNotIn('status', ['completed', 'cancelled'])
             ->with(['project', 'assignee'])
             ->orderBy('due_date', 'asc')
@@ -45,7 +52,7 @@ class DashboardController extends Controller
             'total_tasks' => Task::count(),
             'completed_tasks' => Task::where('status', 'completed')->count(),
             'overdue_tasks' => $overdueTasks->count(),
-            'today_tasks' => Task::whereDate('due_date', today())->count(),
+            'today_tasks' => $todayTasks->count(),
             'team_members' => User::where('id', '!=', $user->id)->count(),
             'active_team_members' => User::where('id', '!=', $user->id)->where('status', 'active')->count(),
         ];
@@ -74,6 +81,7 @@ class DashboardController extends Controller
             'teamMembers',
             'allTasks',
             'overdueTasks',
+            'todayTasks',
             'stats',
             'teamWorkload',
             'recentActivity'

@@ -147,7 +147,7 @@ class User extends Authenticatable
     public function getOverdueTasksCount()
     {
         return $this->assignedTasks()
-            ->where('due_date', '<', now())
+            ->whereDate('due_date', '<', today())
             ->whereNotIn('status', ['completed', 'cancelled'])
             ->count();
     }

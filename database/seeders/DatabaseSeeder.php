@@ -30,17 +30,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create developer
-        User::create([
-            'name' => 'Daniel Marinov',
-            'email' => 'r3s0lu7e@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'developer',
-            'department' => 'Development',
-            'phone' => '0878736802',
-            'hourly_rate' => 45.00,
-            'hire_date' => '2024-07-1',
-            'status' => 'active',
-        ]);
+        // User::create([
+        //     'name' => 'Daniel Marinov',
+        //     'email' => 'r3s0lu7e@gmail.com',
+        //     'password' => Hash::make('12345'),
+        //     'role' => 'developer',
+        //     'department' => 'Development',
+        //     'phone' => '0878736802',
+        //     'hourly_rate' => 45.00,
+        //     'hire_date' => '2024-07-1',
+        //     'status' => 'active',
+        // ]);
         // Create team members
         $teamMembers = [
             // [
@@ -52,12 +52,24 @@ class DatabaseSeeder extends Seeder
             //     'hourly_rate' => 45.00,
             // ],
             [
+                'name' => 'Daniel Marinov',
+                'email' => 'r3s0lu7e@gmail.com',
+                'password' => Hash::make('12345'),
+                'role' => 'developer',
+                'department' => 'Development',
+                'phone' => '0878736802',
+                'hourly_rate' => 45.00,
+                'hire_date' => '2024-07-1',
+                'status' => 'active',
+            ],
+            [
                 'name' => 'Jane Designer',
                 'email' => 'jane@wuvu.com',
                 'role' => 'developer',
                 'department' => 'Design',
                 'phone' => '+1-555-0003',
                 'hourly_rate' => 40.00,
+                'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Mike Tester',
@@ -66,6 +78,7 @@ class DatabaseSeeder extends Seeder
                 'department' => 'Quality Assurance',
                 'phone' => '+1-555-0004',
                 'hourly_rate' => 35.00,
+                'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Sarah Manager',
@@ -74,6 +87,7 @@ class DatabaseSeeder extends Seeder
                 'department' => 'Management',
                 'phone' => '+1-555-0005',
                 'hourly_rate' => 55.00,
+                'password' => Hash::make('password'),
             ],
             [
                 'name' => 'Client User',
@@ -82,13 +96,14 @@ class DatabaseSeeder extends Seeder
                 'department' => 'Business',
                 'phone' => '+1-555-0006',
                 'status' => 'active',
+                'password' => Hash::make('password'),
             ],
         ];
 
         $users = collect();
         foreach ($teamMembers as $memberData) {
             $user = User::create(array_merge([
-                'password' => Hash::make('password'),
+
                 'status' => 'active',
                 'hire_date' => now()->subMonths(rand(3, 18)),
             ], $memberData));
@@ -145,13 +160,49 @@ class DatabaseSeeder extends Seeder
         $taskStatuses = ['todo', 'in_progress', 'completed', 'blocked'];
         $taskPriorities = ['low', 'medium', 'high'];
 
+        // More varied task titles for realistic data
+        $taskTitles = [
+            'Implement user authentication system',
+            'Fix login form validation',
+            'Add responsive design for mobile',
+            'Optimize database queries',
+            'Create API documentation',
+            'Setup automated testing',
+            'Implement search functionality',
+            'Add email notifications',
+            'Fix security vulnerabilities',
+            'Update user interface design',
+            'Integrate payment gateway',
+            'Add data export feature',
+            'Implement caching system',
+            'Create admin dashboard',
+            'Add user profile management',
+            'Fix cross-browser compatibility',
+            'Implement file upload feature',
+            'Add real-time notifications',
+            'Create backup system',
+            'Optimize application performance',
+            'Add multi-language support',
+            'Implement role-based access',
+            'Create reporting system',
+            'Add social media integration',
+            'Fix memory leak issues',
+            'Implement audit logging',
+            'Add advanced search filters',
+            'Create mobile application',
+            'Implement data validation',
+            'Add configuration management',
+        ];
+
         foreach ($projectModels as $project) {
             $projectMembers = $project->members->push($project->owner);
 
-            for ($i = 0; $i < rand(8, 15); $i++) {
+            for ($i = 0; $i < 200; $i++) {
+                $taskTitle = $taskTitles[array_rand($taskTitles)] . ' #' . ($i + 1);
+
                 $task = Task::create([
-                    'title' => 'Task ' . ($i + 1) . ' for ' . $project->name,
-                    'description' => 'This is a sample task description for ' . $project->name . '. It contains detailed information about what needs to be done.',
+                    'title' => $taskTitle,
+                    'description' => 'This is a sample task description for ' . $project->name . '. Task: ' . $taskTitle . '. It contains detailed information about what needs to be done and includes specific requirements and acceptance criteria.',
                     'type' => $taskTypes[array_rand($taskTypes)],
                     'status' => $taskStatuses[array_rand($taskStatuses)],
                     'priority' => $taskPriorities[array_rand($taskPriorities)],

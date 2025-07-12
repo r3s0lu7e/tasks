@@ -39,7 +39,9 @@ class DashboardController extends Controller
         $teamMembers = collect();
         if ($user->isAdmin()) {
             $teamMembers = User::where('id', '!=', $user->id)
-                ->withCount(['assignedTasks'])
+                ->withCount(['assignedTasks as assigned_tasks_count' => function ($query) {
+                    $query->whereIn('status', ['todo', 'in_progress']);
+                }])
                 ->orderBy('name')
                 ->limit(6)
                 ->get();

@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ getWorkstationName() }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Prevent dark mode flash -->
+    <script>
+        // Initialize theme immediately to prevent flash
+        (function() {
+            try {
+                if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
+                        '(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark')
+                } else {
+                    document.documentElement.classList.remove('dark')
+                }
+            } catch (e) {
+                // Fallback to light mode if localStorage is not available
+                document.documentElement.classList.remove('dark')
+            }
+        })()
+    </script>
 </head>
 
 <body class="bg-gray-50 dark:bg-gray-900">

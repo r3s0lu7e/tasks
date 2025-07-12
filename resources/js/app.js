@@ -3,12 +3,20 @@ import "./image-paste"
 
 // Robust dark mode implementation with defensive checks
 document.addEventListener("DOMContentLoaded", function () {
+	// Add preload class to prevent transitions during initial load
+	document.body.classList.add("preload")
+
 	// Initialize theme first
 	initTheme()
 
 	// Setup components only if they exist
 	setupThemeToggles()
 	setupNavigation()
+
+	// Remove preload class after a short delay to allow transitions
+	setTimeout(() => {
+		document.body.classList.remove("preload")
+	}, 100)
 })
 
 function initTheme() {

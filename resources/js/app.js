@@ -8,7 +8,7 @@ window.Alpine = Alpine
 Alpine.start()
 
 // Dark Mode Toggle
-document.addEventListener("DOMContentLoaded", () => {
+function initTheme() {
 	// Check for saved theme preference or respect OS preference
 	if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
 		document.documentElement.classList.add("dark")
@@ -16,24 +16,31 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.documentElement.classList.remove("dark")
 	}
 
-	// Add event listener for desktop theme toggle button
-	const themeToggleBtn = document.getElementById("theme-toggle")
-	if (themeToggleBtn) {
-		themeToggleBtn.addEventListener("click", () => {
-			toggleTheme()
-		})
-	}
-
-	// Add event listener for mobile theme toggle button
-	const mobileThemeToggleBtn = document.getElementById("mobile-theme-toggle")
-	if (mobileThemeToggleBtn) {
-		mobileThemeToggleBtn.addEventListener("click", () => {
-			toggleTheme()
-		})
-	}
-
 	// Set initial icon state for both buttons
 	updateThemeToggleIcon()
+}
+
+// Initialize theme immediately
+initTheme()
+
+document.addEventListener("DOMContentLoaded", () => {
+	// Re-check icons after DOM is loaded
+	updateThemeToggleIcon()
+})
+
+// Also update theme icons when Alpine.js initializes
+document.addEventListener("alpine:init", () => {
+	updateThemeToggleIcon()
+})
+
+// Use event delegation for both desktop and mobile theme toggle buttons
+// This ensures the event listeners work even when elements are dynamically shown/hidden
+document.addEventListener("click", (e) => {
+	// Check if the clicked element is a theme toggle button (desktop or mobile)
+	if (e.target.closest("#theme-toggle") || e.target.closest("#mobile-theme-toggle")) {
+		e.preventDefault()
+		toggleTheme()
+	}
 })
 
 function toggleTheme() {
@@ -60,7 +67,9 @@ function updateThemeToggleIcon() {
 	const mobileSunIcon = document.getElementById("mobile-theme-toggle-light-icon")
 	const mobileMoonIcon = document.getElementById("mobile-theme-toggle-dark-icon")
 
-	if (document.documentElement.classList.contains("dark")) {
+	const isDark = document.documentElement.classList.contains("dark")
+
+	if (isDark) {
 		// Show sun icon (light mode button)
 		if (sunIcon) sunIcon.classList.remove("hidden")
 		if (moonIcon) moonIcon.classList.add("hidden")
@@ -74,6 +83,23 @@ function updateThemeToggleIcon() {
 		if (mobileMoonIcon) mobileMoonIcon.classList.remove("hidden")
 	}
 }
+
+// Observe changes to the mobile menu visibility to update icons when it becomes visible
+const observer = new MutationObserver(() => {
+	updateThemeToggleIcon()
+})
+
+// Start observing when DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+	// Observe changes to elements that might affect mobile menu visibility
+	const mobileMenu = document.querySelector('[x-show="mobileMenuOpen"]')
+	if (mobileMenu) {
+		observer.observe(mobileMenu, {
+			attributes: true,
+			attributeFilter: ["style", "class"],
+		})
+	}
+})
 
 // Custom Alpine.js components
 Alpine.data("taskBoard", () => ({

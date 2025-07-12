@@ -8,4 +8,11 @@ export default defineConfig({
 			refresh: true,
 		}),
 	],
+	server: {
+		host: "0.0.0.0", // Allow external connections
+		port: 5173, // Default Vite port
+		hmr: {
+			host: "192.168.31.244", // Replace with your actual IP
+		},
+	},
 })

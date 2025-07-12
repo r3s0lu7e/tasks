@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Daniel Marinov',
                 'email' => 'r3s0lu7e@gmail.com',
                 'password' => Hash::make('12345'),
-                'role' => 'developer',
+                'role' => 'admin',
                 'department' => 'Development',
                 'phone' => '0878736802',
                 'hourly_rate' => 45.00,

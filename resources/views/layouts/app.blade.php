@@ -160,7 +160,8 @@
             </div>
 
             <!-- Mobile menu -->
-            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200"
+            <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false"
+                 x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 transform scale-95"
                  x-transition:enter-end="opacity-100 transform scale-100"
                  x-transition:leave="transition ease-in duration-75"
@@ -169,20 +170,20 @@
                 <div
                      class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                     @auth
-                        <a href="{{ route('dashboard') }}"
+                        <a href="{{ route('dashboard') }}" @click="mobileMenuOpen = false"
                            class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                             Dashboard
                         </a>
-                        <a href="{{ route('projects.index') }}"
+                        <a href="{{ route('projects.index') }}" @click="mobileMenuOpen = false"
                            class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('projects.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                             Projects
                         </a>
-                        <a href="{{ route('tasks.index') }}"
+                        <a href="{{ route('tasks.index') }}" @click="mobileMenuOpen = false"
                            class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tasks.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                             Tasks
                         </a>
                         @if (auth()->user()->isAdmin())
-                            <a href="{{ route('team.index') }}"
+                            <a href="{{ route('team.index') }}" @click="mobileMenuOpen = false"
                                class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('team.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                                 Team
                             </a>
@@ -232,25 +233,25 @@
                                     </svg>
                                     <svg id="mobile-theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor"
                                          viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                              d="M10 2L13.09 8.26L20 9L14 14.74L15.18 21.02L10 17.77L4.82 21.02L6 14.74L0 9L6.91 8.26L10 2Z">
-                                        </path>
+                                        <path fill-rule="evenodd"
+                                              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                                              clip-rule="evenodd"></path>
                                     </svg>
                                 </button>
                             </div>
                         </div>
                         <div class="mt-3 space-y-1">
-                            <a href="{{ route('profile.show') }}"
+                            <a href="{{ route('profile.show') }}" @click="mobileMenuOpen = false"
                                class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 Profile
                             </a>
-                            <a href="{{ route('profile.edit') }}"
+                            <a href="{{ route('profile.edit') }}" @click="mobileMenuOpen = false"
                                class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 Settings
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit"
+                                <button type="submit" @click="mobileMenuOpen = false"
                                         class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     Sign out
                                 </button>
@@ -260,11 +261,11 @@
                 @else
                     <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                         <div class="space-y-1">
-                            <a href="{{ route('login') }}"
+                            <a href="{{ route('login') }}" @click="mobileMenuOpen = false"
                                class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 Sign in
                             </a>
-                            <a href="{{ route('register') }}"
+                            <a href="{{ route('register') }}" @click="mobileMenuOpen = false"
                                class="block px-4 py-2 text-base font-medium text-jira-blue hover:text-blue-700 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 Sign up
                             </a>

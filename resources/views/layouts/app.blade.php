@@ -19,7 +19,8 @@
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
     <div class="min-h-screen">
         <!-- Navigation -->
-        <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
+             x-data="{ mobileMenuOpen: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex">
@@ -138,15 +139,133 @@
 
                     <!-- Hamburger -->
                     <div class="-mr-2 flex items-center sm:hidden">
-                        <button
-                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <button @click="mobileMenuOpen = !mobileMenuOpen"
+                                class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700 focus:text-gray-500 dark:focus:text-gray-200 transition duration-150 ease-in-out">
+                            <svg class="h-6 w-6" :class="{ 'hidden': mobileMenuOpen, 'block': !mobileMenuOpen }"
+                                 stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            <svg class="h-6 w-6" :class="{ 'block': mobileMenuOpen, 'hidden': !mobileMenuOpen }"
+                                 stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Mobile menu -->
+            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 transform scale-100"
+                 x-transition:leave-end="opacity-0 transform scale-95" class="sm:hidden">
+                <div
+                     class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                    @auth
+                        <a href="{{ route('dashboard') }}"
+                           class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('projects.index') }}"
+                           class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('projects.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            Projects
+                        </a>
+                        <a href="{{ route('tasks.index') }}"
+                           class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tasks.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            Tasks
+                        </a>
+                        <a href="{{ route('team.index') }}"
+                           class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('team.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                            Team
+                        </a>
+
+                        <!-- Mobile Search -->
+                        <div class="px-3 py-2">
+                            <form method="GET" action="{{ route('search.index') }}" class="flex">
+                                <input type="text" name="q" placeholder="Search..."
+                                       class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400">
+                                <button type="submit"
+                                        class="px-3 py-2 bg-jira-blue text-white rounded-r-lg hover:bg-blue-700 dark:hover:bg-blue-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    @endauth
+                </div>
+
+                <!-- Mobile user menu -->
+                @auth
+                    <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                        <div class="flex items-center px-5">
+                            <div class="flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-jira-blue flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">
+                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-base font-medium text-gray-800 dark:text-gray-200">
+                                    {{ auth()->user()->name }}</div>
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    {{ auth()->user()->email }}</div>
+                            </div>
+                            <div class="ml-auto">
+                                <!-- Mobile Dark Mode Toggle -->
+                                <button id="mobile-theme-toggle" type="button"
+                                        class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                                    <svg id="mobile-theme-toggle-dark-icon" class="w-5 h-5" fill="currentColor"
+                                         viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                                    </svg>
+                                    <svg id="mobile-theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor"
+                                         viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                              d="M10 2L13.09 8.26L20 9L14 14.74L15.18 21.02L10 17.77L4.82 21.02L6 14.74L0 9L6.91 8.26L10 2Z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3 space-y-1">
+                            <a href="{{ route('profile.show') }}"
+                               class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Profile
+                            </a>
+                            <a href="{{ route('profile.edit') }}"
+                               class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Settings
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit"
+                                        class="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Sign out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <div class="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                        <div class="space-y-1">
+                            <a href="{{ route('login') }}"
+                               class="block px-4 py-2 text-base font-medium text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Sign in
+                            </a>
+                            <a href="{{ route('register') }}"
+                               class="block px-4 py-2 text-base font-medium text-jira-blue hover:text-blue-700 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Sign up
+                            </a>
+                        </div>
+                    </div>
+                @endauth
             </div>
         </nav>
 

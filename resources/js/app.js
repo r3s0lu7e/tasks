@@ -15,39 +15,62 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.documentElement.classList.remove("dark")
 	}
 
-	// Add event listener for theme toggle button
+	// Add event listener for desktop theme toggle button
 	const themeToggleBtn = document.getElementById("theme-toggle")
 	if (themeToggleBtn) {
 		themeToggleBtn.addEventListener("click", () => {
-			// Toggle theme
-			if (document.documentElement.classList.contains("dark")) {
-				document.documentElement.classList.remove("dark")
-				localStorage.theme = "light"
-			} else {
-				document.documentElement.classList.add("dark")
-				localStorage.theme = "dark"
-			}
-
-			// Update button icon
-			updateThemeToggleIcon()
+			toggleTheme()
 		})
-
-		// Set initial icon state
-		updateThemeToggleIcon()
 	}
+
+	// Add event listener for mobile theme toggle button
+	const mobileThemeToggleBtn = document.getElementById("mobile-theme-toggle")
+	if (mobileThemeToggleBtn) {
+		mobileThemeToggleBtn.addEventListener("click", () => {
+			toggleTheme()
+		})
+	}
+
+	// Set initial icon state for both buttons
+	updateThemeToggleIcon()
 })
 
+function toggleTheme() {
+	// Toggle theme
+	if (document.documentElement.classList.contains("dark")) {
+		document.documentElement.classList.remove("dark")
+		localStorage.theme = "light"
+	} else {
+		document.documentElement.classList.add("dark")
+		localStorage.theme = "dark"
+	}
+
+	// Update button icons
+	updateThemeToggleIcon()
+}
+
 function updateThemeToggleIcon() {
+	// Desktop theme toggle icons
 	const themeToggleBtn = document.getElementById("theme-toggle")
 	const sunIcon = document.getElementById("theme-toggle-light-icon")
 	const moonIcon = document.getElementById("theme-toggle-dark-icon")
 
+	// Mobile theme toggle icons
+	const mobileSunIcon = document.getElementById("mobile-theme-toggle-light-icon")
+	const mobileMoonIcon = document.getElementById("mobile-theme-toggle-dark-icon")
+
 	if (document.documentElement.classList.contains("dark")) {
-		sunIcon.classList.remove("hidden")
-		moonIcon.classList.add("hidden")
+		// Show sun icon (light mode button)
+		if (sunIcon) sunIcon.classList.remove("hidden")
+		if (moonIcon) moonIcon.classList.add("hidden")
+		if (mobileSunIcon) mobileSunIcon.classList.remove("hidden")
+		if (mobileMoonIcon) mobileMoonIcon.classList.add("hidden")
 	} else {
-		sunIcon.classList.add("hidden")
-		moonIcon.classList.remove("hidden")
+		// Show moon icon (dark mode button)
+		if (sunIcon) sunIcon.classList.add("hidden")
+		if (moonIcon) moonIcon.classList.remove("hidden")
+		if (mobileSunIcon) mobileSunIcon.classList.add("hidden")
+		if (mobileMoonIcon) mobileMoonIcon.classList.remove("hidden")
 	}
 }
 

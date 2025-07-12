@@ -44,14 +44,27 @@
                         <!-- Task Info -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Status</h3>
-                            <span class="status-badge status-{{ str_replace('_', '-', $task->status) }}">
+                            <span
+                                  class="px-2 py-1 text-xs font-medium rounded-full
+                                @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
+                                @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
+                                @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
+                                @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
                                 {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                             </span>
                         </div>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Priority</h3>
-                            <span class="priority-badge priority-{{ $task->priority }}">
+                            <span
+                                  class="px-2 py-1 text-xs font-medium rounded-full
+                                @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
+                                @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-white
+                                @elseif($task->priority === 'high') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
                                 {{ ucfirst($task->priority) }}
                             </span>
                         </div>
@@ -79,7 +92,9 @@
                         <div class="mb-6">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Description</h3>
                             <div class="prose dark:prose-invert max-w-none">
-                                <p class="text-gray-700 dark:text-gray-300">{{ $task->description }}</p>
+                                <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                                    {!! \App\Helpers\DescriptionHelper::parseDescription($task->description) !!}
+                                </div>
                             </div>
                         </div>
                     @endif

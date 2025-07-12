@@ -20,6 +20,9 @@ class Task extends Model
         static::deleting(function ($task) {
             // Delete task comments
             $task->comments()->delete();
+
+            // Clean up images from description
+            $task->cleanupDescriptionImages();
         });
     }
 
@@ -189,5 +192,32 @@ class Task extends Model
     public function scopeDueToday($query)
     {
         return $query->whereDate('due_date', today());
+    }
+
+    /**
+     * Clean up images from task description when task is deleted
+     */
+    public function cleanupDescriptionImages()
+    {
+        if (empty($this->description)) {
+            return;
+        }
+
+        $imageUrls = \App\Helpers\DescriptionHelper::extractImageUrls($this->description);
+
+        foreach ($imageUrls as $imageUrl) {
+            // Extract filename from URL
+            $filename = basename(parse_url($imageUrl, PHP_URL_PATH));
+
+            // Check if it's one of our uploaded images (starts with 'desc_')
+            if (strpos($filename, 'desc_') === 0) {
+                $path = 'task-images/' . $filename;
+
+                // Delete from storage
+                if (\Storage::disk('public')->exists($path)) {
+                    \Storage::disk('public')->delete($path);
+                }
+            }
+        }
     }
 }

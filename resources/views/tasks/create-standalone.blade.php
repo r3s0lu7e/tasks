@@ -65,7 +65,12 @@
                                 Description
                             </label>
                             <textarea id="description" name="description" rows="4"
-                                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('description') border-red-300 @enderror">{{ old('description') }}</textarea>
+                                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('description') border-red-300 @enderror"
+                                      placeholder="Enter task description... You can paste images directly here!">{{ old('description') }}</textarea>
+                            <p class="mt-1 text-sm text-gray-500">
+                                💡 <strong>Tip:</strong> You can paste screenshots directly into this field! Just copy an
+                                image and paste it here.
+                            </p>
                             @error('description')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
@@ -224,4 +229,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize image paste functionality for description field
+            new ImagePaste('#description');
+        });
+    </script>
 @endsection

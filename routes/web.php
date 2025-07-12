@@ -37,7 +37,11 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/tasks/{task}/assign', [TaskController::class, 'assign'])->name('tasks.assign');
 
     // Task attachment routes
+    Route::delete('/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachment'])->name('tasks.attachments.delete');
+    Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->name('tasks.attachments.download');
 
+    // Image upload route for descriptions
+    Route::post('/upload/image', [TaskController::class, 'uploadImage'])->name('upload.image');
 
     // Task Comments routes
     Route::post('/tasks/{task}/comments', [App\Http\Controllers\TaskCommentController::class, 'store'])->name('tasks.comments.store');

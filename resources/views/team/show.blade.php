@@ -186,19 +186,22 @@
                                                 </div>
                                                 <div class="flex items-center space-x-2">
                                                     <span
-                                                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                        @if ($task->status === 'completed') bg-green-100 text-green-800
-                                                        @elseif($task->status === 'in_progress') bg-blue-100 text-blue-800
-                                                        @elseif($task->status === 'todo') bg-gray-100 text-gray-800
-                                                        @else bg-red-100 text-red-800 @endif">
+                                                          class="px-2 py-1 text-xs font-medium rounded-full
+                                                        @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
+                                                        @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
+                                                        @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
+                                                        @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                                        @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                                        @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
                                                         {{ ucfirst(str_replace('_', ' ', $task->status)) }}
                                                     </span>
                                                     <span
-                                                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                        @if ($task->priority === 'critical') bg-red-100 text-red-800
-                                                        @elseif($task->priority === 'high') bg-orange-100 text-orange-800
-                                                        @elseif($task->priority === 'medium') bg-yellow-100 text-yellow-800
-                                                        @else bg-green-100 text-green-800 @endif">
+                                                          class="px-2 py-1 text-xs font-medium rounded-full
+                                                        @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-white
+                                                        @elseif($task->priority === 'high') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                                        @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
+                                                        @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
                                                         {{ ucfirst($task->priority) }}
                                                     </span>
                                                     @if ($task->due_date)

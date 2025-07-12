@@ -1,4 +1,5 @@
 import "./bootstrap"
+import "./image-paste"
 
 import Alpine from "alpinejs"
 

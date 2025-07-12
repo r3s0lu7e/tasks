@@ -837,4 +837,32 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')
             ->with('success', 'Task deleted successfully.');
     }
+
+    /**
+     * Upload image for task description.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:10240', // 10MB max
+        ]);
+
+        $user = Auth::user();
+        $file = $request->file('image');
+
+        // Generate unique filename
+        $filename = 'desc_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        // Store in public/task-images directory
+        $path = $file->storeAs('task-images', $filename, 'public');
+
+        // Return the URL for the image
+        $url = asset('storage/' . $path);
+
+        return response()->json([
+            'success' => true,
+            'url' => $url,
+            'filename' => $filename
+        ]);
+    }
 }

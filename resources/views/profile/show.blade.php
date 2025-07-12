@@ -159,7 +159,10 @@
                                         {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                                     </span>
                                 </div>
-
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Department</h4>
+                                    <p class="text-sm text-gray-900 dark:text-white">{{ ucfirst($user->department) }}</p>
+                                </div>
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Member Since</h4>
                                     <p class="text-sm text-gray-900 dark:text-white">

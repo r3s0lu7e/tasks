@@ -108,7 +108,8 @@
                                     <div class="py-1">
                                         <div
                                              class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-600">
-                                            <div class="font-medium">{{ auth()->user()->name }}</div>
+                                            <div class="font-medium">{{ auth()->user()->name }} -
+                                                {{ auth()->user()->department }}</div>
                                             <div class="text-gray-500 dark:text-gray-400">{{ auth()->user()->email }}</div>
                                         </div>
                                         <a href="{{ route('profile.show') }}"

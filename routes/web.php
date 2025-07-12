@@ -17,6 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/{project}/members', [ProjectController::class, 'members'])->name('projects.members');
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.add-member');
     Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.remove-member');
+    Route::get('/api/projects/{project}/members', [ProjectController::class, 'getProjectMembers'])->name('api.projects.members');
 
     // Task routes (nested under projects)
     Route::resource('projects.tasks', TaskController::class)->except(['index']);

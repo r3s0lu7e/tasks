@@ -71,8 +71,12 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
-        // Get all team members (users) for assignment
-        $assignableUsers = User::orderBy('name')->get();
+        // Get project members (including owner) for assignment
+        $assignableUsers = collect([$project->owner])
+            ->merge($project->members)
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
 
         return view('tasks.create', compact('project', 'assignableUsers'));
     }
@@ -100,11 +104,11 @@ class TaskController extends Controller
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
 
-        // Validate assignee exists (removed project member restriction)
+        // Validate assignee is a member of the project
         if ($request->assignee_id) {
             $assignee = User::find($request->assignee_id);
-            if (!$assignee) {
-                return back()->withErrors(['assignee_id' => 'Selected assignee does not exist.']);
+            if (!$assignee || !$project->hasMember($assignee)) {
+                return back()->withErrors(['assignee_id' => 'Assignee must be a member of the project.']);
             }
         }
 
@@ -182,8 +186,12 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
-        // Get all team members (users) for assignment
-        $assignableUsers = User::orderBy('name')->get();
+        // Get project members (including owner) for assignment
+        $assignableUsers = collect([$project->owner])
+            ->merge($project->members)
+            ->unique('id')
+            ->sortBy('name')
+            ->values();
 
         return view('tasks.edit', compact('project', 'task', 'assignableUsers'));
     }
@@ -506,7 +514,8 @@ class TaskController extends Controller
         // Use the first project as default, or let user choose
         $project = $projects->first();
 
-        // Get all team members (users) for assignment
+        // Get all team members (users) for assignment - keep all users for standalone form
+        // since user can change project and we'll validate on submission
         $assignableUsers = User::orderBy('name')->get();
 
         return view('tasks.create-standalone', compact('projects', 'project', 'assignableUsers'));
@@ -538,6 +547,14 @@ class TaskController extends Controller
             return back()->withErrors(['project_id' => 'You do not have access to this project.']);
         }
 
+        // Validate assignee is a member of the project
+        if ($request->assignee_id) {
+            $assignee = User::find($request->assignee_id);
+            if (!$assignee || !$project->hasMember($assignee)) {
+                return back()->withErrors(['assignee_id' => 'Assignee must be a member of the project.']);
+            }
+        }
+
         $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
@@ -546,7 +563,7 @@ class TaskController extends Controller
             'status' => $request->status,
             'project_id' => $request->project_id,
             'creator_id' => $user->id,
-            'assignee_id' => $request->assignee_id, // Can assign to any team member
+            'assignee_id' => $request->assignee_id,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -594,7 +611,8 @@ class TaskController extends Controller
                 })->get();
         }
 
-        // Get all team members (users) for assignment
+        // Get all team members (users) for assignment - keep all users for standalone form
+        // since user can change project and we'll validate on submission
         $assignableUsers = User::orderBy('name')->get();
 
         // Use the existing edit view with project context
@@ -629,10 +647,19 @@ class TaskController extends Controller
         ]);
 
         // Verify user has access to the new project (if changed)
+        $targetProject = $task->project;
         if ($request->project_id != $task->project_id) {
-            $newProject = Project::findOrFail($request->project_id);
-            if (!$newProject->hasMember($user)) {
+            $targetProject = Project::findOrFail($request->project_id);
+            if (!$targetProject->hasMember($user)) {
                 return back()->withErrors(['project_id' => 'You do not have access to this project.']);
+            }
+        }
+
+        // Validate assignee is a member of the target project
+        if ($request->assignee_id) {
+            $assignee = User::find($request->assignee_id);
+            if (!$assignee || !$targetProject->hasMember($assignee)) {
+                return back()->withErrors(['assignee_id' => 'Assignee must be a member of the project.']);
             }
         }
 

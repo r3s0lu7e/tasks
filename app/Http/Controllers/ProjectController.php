@@ -244,4 +244,33 @@ class ProjectController extends Controller
 
         return view('projects.members', compact('project', 'availableUsers'));
     }
+
+    /**
+     * Get project members for API calls.
+     */
+    public function getProjectMembers(Project $project)
+    {
+        // Check if user has access to this project
+        $user = Auth::user();
+        if (!$project->hasMember($user)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get project members (including owner)
+        $members = collect([$project->owner])
+            ->merge($project->members)
+            ->unique('id')
+            ->sortBy('name')
+            ->values()
+            ->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'department' => $member->department,
+                    'role' => $member->role,
+                ];
+            });
+
+        return response()->json($members);
+    }
 }

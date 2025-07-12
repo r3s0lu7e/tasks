@@ -140,3 +140,42 @@ window.showNotification = function (message, type = "success") {
 		notification.remove()
 	}, 3000)
 }
+
+// Dynamic assignee dropdown for task forms
+document.addEventListener("DOMContentLoaded", () => {
+	const projectSelect = document.getElementById("project_id")
+	const assigneeSelect = document.getElementById("assignee_id")
+
+	if (projectSelect && assigneeSelect) {
+		projectSelect.addEventListener("change", async (e) => {
+			const projectId = e.target.value
+
+			// Clear current assignee options
+			assigneeSelect.innerHTML = '<option value="">Unassigned</option>'
+
+			if (!projectId) {
+				return
+			}
+
+			try {
+				const response = await fetch(`/api/projects/${projectId}/members`)
+				if (!response.ok) {
+					throw new Error("Failed to fetch project members")
+				}
+
+				const members = await response.json()
+
+				// Add project members to assignee dropdown
+				members.forEach((member) => {
+					const option = document.createElement("option")
+					option.value = member.id
+					option.textContent = `${member.name} (${member.department || member.role})`
+					assigneeSelect.appendChild(option)
+				})
+			} catch (error) {
+				console.error("Error fetching project members:", error)
+				window.showNotification("Failed to load project members", "error")
+			}
+		})
+	}
+})

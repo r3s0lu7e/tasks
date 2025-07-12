@@ -30,15 +30,18 @@
                                 </svg>
                                 New Task
                             </a>
-                            <a href="{{ route('team.create') }}"
-                               class="bg-white dark:bg-gray-800 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                                    </path>
-                                </svg>
-                                Add Team Member
-                            </a>
+                            @if (auth()->user()->isAdmin())
+                                <a href="{{ route('team.create') }}"
+                                   class="bg-white dark:bg-gray-800 text-green-600 dark:text-green-400 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                                        </path>
+                                    </svg>
+                                    Add Team Member
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -175,26 +178,29 @@
                     </div>
                 </div> --}}
 
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border-l-4 border-teal-500">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-teal-500" fill="none" stroke="currentColor"
-                                     viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active</dt>
-                                    <dd class="text-lg font-medium text-gray-900 dark:text-white">
-                                        {{ $stats['active_team_members'] }}</dd>
-                                </dl>
+                @if (auth()->user()->isAdmin())
+                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border-l-4 border-teal-500">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-teal-500" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active
+                                            Team</dt>
+                                        <dd class="text-lg font-medium text-gray-900 dark:text-white">
+                                            {{ $stats['active_team_members'] }}</dd>
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
 
             <!-- Due Today Tasks Alert -->
@@ -277,65 +283,69 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Team Members Overview -->
-                <div
-                     class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div class="px-4 py-5 sm:p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Team Members</h3>
-                            <a href="{{ route('team.index') }}"
-                               class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">View
-                                all</a>
-                        </div>
-                        <div class="space-y-3">
-                            @forelse($teamMembers as $member)
-                                <div
-                                     class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                                    <div class="flex items-center">
-                                        <div
-                                             class="h-8 w-8 rounded-full bg-{{ $member->status_color }}-500 flex items-center justify-center">
-                                            <span class="text-white text-sm font-medium">{{ $member->initials }}</span>
+            <div class="grid grid-cols-1 lg:grid-cols-{{ auth()->user()->isAdmin() ? '3' : '2' }} gap-8">
+                <!-- Team Members Overview - Admin Only -->
+                @if (auth()->user()->isAdmin())
+                    <div
+                         class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Team Members</h3>
+                                <a href="{{ route('team.index') }}"
+                                   class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">View
+                                    all</a>
+                            </div>
+                            <div class="space-y-3">
+                                @forelse($teamMembers as $member)
+                                    <div
+                                         class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex items-center">
+                                            <div
+                                                 class="h-8 w-8 rounded-full bg-{{ $member->status_color }}-500 flex items-center justify-center">
+                                                <span
+                                                      class="text-white text-sm font-medium">{{ $member->initials }}</span>
+                                            </div>
+                                            <div class="ml-3">
+                                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    <a href="{{ route('team.show', $member) }}"
+                                                       class="hover:text-blue-600 dark:hover:text-blue-400">
+                                                        {{ $member->name }}
+                                                    </a>
+                                                </h4>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->role }} •
+                                                    {{ $member->position }}</p>
+                                            </div>
                                         </div>
-                                        <div class="ml-3">
-                                            <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                                                <a href="{{ route('team.show', $member) }}"
-                                                   class="hover:text-blue-600 dark:hover:text-blue-400">
-                                                    {{ $member->name }}
-                                                </a>
-                                            </h4>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->role }} •
-                                                {{ $member->position }}</p>
+                                        <div class="text-right">
+                                            <span
+                                                  class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->assigned_tasks_count }}</span>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">tasks</p>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <span
-                                              class="text-sm font-medium text-gray-900 dark:text-white">{{ $member->assigned_tasks_count }}</span>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">tasks</p>
+                                @empty
+                                    <div class="text-center py-6">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
+                                            </path>
+                                        </svg>
+                                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No team members
+                                        </h3>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add team members to start
+                                            tracking their work.
+                                        </p>
+                                        <div class="mt-6">
+                                            <a href="{{ route('team.create') }}" class="btn btn-primary">
+                                                Add Team Member
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            @empty
-                                <div class="text-center py-6">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
-                                         viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z">
-                                        </path>
-                                    </svg>
-                                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No team members</h3>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add team members to start
-                                        tracking their work.
-                                    </p>
-                                    <div class="mt-6">
-                                        <a href="{{ route('team.create') }}" class="btn btn-primary">
-                                            Add Team Member
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforelse
+                                @endforelse
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
 
                 <!-- Active Projects -->
                 <div
@@ -478,8 +488,8 @@
                 </div>
             </div>
 
-            <!-- Team Performance Overview -->
-            @if ($teamWorkload->count() > 0)
+            <!-- Team Performance Overview - Admin Only -->
+            @if (auth()->user()->isAdmin() && $teamWorkload->count() > 0)
                 <div
                      class="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="px-4 py-5 sm:p-6">

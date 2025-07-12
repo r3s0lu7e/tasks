@@ -22,17 +22,17 @@ class UserSeeder extends Seeder
         // ]);
 
         // Create developer
-        User::create([
-            'name' => 'Daniel Marinov',
-            'email' => 'r3s0lu7e@gmail.com',
-            'password' => Hash::make('12345'),
-            'role' => 'developer',
-            'department' => 'Development',
-            'phone' => '0878736802',
-            'hourly_rate' => 45.00,
-            'hire_date' => '2024-07-1',
-            'status' => 'Active',
-        ]);
+        // User::create([
+        //     'name' => 'Daniel Marinov',
+        //     'email' => 'r3s0lu7e@gmail.com',
+        //     'password' => Hash::make('12345'),
+        //     'role' => 'developer',
+        //     'department' => 'Development',
+        //     'phone' => '0878736802',
+        //     'hourly_rate' => 45.00,
+        //     'hire_date' => '2024-07-1',
+        //     'status' => 'active',
+        // ]);
 
         // // Create project manager
         // User::create([

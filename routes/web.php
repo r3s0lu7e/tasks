@@ -44,9 +44,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/comments/{comment}', [App\Http\Controllers\TaskCommentController::class, 'update'])->name('comments.update');
     Route::delete('/comments/{comment}', [App\Http\Controllers\TaskCommentController::class, 'destroy'])->name('comments.destroy');
 
-    // Team Management routes
-    Route::resource('team', App\Http\Controllers\TeamMemberController::class);
-    Route::get('/team/workload/data', [App\Http\Controllers\TeamMemberController::class, 'workloadData'])->name('team.workload.data');
+    // Team Management routes - Admin only
+    Route::middleware(['admin'])->group(function () {
+        Route::resource('team', App\Http\Controllers\TeamMemberController::class);
+        Route::get('/team/workload/data', [App\Http\Controllers\TeamMemberController::class, 'workloadData'])->name('team.workload.data');
+    });
 
     // Profile routes
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');

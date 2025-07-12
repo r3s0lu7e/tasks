@@ -47,10 +47,12 @@
                                    class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('tasks.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">
                                     Tasks
                                 </a>
-                                <a href="{{ route('team.index') }}"
-                                   class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('team.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">
-                                    Team
-                                </a>
+                                @if (auth()->user()->isAdmin())
+                                    <a href="{{ route('team.index') }}"
+                                       class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('team.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">
+                                        Team
+                                    </a>
+                                @endif
 
                                 <!-- Search -->
                                 <div class="flex items-center">
@@ -178,10 +180,12 @@
                            class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tasks.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
                             Tasks
                         </a>
-                        <a href="{{ route('team.index') }}"
-                           class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('team.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
-                            Team
-                        </a>
+                        @if (auth()->user()->isAdmin())
+                            <a href="{{ route('team.index') }}"
+                               class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('team.*') ? 'text-jira-blue bg-blue-50 dark:bg-blue-900 dark:text-blue-400' : 'text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700' }}">
+                                Team
+                            </a>
+                        @endif
 
                         <!-- Mobile Search -->
                         <div class="px-3 py-2">

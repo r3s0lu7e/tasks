@@ -29,6 +29,18 @@ class DatabaseSeeder extends Seeder
             'hire_date' => now()->subMonths(24),
         ]);
 
+        // Create developer
+        User::create([
+            'name' => 'Daniel Marinov',
+            'email' => 'r3s0lu7e@gmail.com',
+            'password' => Hash::make('12345'),
+            'role' => 'developer',
+            'department' => 'Development',
+            'phone' => '0878736802',
+            'hourly_rate' => 45.00,
+            'hire_date' => '2024-07-1',
+            'status' => 'active',
+        ]);
         // Create team members
         $teamMembers = [
             // [

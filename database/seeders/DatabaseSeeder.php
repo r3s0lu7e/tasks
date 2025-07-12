@@ -163,14 +163,5 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
-
-        $this->command->info('Database seeded successfully!');
-        $this->command->info('Login credentials:');
-        $this->command->info('Admin: iva@wuvu.com / password');
-        $this->command->info('Developer: r3s0lu7e@gmail.com / password');
-        $this->command->info('Designer: jane@wuvu.com / password');
-        $this->command->info('Tester: mike@wuvu.com / password');
-        $this->command->info('Project Manager: sarah@wuvu.com / password');
-        $this->command->info('Client: client@wuvu.com / password');
     }
 }

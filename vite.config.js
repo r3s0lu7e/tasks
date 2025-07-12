@@ -9,10 +9,21 @@ export default defineConfig({
 		}),
 	],
 	server: {
-		host: "0.0.0.0", // Allow external connections
-		port: 5173, // Default Vite port
+		host: "localhost",
+		port: 5173,
 		hmr: {
-			host: "192.168.31.244", // Replace with your actual IP
+			host: "localhost",
+		},
+		cors: true,
+	},
+	build: {
+		outDir: "public/build",
+		emptyOutDir: true,
+		manifest: true,
+		rollupOptions: {
+			output: {
+				manualChunks: undefined,
+			},
 		},
 	},
 })

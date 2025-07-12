@@ -697,6 +697,41 @@ class TaskController extends Controller
     }
 
     /**
+     * Remove the specified task (standalone).
+     */
+    public function destroyStandalone(Task $task)
+    {
+        $user = Auth::user();
+
+        // Check if user has access to this task's project
+        if (!$task->project->hasMember($user)) {
+            abort(403, 'You do not have access to this task.');
+        }
+
+        // Only creator, assignee, project owner, or admin can delete
+        if (
+            $task->creator_id !== $user->id &&
+            $task->assignee_id !== $user->id &&
+            $task->project->owner_id !== $user->id &&
+            !$user->isAdmin()
+        ) {
+            abort(403, 'You do not have permission to delete this task.');
+        }
+
+        // Delete attachments from storage
+        foreach ($task->attachments as $attachment) {
+            if (Storage::disk('public')->exists($attachment->path)) {
+                Storage::disk('public')->delete($attachment->path);
+            }
+        }
+
+        $task->delete();
+
+        return redirect()->route('tasks.index')
+            ->with('success', 'Task deleted successfully.');
+    }
+
+    /**
      * Display the specified task (global).
      */
     public function showGlobal(Task $task)

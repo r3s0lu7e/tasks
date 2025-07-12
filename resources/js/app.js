@@ -1,208 +1,207 @@
 import "./bootstrap"
 import "./image-paste"
 
-import Alpine from "alpinejs"
+// Robust dark mode implementation with defensive checks
+document.addEventListener("DOMContentLoaded", function () {
+	// Initialize theme first
+	initTheme()
 
-window.Alpine = Alpine
+	// Setup components only if they exist
+	setupThemeToggles()
+	setupNavigation()
+})
 
-Alpine.start()
-
-// Dark Mode Toggle
 function initTheme() {
-	// Check for saved theme preference or respect OS preference
-	if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-		document.documentElement.classList.add("dark")
-	} else {
-		document.documentElement.classList.remove("dark")
-	}
+	try {
+		// Check for saved theme preference or respect OS preference
+		if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+			document.documentElement.classList.add("dark")
+		} else {
+			document.documentElement.classList.remove("dark")
+		}
 
-	// Set initial icon state for both buttons
-	updateThemeToggleIcon()
+		// Update icons only if elements exist
+		updateThemeToggleIcon()
+	} catch (error) {
+		console.warn("Theme initialization failed:", error)
+	}
 }
 
-// Initialize theme immediately
-initTheme()
+function setupThemeToggles() {
+	try {
+		// Desktop theme toggle
+		const themeToggle = document.getElementById("theme-toggle")
+		if (themeToggle) {
+			themeToggle.addEventListener("click", function (e) {
+				e.preventDefault()
+				toggleTheme()
+			})
+		}
 
-document.addEventListener("DOMContentLoaded", () => {
-	// Re-check icons after DOM is loaded
-	updateThemeToggleIcon()
-})
-
-// Also update theme icons when Alpine.js initializes
-document.addEventListener("alpine:init", () => {
-	updateThemeToggleIcon()
-})
-
-// Use event delegation for both desktop and mobile theme toggle buttons
-// This ensures the event listeners work even when elements are dynamically shown/hidden
-document.addEventListener("click", (e) => {
-	// Check if the clicked element is a theme toggle button (desktop or mobile)
-	if (e.target.closest("#theme-toggle") || e.target.closest("#mobile-theme-toggle")) {
-		e.preventDefault()
-		toggleTheme()
+		// Mobile theme toggle
+		const mobileThemeToggle = document.getElementById("mobile-theme-toggle")
+		if (mobileThemeToggle) {
+			mobileThemeToggle.addEventListener("click", function (e) {
+				e.preventDefault()
+				toggleTheme()
+			})
+		}
+	} catch (error) {
+		console.warn("Theme toggle setup failed:", error)
 	}
-})
+}
 
 function toggleTheme() {
-	// Toggle theme
-	if (document.documentElement.classList.contains("dark")) {
-		document.documentElement.classList.remove("dark")
-		localStorage.theme = "light"
-	} else {
-		document.documentElement.classList.add("dark")
-		localStorage.theme = "dark"
-	}
+	try {
+		// Toggle theme
+		if (document.documentElement.classList.contains("dark")) {
+			document.documentElement.classList.remove("dark")
+			localStorage.theme = "light"
+		} else {
+			document.documentElement.classList.add("dark")
+			localStorage.theme = "dark"
+		}
 
-	// Update button icons
-	updateThemeToggleIcon()
+		// Update button icons
+		updateThemeToggleIcon()
+	} catch (error) {
+		console.warn("Theme toggle failed:", error)
+	}
 }
 
 function updateThemeToggleIcon() {
-	// Desktop theme toggle icons
-	const themeToggleBtn = document.getElementById("theme-toggle")
-	const sunIcon = document.getElementById("theme-toggle-light-icon")
-	const moonIcon = document.getElementById("theme-toggle-dark-icon")
+	try {
+		// Desktop theme toggle icons - only update if they exist
+		const sunIcon = document.getElementById("theme-toggle-light-icon")
+		const moonIcon = document.getElementById("theme-toggle-dark-icon")
 
-	// Mobile theme toggle icons
-	const mobileSunIcon = document.getElementById("mobile-theme-toggle-light-icon")
-	const mobileMoonIcon = document.getElementById("mobile-theme-toggle-dark-icon")
+		// Mobile theme toggle icons - only update if they exist
+		const mobileSunIcon = document.getElementById("mobile-theme-toggle-light-icon")
+		const mobileMoonIcon = document.getElementById("mobile-theme-toggle-dark-icon")
 
-	const isDark = document.documentElement.classList.contains("dark")
+		const isDark = document.documentElement.classList.contains("dark")
 
-	if (isDark) {
-		// Show sun icon (light mode button)
-		if (sunIcon) sunIcon.classList.remove("hidden")
-		if (moonIcon) moonIcon.classList.add("hidden")
-		if (mobileSunIcon) mobileSunIcon.classList.remove("hidden")
-		if (mobileMoonIcon) mobileMoonIcon.classList.add("hidden")
-	} else {
-		// Show moon icon (dark mode button)
-		if (sunIcon) sunIcon.classList.add("hidden")
-		if (moonIcon) moonIcon.classList.remove("hidden")
-		if (mobileSunIcon) mobileSunIcon.classList.add("hidden")
-		if (mobileMoonIcon) mobileMoonIcon.classList.remove("hidden")
+		if (isDark) {
+			// Show sun icon (light mode button)
+			if (sunIcon) sunIcon.classList.remove("hidden")
+			if (moonIcon) moonIcon.classList.add("hidden")
+			if (mobileSunIcon) mobileSunIcon.classList.remove("hidden")
+			if (mobileMoonIcon) mobileMoonIcon.classList.add("hidden")
+		} else {
+			// Show moon icon (dark mode button)
+			if (sunIcon) sunIcon.classList.add("hidden")
+			if (moonIcon) moonIcon.classList.remove("hidden")
+			if (mobileSunIcon) mobileSunIcon.classList.add("hidden")
+			if (mobileMoonIcon) mobileMoonIcon.classList.remove("hidden")
+		}
+	} catch (error) {
+		console.warn("Theme icon update failed:", error)
 	}
 }
 
-// Observe changes to the mobile menu visibility to update icons when it becomes visible
-const observer = new MutationObserver(() => {
-	updateThemeToggleIcon()
-})
+function setupNavigation() {
+	try {
+		// User menu dropdown - only setup if elements exist
+		const userMenuButton = document.getElementById("user-menu-button")
+		const userMenuDropdown = document.getElementById("user-menu-dropdown")
 
-// Start observing when DOM is ready
-document.addEventListener("DOMContentLoaded", () => {
-	// Observe changes to elements that might affect mobile menu visibility
-	const mobileMenu = document.querySelector('[x-show="mobileMenuOpen"]')
-	if (mobileMenu) {
-		observer.observe(mobileMenu, {
-			attributes: true,
-			attributeFilter: ["style", "class"],
-		})
-	}
-})
+		if (userMenuButton && userMenuDropdown) {
+			userMenuButton.addEventListener("click", function (e) {
+				e.preventDefault()
+				e.stopPropagation()
+				userMenuDropdown.classList.toggle("hidden")
+			})
 
-// Custom Alpine.js components
-Alpine.data("taskBoard", () => ({
-	tasks: [],
-	showTaskModal: false,
-	selectedTask: null,
-
-	init() {
-		// Initialize task board
-	},
-
-	openTaskModal(task = null) {
-		this.selectedTask = task
-		this.showTaskModal = true
-	},
-
-	closeTaskModal() {
-		this.showTaskModal = false
-		this.selectedTask = null
-	},
-
-	updateTaskStatus(taskId, newStatus) {
-		// Update task status via API
-		fetch(`/tasks/${taskId}/status`, {
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-			},
-			body: JSON.stringify({ status: newStatus }),
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				if (data.success) {
-					// Update task in the UI
-					this.tasks = this.tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task))
+			// Close dropdown when clicking outside
+			document.addEventListener("click", function (e) {
+				if (!userMenuButton.contains(e.target) && !userMenuDropdown.contains(e.target)) {
+					userMenuDropdown.classList.add("hidden")
 				}
 			})
-	},
-}))
 
-Alpine.data("projectSelector", () => ({
-	projects: [],
-	selectedProject: null,
+			// Close dropdown when pressing escape
+			document.addEventListener("keydown", function (e) {
+				if (e.key === "Escape") {
+					userMenuDropdown.classList.add("hidden")
+				}
+			})
+		}
 
-	init() {
-		// Load projects
-	},
+		// Mobile menu - only setup if elements exist
+		const mobileMenuButton = document.getElementById("mobile-menu-button")
+		const mobileMenu = document.getElementById("mobile-menu")
+		const mobileMenuIconOpen = document.getElementById("mobile-menu-icon-open")
+		const mobileMenuIconClose = document.getElementById("mobile-menu-icon-close")
 
-	selectProject(project) {
-		this.selectedProject = project
-		// Navigate to project or update view
-	},
-}))
+		if (mobileMenuButton && mobileMenu && mobileMenuIconOpen && mobileMenuIconClose) {
+			mobileMenuButton.addEventListener("click", function () {
+				mobileMenu.classList.toggle("hidden")
+				mobileMenuIconOpen.classList.toggle("hidden")
+				mobileMenuIconClose.classList.toggle("hidden")
+			})
+		}
+	} catch (error) {
+		console.warn("Navigation setup failed:", error)
+	}
+}
 
 // Utility functions
 window.showNotification = function (message, type = "success") {
-	const notification = document.createElement("div")
-	notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${type === "success" ? "bg-green-500 text-white" : type === "error" ? "bg-red-500 text-white" : "bg-blue-500 text-white"}`
-	notification.textContent = message
+	try {
+		const notification = document.createElement("div")
+		notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${type === "success" ? "bg-green-500 text-white" : type === "error" ? "bg-red-500 text-white" : "bg-blue-500 text-white"}`
+		notification.textContent = message
 
-	document.body.appendChild(notification)
+		document.body.appendChild(notification)
 
-	setTimeout(() => {
-		notification.remove()
-	}, 3000)
+		setTimeout(() => {
+			if (notification.parentNode) {
+				notification.remove()
+			}
+		}, 3000)
+	} catch (error) {
+		console.warn("Notification failed:", error)
+	}
 }
 
 // Dynamic assignee dropdown for task forms
 document.addEventListener("DOMContentLoaded", () => {
-	const projectSelect = document.getElementById("project_id")
-	const assigneeSelect = document.getElementById("assignee_id")
+	try {
+		const projectSelect = document.getElementById("project_id")
+		const assigneeSelect = document.getElementById("assignee_id")
 
-	if (projectSelect && assigneeSelect) {
-		projectSelect.addEventListener("change", async (e) => {
-			const projectId = e.target.value
+		if (projectSelect && assigneeSelect) {
+			projectSelect.addEventListener("change", async (e) => {
+				const projectId = e.target.value
 
-			// Clear current assignee options
-			assigneeSelect.innerHTML = '<option value="">Unassigned</option>'
+				// Clear current assignee options
+				assigneeSelect.innerHTML = '<option value="">Unassigned</option>'
 
-			if (!projectId) {
-				return
-			}
-
-			try {
-				const response = await fetch(`/api/projects/${projectId}/members`)
-				if (!response.ok) {
-					throw new Error("Failed to fetch project members")
+				if (!projectId) {
+					return
 				}
 
-				const members = await response.json()
+				try {
+					const response = await fetch(`/api/projects/${projectId}/members`)
+					if (!response.ok) {
+						throw new Error("Failed to fetch project members")
+					}
 
-				// Add project members to assignee dropdown
-				members.forEach((member) => {
-					const option = document.createElement("option")
-					option.value = member.id
-					option.textContent = `${member.name} (${member.department || member.role})`
-					assigneeSelect.appendChild(option)
-				})
-			} catch (error) {
-				console.error("Error fetching project members:", error)
-				window.showNotification("Failed to load project members", "error")
-			}
-		})
+					const members = await response.json()
+
+					// Add project members to assignee dropdown
+					members.forEach((member) => {
+						const option = document.createElement("option")
+						option.value = member.id
+						option.textContent = `${member.name} (${member.department || member.role})`
+						assigneeSelect.appendChild(option)
+					})
+				} catch (error) {
+					console.error("Error fetching project members:", error)
+				}
+			})
+		}
+	} catch (error) {
+		console.warn("Project selector setup failed:", error)
 	}
 })

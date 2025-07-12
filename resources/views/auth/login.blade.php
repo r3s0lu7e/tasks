@@ -20,7 +20,7 @@
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div
                  class="bg-white dark:bg-gray-800 py-8 px-4 shadow-lg sm:rounded-lg sm:px-10 border border-gray-200 dark:border-gray-700">
-                <form method="POST" action="{{ route('login') }}" class="space-y-6">
+                <form method="POST" action="{{ route('login') }}" class="space-y-6" autocomplete="on">
                     @csrf
 
                     <div>
@@ -29,7 +29,7 @@
                         </label>
                         <div class="mt-1">
                             <input id="email" type="email" name="email" value="{{ old('email') }}" required
-                                   autocomplete="email" autofocus
+                                   autocomplete="username" autofocus
                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('email') border-red-300 dark:border-red-600 @enderror">
                             @error('email')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

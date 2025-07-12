@@ -40,7 +40,7 @@
                  class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
                     <form method="GET" action="{{ route('projects.tasks.index', $project) }}" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <!-- Search -->
                             <div>
                                 <label for="search"
@@ -116,17 +116,17 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
 
-                        <div class="flex items-center space-x-4">
-                            <button type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-jira-blue border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Apply Filters
-                            </button>
-                            <a href="{{ route('projects.tasks.index', $project) }}"
-                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            {{-- <div class="flex items-center space-x-4"> --}}
+                            <div class="flex items-end">
+                                <button type="submit" class="btn btn-primary w-full">
+                                    Filter
+                                </button>
+                                {{-- <a href="{{ route('projects.tasks.index', $project) }}"
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Clear Filters
-                            </a>
+                            </a> --}}
+                            </div>
                         </div>
                     </form>
                 </div>

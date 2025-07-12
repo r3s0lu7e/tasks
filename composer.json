@@ -1,12 +1,13 @@
 {
 	"name": "laravel/laravel",
 	"type": "project",
-	"description": "Jira Clone - Project and Task Management System",
+	"description": "Personal Workstation - Dynamic Task Management System",
 	"keywords": [
 		"laravel",
 		"framework",
-		"jira",
-		"project-management"
+		"workstation",
+		"project-management",
+		"task-management"
 	],
 	"license": "MIT",
 	"require": {
@@ -29,7 +30,10 @@
 			"App\\": "app/",
 			"Database\\Factories\\": "database/factories/",
 			"Database\\Seeders\\": "database/seeders/"
-		}
+		},
+		"files": [
+			"app/helpers.php"
+		]
 	},
 	"autoload-dev": {
 		"psr-4": {

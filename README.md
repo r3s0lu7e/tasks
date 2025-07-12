@@ -1,6 +1,6 @@
-# Laravel Jira Clone - Task Management System
+# Personal Workstation - Task Management System
 
-A comprehensive task management system built with Laravel 12, featuring project management, team collaboration, and task tracking capabilities similar to Jira.
+A personalized task management system built with Laravel 12, featuring project management, team collaboration, and task tracking capabilities. The system dynamically adapts to show the logged-in user's name (e.g., "Ива's workstation" or "Daniel's workstation").
 
 ## Features
 
@@ -96,7 +96,7 @@ A comprehensive task management system built with Laravel 12, featuring project 
 After running the seeders, you can log in with:
 
 - **Admin User**: 
-  - Email: `iva@jiraclone.com`
+  - Email: `iva@wuvu.com`
   - Password: `password`
 
 ## Project Structure

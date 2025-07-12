@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'admin',
             'status' => 'active',
-            'department' => 'IT',
+            'department' => 'Boss Lady',
             'phone' => '0888622212',
             'hourly_rate' => 50.00,
             'hire_date' => now()->subMonths(24),
@@ -31,17 +31,17 @@ class DatabaseSeeder extends Seeder
 
         // Create team members
         $teamMembers = [
-            [
-                'name' => 'Daniel Marinov',
-                'email' => 'r3s0lu7e@gmail.com',
-                'role' => 'developer',
-                'department' => 'Development',
-                'phone' => '0878736802',
-                'hourly_rate' => 45.00,
-            ],
+            // [
+            //     'name' => 'Daniel Marinov',
+            //     'email' => 'r3s0lu7e@gmail.com',
+            //     'role' => 'developer',
+            //     'department' => 'Development',
+            //     'phone' => '0878736802',
+            //     'hourly_rate' => 45.00,
+            // ],
             [
                 'name' => 'Jane Designer',
-                'email' => 'jane@jiraclone.com',
+                'email' => 'jane@wuvu.com',
                 'role' => 'developer',
                 'department' => 'Design',
                 'phone' => '+1-555-0003',
@@ -49,7 +49,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Mike Tester',
-                'email' => 'mike@jiraclone.com',
+                'email' => 'mike@wuvu.com',
                 'role' => 'tester',
                 'department' => 'Quality Assurance',
                 'phone' => '+1-555-0004',
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Sarah Manager',
-                'email' => 'sarah@jiraclone.com',
+                'email' => 'sarah@wuvu.com',
                 'role' => 'project_manager',
                 'department' => 'Management',
                 'phone' => '+1-555-0005',
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Client User',
-                'email' => 'client@jiraclone.com',
+                'email' => 'client@wuvu.com',
                 'role' => 'admin',
                 'department' => 'Business',
                 'phone' => '+1-555-0006',
@@ -166,11 +166,11 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Database seeded successfully!');
         $this->command->info('Login credentials:');
-        $this->command->info('Admin: iva@jiraclone.com / password');
-        $this->command->info('Developer: john@jiraclone.com / password');
-        $this->command->info('Designer: jane@jiraclone.com / password');
-        $this->command->info('Tester: mike@jiraclone.com / password');
-        $this->command->info('Project Manager: sarah@jiraclone.com / password');
-        $this->command->info('Client: client@jiraclone.com / password');
+        $this->command->info('Admin: iva@wuvu.com / password');
+        $this->command->info('Developer: r3s0lu7e@gmail.com / password');
+        $this->command->info('Designer: jane@wuvu.com / password');
+        $this->command->info('Tester: mike@wuvu.com / password');
+        $this->command->info('Project Manager: sarah@wuvu.com / password');
+        $this->command->info('Client: client@wuvu.com / password');
     }
 }

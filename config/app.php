@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Jira Clone'),
+    'name' => env('APP_NAME', "Ива's workstation"),
 
     /*
     |--------------------------------------------------------------------------

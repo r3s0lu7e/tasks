@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Jira Clone') }}</title>
+    <title>{{ getWorkstationName() }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -13,8 +13,8 @@
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <div class="text-center">
                 <h1 class="text-4xl font-bold text-jira-blue dark:text-blue-400 mb-2">
-                    {{ config('app.name', 'Jira Clone') }}</h1>
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">Modern Project Management System</p>
+                    {{ getWorkstationName() }}</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">{{ getWorkstationDescription() }}</p>
             </div>
 
             <div
@@ -27,9 +27,10 @@
                                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                             </path>
                         </svg>
-                        <h2 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Welcome to Jira Clone</h2>
+                        <h2 class="mt-4 text-xl font-semibold text-gray-900 dark:text-white">Welcome to
+                            {{ getWorkstationName() }}</h2>
                         <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                            A comprehensive project management system built with Laravel 12
+                            {{ getWorkstationDescription() }}
                         </p>
                     </div>
 
@@ -66,23 +67,7 @@
                         @endauth
                     </div>
 
-                    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-                        <div class="text-center">
-                            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Sample Login Credentials
-                            </h3>
-                            <div class="text-xs text-gray-600 dark:text-gray-300 space-y-2">
-                                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                                    <strong>Admin:</strong> admin@jiraclone.com / password
-                                </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                                    <strong>Project Manager:</strong> pm@jiraclone.com / password
-                                </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                                    <strong>Developer:</strong> john@jiraclone.com / password
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>

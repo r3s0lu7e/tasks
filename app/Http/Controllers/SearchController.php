@@ -27,8 +27,7 @@ class SearchController extends Controller
             $projects = Project::where('name', 'like', "%{$query}%")
                 ->orWhere('description', 'like', "%{$query}%")
                 ->orWhere('key', 'like', "%{$query}%")
-                ->limit(10)
-                ->get();
+                ->paginate(10, ['*'], 'projects_page');
         } else {
             $projects = Project::where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
@@ -39,8 +38,7 @@ class SearchController extends Controller
                     ->orWhereHas('members', function ($memberQuery) use ($user) {
                         $memberQuery->where('user_id', $user->id);
                     });
-            })->limit(10)
-                ->get();
+            })->paginate(10, ['*'], 'projects_page');
         }
 
         // Search tasks based on user access
@@ -48,8 +46,7 @@ class SearchController extends Controller
             $tasks = Task::where('title', 'like', "%{$query}%")
                 ->orWhere('description', 'like', "%{$query}%")
                 ->with(['project', 'assignee'])
-                ->limit(20)
-                ->get();
+                ->paginate(20, ['*'], 'tasks_page');
         } else {
             $tasks = Task::where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
@@ -60,11 +57,10 @@ class SearchController extends Controller
                         $memberQuery->where('user_id', $user->id);
                     });
             })->with(['project', 'assignee'])
-                ->limit(20)
-                ->get();
+                ->paginate(20, ['*'], 'tasks_page');
         }
 
-        $total = $projects->count() + $tasks->count();
+        $total = $projects->total() + $tasks->total();
 
         return view('search.index', [
             'query' => $query,

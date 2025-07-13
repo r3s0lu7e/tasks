@@ -84,6 +84,11 @@
                                         </div>
                                     @endforeach
                                 </div>
+
+                                <!-- Projects Pagination -->
+                                <div class="mt-6">
+                                    {{ $projects->appends(request()->query())->links() }}
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -154,6 +159,11 @@
                                             </div>
                                         </div>
                                     @endforeach
+                                </div>
+
+                                <!-- Tasks Pagination -->
+                                <div class="mt-6">
+                                    {{ $tasks->appends(request()->query())->links() }}
                                 </div>
                             </div>
                         </div>

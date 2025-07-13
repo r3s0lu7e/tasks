@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PersonalNote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PersonalNotesController extends Controller
 {
@@ -26,16 +27,6 @@ class PersonalNotesController extends Controller
             $query->withTag($request->tag);
         }
 
-        // Apply pinned filter
-        if ($request->filled('pinned') && $request->pinned === '1') {
-            $query->pinned();
-        }
-
-        // Apply favorite filter
-        if ($request->filled('favorite') && $request->favorite === '1') {
-            $query->favorite();
-        }
-
         // Apply color filter
         if ($request->filled('color')) {
             $query->where('color', $request->color);
@@ -53,15 +44,39 @@ class PersonalNotesController extends Controller
             $query->orderBy('created_at', $sortOrder);
         }
 
-        // Get pinned notes separately for display at top (only if not filtering for specific pinned status)
-        $pinnedNotes = collect();
-        if (!$request->filled('pinned')) {
-            $pinnedNotes = $user->personalNotes()->pinned()->latest()->get();
-            // Exclude pinned notes from main query to avoid duplicates
-            $query->where('is_pinned', false);
-        }
+        // If specific filters are applied, return filtered results normally
+        if ($request->filled('pinned') || $request->filled('favorite')) {
+            // Apply pinned filter
+            if ($request->filled('pinned') && $request->pinned === '1') {
+                $query->pinned();
+            }
 
-        $notes = $query->paginate(12);
+            // Apply favorite filter
+            if ($request->filled('favorite') && $request->favorite === '1') {
+                $query->favorite();
+            }
+
+            $notes = $query->paginate(12);
+            $pinnedNotes = collect();
+            $favoriteNotes = collect();
+            $normalNotes = collect();
+        } else {
+            // For normal display, separate notes into three categories
+            $allNotes = $query->get();
+
+            $pinnedNotes = $allNotes->where('is_pinned', true);
+            $favoriteNotes = $allNotes->where('is_favorite', true)->where('is_pinned', false);
+            $normalNotes = $allNotes->where('is_pinned', false)->where('is_favorite', false);
+
+            // Create empty paginated collection for compatibility
+            $notes = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect(),
+                0,
+                12,
+                1,
+                ['path' => request()->url(), 'pageName' => 'page']
+            );
+        }
 
         // Get all unique tags for filter dropdown
         $allTags = PersonalNote::getTagsForUser($user->id);
@@ -78,7 +93,7 @@ class PersonalNotesController extends Controller
             '#6b7280' => 'Gray',
         ];
 
-        return view('personal-notes.index', compact('notes', 'pinnedNotes', 'allTags', 'colorOptions'));
+        return view('personal-notes.index', compact('notes', 'pinnedNotes', 'favoriteNotes', 'normalNotes', 'allTags', 'colorOptions'));
     }
 
     /**

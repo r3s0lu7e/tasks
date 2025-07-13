@@ -40,6 +40,15 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachment'])->name('tasks.attachments.delete');
     Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->name('tasks.attachments.download');
 
+    // Task Dependency routes
+    Route::post('/tasks/{task}/dependencies', [TaskController::class, 'addDependency'])->name('tasks.dependencies.add');
+    Route::delete('/tasks/{task}/dependencies/{dependency}', [TaskController::class, 'removeDependency'])->name('tasks.dependencies.remove');
+
+    // Checklist Item routes
+    Route::post('/tasks/{task}/checklist-items', [App\Http\Controllers\ChecklistItemController::class, 'store'])->name('checklist-items.store');
+    Route::put('/checklist-items/{item}', [App\Http\Controllers\ChecklistItemController::class, 'update'])->name('checklist-items.update');
+    Route::delete('/checklist-items/{item}', [App\Http\Controllers\ChecklistItemController::class, 'destroy'])->name('checklist-items.destroy');
+
     // Image upload route for descriptions
     Route::post('/upload/image', [TaskController::class, 'uploadImage'])->name('upload.image');
 
@@ -64,6 +73,10 @@ Route::middleware(['auth'])->group(function () {
     // Search routes
     Route::get('/search', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
     Route::get('/search/suggestions', [App\Http\Controllers\SearchController::class, 'suggestions'])->name('search.suggestions');
+
+    // Saved Filter routes
+    Route::post('/filters/save', [App\Http\Controllers\SavedFilterController::class, 'save'])->name('filters.save');
+    Route::delete('/filters/{id}', [App\Http\Controllers\SavedFilterController::class, 'destroy'])->name('filters.destroy');
 });
 
 Auth::routes();

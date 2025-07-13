@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\TaskDependency;
 
 class TaskController extends Controller
 {
@@ -52,7 +53,52 @@ class TaskController extends Controller
             });
         }
 
-        $tasks = $query->orderBy('created_at', 'desc')->paginate(20);
+        // Due date range filter
+        if (request()->filled('due_date_range')) {
+            $range = request('due_date_range');
+            if ($range === 'today') {
+                $query->whereDate('due_date', today());
+            } elseif ($range === 'this_week') {
+                $query->whereBetween('due_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($range === 'next_7_days') {
+                $query->whereBetween('due_date', [today(), today()->addDays(7)]);
+            } elseif ($range === 'this_month') {
+                $query->whereMonth('due_date', now()->month);
+            } elseif ($range === 'overdue') {
+                $query->where('due_date', '<', today())->whereNotIn('status', ['completed', 'cancelled']);
+            } elseif ($range === 'no_due_date') {
+                $query->whereNull('due_date');
+            }
+        }
+
+        // Sorting
+        $sortBy = request()->input('sort_by', 'created_at_desc');
+        switch ($sortBy) {
+            case 'created_at_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'due_date_asc':
+                $query->orderByRaw('due_date IS NULL ASC, due_date ASC');
+                break;
+            case 'due_date_desc':
+                $query->orderByRaw('due_date IS NULL ASC, due_date DESC');
+                break;
+            case 'priority_desc':
+                $query->orderByRaw("FIELD(priority, 'critical', 'high', 'medium', 'low')");
+                break;
+            case 'priority_asc':
+                $query->orderByRaw("FIELD(priority, 'low', 'medium', 'high', 'critical')");
+                break;
+            case 'updated_at_desc':
+                $query->orderBy('updated_at', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+
+        $tasks = $query->paginate(20);
 
         // Group tasks by status for kanban view
         $tasksByStatus = $project->tasks->groupBy('status');
@@ -162,12 +208,24 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
-        $task->load(['assignee', 'creator', 'comments.user']);
+        $task->load(['assignee', 'creator', 'comments.user', 'blockingDependencies.dependentTask.project', 'blockedByDependencies.task.project']);
+
+        // Get IDs of all related tasks
+        $blockingIds = $task->blockingDependencies->pluck('depends_on_task_id');
+        $blockedByIds = $task->blockedByDependencies->pluck('task_id');
+        $existingDependencyIds = $blockingIds->merge($blockedByIds)->unique();
+
+
+        // Get tasks for the dropdown
+        $availableTasks = $project->tasks()
+            ->where('id', '!=', $task->id)
+            ->whereNotIn('id', $existingDependencyIds)
+            ->get();
 
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();
 
-        return view('tasks.show', compact('project', 'task', 'assignableUsers'));
+        return view('tasks.show', compact('project', 'task', 'assignableUsers', 'availableTasks'));
     }
 
     /**
@@ -471,7 +529,51 @@ class TaskController extends Controller
             });
         }
 
-        $tasks = $query->orderBy('created_at', 'desc')->paginate(20);
+        // Due date range filter
+        if ($request->filled('due_date_range')) {
+            $range = $request->due_date_range;
+            if ($range === 'today') {
+                $query->whereDate('due_date', today());
+            } elseif ($range === 'this_week') {
+                $query->whereBetween('due_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($range === 'next_7_days') {
+                $query->whereBetween('due_date', [today(), today()->addDays(7)]);
+            } elseif ($range === 'this_month') {
+                $query->whereMonth('due_date', now()->month);
+            } elseif ($range === 'overdue') {
+                $query->where('due_date', '<', today())->whereNotIn('status', ['completed', 'cancelled']);
+            } elseif ($range === 'no_due_date') {
+                $query->whereNull('due_date');
+            }
+        }
+
+        // Sorting
+        $sortBy = $request->input('sort_by', 'created_at_desc');
+        switch ($sortBy) {
+            case 'created_at_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'due_date_asc':
+                $query->orderByRaw('due_date IS NULL ASC, due_date ASC');
+                break;
+            case 'due_date_desc':
+                $query->orderByRaw('due_date IS NULL ASC, due_date DESC');
+                break;
+            case 'priority_desc':
+                $query->orderByRaw("FIELD(priority, 'critical', 'high', 'medium', 'low')");
+                break;
+            case 'priority_asc':
+                $query->orderByRaw("FIELD(priority, 'low', 'medium', 'high', 'critical')");
+                break;
+            case 'updated_at_desc':
+                $query->orderBy('updated_at', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $tasks = $query->paginate(20);
 
         // Get projects for filter dropdown
         if ($user->isAdmin()) {
@@ -743,15 +845,26 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this task.');
         }
 
-        $task->load(['project', 'assignee', 'creator', 'comments.user']);
-
-        // Get all team members (users) for assignment
-        $assignableUsers = User::orderBy('name')->get();
+        $task->load(['project', 'assignee', 'creator', 'comments.user', 'blockingDependencies.dependentTask.project', 'blockedByDependencies.task.project']);
 
         // Use the existing show view with project context
         $project = $task->project;
 
-        return view('tasks.show', compact('task', 'project', 'assignableUsers'));
+        // Get IDs of all related tasks
+        $blockingIds = $task->blockingDependencies->pluck('depends_on_task_id');
+        $blockedByIds = $task->blockedByDependencies->pluck('task_id');
+        $existingDependencyIds = $blockingIds->merge($blockedByIds)->unique();
+
+        // Get tasks for the dropdown
+        $availableTasks = $project->tasks()
+            ->where('id', '!=', $task->id)
+            ->whereNotIn('id', $existingDependencyIds)
+            ->get();
+
+        // Get all team members (users) for assignment
+        $assignableUsers = User::orderBy('name')->get();
+
+        return view('tasks.show', compact('task', 'project', 'assignableUsers', 'availableTasks'));
     }
 
     /**
@@ -899,5 +1012,43 @@ class TaskController extends Controller
             'url' => $url,
             'filename' => $filename
         ]);
+    }
+
+    public function addDependency(Request $request, Task $task)
+    {
+        $request->validate([
+            'related_task_id' => 'required|exists:tasks,id',
+            'dependency_type' => 'required|in:blocks,is_blocked_by',
+        ]);
+
+        $relatedTask = Task::findOrFail($request->related_task_id);
+
+        // Determine the blocker and the blocked task
+        $blocker_id = ($request->dependency_type === 'blocks') ? $task->id : $relatedTask->id;
+        $blocked_id = ($request->dependency_type === 'blocks') ? $relatedTask->id : $task->id;
+
+        // Check for existing dependency
+        $existingDependency = TaskDependency::where('task_id', $blocker_id)
+            ->where('depends_on_task_id', $blocked_id)
+            ->exists();
+
+        if ($existingDependency) {
+            return back()->with('error', 'This dependency already exists.');
+        }
+
+        TaskDependency::create([
+            'task_id' => $blocker_id,
+            'depends_on_task_id' => $blocked_id,
+            'type' => 'blocks' // We always store the dependency in one direction
+        ]);
+
+        return back()->with('success', 'Dependency added successfully.');
+    }
+
+    public function removeDependency(Task $task, TaskDependency $dependency)
+    {
+        $dependency->delete();
+
+        return back()->with('success', 'Dependency removed successfully.');
     }
 }

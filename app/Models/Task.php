@@ -100,6 +100,36 @@ class Task extends Model
         return $this->hasMany(TaskAttachment::class);
     }
 
+    public function checklistItems()
+    {
+        return $this->hasMany(ChecklistItem::class)->orderBy('order');
+    }
+
+    /**
+     * The dependencies where this task is the blocker.
+     */
+    public function blockingDependencies()
+    {
+        return $this->hasMany(TaskDependency::class, 'task_id');
+    }
+
+    /**
+     * The dependencies where this task is being blocked.
+     */
+    public function blockedByDependencies()
+    {
+        return $this->hasMany(TaskDependency::class, 'depends_on_task_id');
+    }
+
+    public function blockingTasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_dependencies', 'task_id', 'depends_on_task_id')->where('type', 'blocks');
+    }
+
+    public function blockedByTasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_dependencies', 'depends_on_task_id', 'task_id')->where('type', 'blocks');
+    }
 
 
     /**

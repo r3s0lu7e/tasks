@@ -22,7 +22,7 @@
             <div
                  class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('tasks.index') }}" class="grid grid-cols-1 md:grid-cols-7 gap-4">
+                    <form method="GET" action="{{ route('tasks.index') }}" class="grid grid-cols-1 md:grid-cols-9 gap-4">
                         <div>
                             <label for="search"
                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>
@@ -107,12 +107,88 @@
                             </select>
                         </div>
 
+                        <div>
+                            <label for="due_date_range"
+                                   class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
+                            <select name="due_date_range" id="due_date_range"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Any Time</option>
+                                <option value="today" {{ request('due_date_range') == 'today' ? 'selected' : '' }}>Today
+                                </option>
+                                <option value="this_week" {{ request('due_date_range') == 'this_week' ? 'selected' : '' }}>
+                                    This Week</option>
+                                <option value="next_7_days"
+                                        {{ request('due_date_range') == 'next_7_days' ? 'selected' : '' }}>Next 7 Days
+                                </option>
+                                <option value="this_month"
+                                        {{ request('due_date_range') == 'this_month' ? 'selected' : '' }}>This Month
+                                </option>
+                                <option value="overdue" {{ request('due_date_range') == 'overdue' ? 'selected' : '' }}>
+                                    Overdue</option>
+                                <option value="no_due_date"
+                                        {{ request('due_date_range') == 'no_due_date' ? 'selected' : '' }}>No Due Date
+                                </option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="sort_by" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sort
+                                By</label>
+                            <select name="sort_by" id="sort_by"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="created_at_desc"
+                                        {{ request('sort_by') == 'created_at_desc' ? 'selected' : '' }}>Newest First
+                                </option>
+                                <option value="created_at_asc"
+                                        {{ request('sort_by') == 'created_at_asc' ? 'selected' : '' }}>Oldest First
+                                </option>
+                                <option value="due_date_asc" {{ request('sort_by') == 'due_date_asc' ? 'selected' : '' }}>
+                                    Due Date Ascending</option>
+                                <option value="due_date_desc"
+                                        {{ request('sort_by') == 'due_date_desc' ? 'selected' : '' }}>Due Date Descending
+                                </option>
+                                <option value="priority_desc"
+                                        {{ request('sort_by') == 'priority_desc' ? 'selected' : '' }}>Priority (High to
+                                    Low)</option>
+                                <option value="priority_asc" {{ request('sort_by') == 'priority_asc' ? 'selected' : '' }}>
+                                    Priority (Low to High)</option>
+                                <option value="updated_at_desc"
+                                        {{ request('sort_by') == 'updated_at_desc' ? 'selected' : '' }}>Last Updated
+                                </option>
+                            </select>
+                        </div>
+
                         <div class="flex items-end">
                             <button type="submit" class="btn btn-primary w-full">
                                 Filter
                             </button>
                         </div>
+                        <div class="flex items-end">
+                            <button type="button" id="save-filter-btn" class="btn btn-secondary w-full">
+                                Save Filter
+                            </button>
+                        </div>
                     </form>
+                </div>
+            </div>
+
+            <!-- Saved Filters -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Saved Filters</h3>
+                <div id="saved-filters-list" class="flex flex-wrap gap-2">
+                    @foreach (auth()->user()->savedFilters as $savedFilter)
+                        <div
+                             class="flex items-center px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm">
+                            <a href="{{ route('tasks.index', $savedFilter->filters) }}"
+                               class="hover:bg-gray-300 dark:hover:bg-gray-600">
+                                {{ $savedFilter->name }}
+                            </a>
+                            <button data-filter-id="{{ $savedFilter->id }}"
+                                    class="ml-2 text-red-500 hover:text-red-700 delete-filter-btn">
+                                &times;
+                            </button>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 

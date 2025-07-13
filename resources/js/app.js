@@ -213,3 +213,72 @@ document.addEventListener("DOMContentLoaded", () => {
 		console.warn("Project selector setup failed:", error)
 	}
 })
+
+document.addEventListener("DOMContentLoaded", () => {
+	const saveFilterBtn = document.getElementById("save-filter-btn")
+	if (saveFilterBtn) {
+		saveFilterBtn.addEventListener("click", () => {
+			const filterName = prompt("Enter a name for this filter view:")
+			if (filterName) {
+				const form = document.querySelector("form.grid")
+				const formData = new FormData(form)
+				const filters = Object.fromEntries(formData.entries())
+
+				fetch("/filters/save", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+					},
+					body: JSON.stringify({
+						name: filterName,
+						filters: filters,
+					}),
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						if (data.success) {
+							window.location.reload()
+						} else {
+							alert(data.message || "Could not save filter.")
+						}
+					})
+					.catch((error) => {
+						console.error("Error:", error)
+						alert("An error occurred while saving the filter.")
+					})
+			}
+		})
+	}
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+	const savedFiltersList = document.getElementById("saved-filters-list")
+	if (savedFiltersList) {
+		savedFiltersList.addEventListener("click", (e) => {
+			if (e.target.classList.contains("delete-filter-btn")) {
+				const filterId = e.target.getAttribute("data-filter-id")
+				if (confirm("Are you sure you want to delete this filter?")) {
+					fetch(`/filters/${filterId}`, {
+						method: "DELETE",
+						headers: {
+							"X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+						},
+					})
+						.then((response) => response.json())
+						.then((data) => {
+							if (data.success) {
+								e.target.closest(".flex.items-center").remove()
+							} else {
+								alert(data.message || "Could not delete filter.")
+							}
+						})
+						.catch((error) => {
+							console.error("Error:", error)
+							alert("An error occurred while deleting the filter.")
+						})
+				}
+			}
+		})
+	}
+})

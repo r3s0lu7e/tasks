@@ -136,6 +136,152 @@
                 </div>
             </div>
 
+            <!-- Checklist -->
+            <div
+                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="font-semibold text-lg text-gray-800 dark:text-white">Checklist</h3>
+                </div>
+                <div class="p-6">
+                    <!-- Progress Bar -->
+                    @if ($task->checklistItems->count() > 0)
+                        @php
+                            $completed = $task->checklistItems->where('is_completed', true)->count();
+                            $total = $task->checklistItems->count();
+                            $percentage = $total > 0 ? ($completed / $total) * 100 : 0;
+                        @endphp
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-base font-medium text-blue-700 dark:text-white">Progress</span>
+                                <span class="text-sm font-medium text-blue-700 dark:text-white">{{ $completed }} /
+                                    {{ $total }}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $percentage }}%"></div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Checklist Items -->
+                    <div id="checklist-container" class="space-y-2 mb-4">
+                        @foreach ($task->checklistItems as $item)
+                            <div class="flex items-center" data-id="{{ $item->id }}">
+                                <input type="checkbox" {{ $item->is_completed ? 'checked' : '' }}
+                                       class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 checklist-item-toggle">
+                                <span
+                                      class="ml-2 text-sm {{ $item->is_completed ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white' }}">{{ $item->content }}</span>
+                                <button
+                                        class="ml-auto text-red-500 hover:text-red-700 delete-checklist-item">&times;</button>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Add Checklist Item Form -->
+                    <form id="add-checklist-item-form">
+                        <div class="flex items-center">
+                            <input type="text" name="content" id="new-checklist-item-content"
+                                   class="block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                   placeholder="Add a new item...">
+                            <button type="submit" class="ml-2 btn btn-secondary">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Task Dependencies -->
+            <div
+                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="font-semibold text-lg text-gray-800 dark:text-white">Task Dependencies</h3>
+                </div>
+                <div class="p-6">
+                    <!-- Add Dependency Form -->
+                    <form method="POST" action="{{ route('tasks.dependencies.add', $task) }}" class="mb-6">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="dependency_type"
+                                       class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dependency
+                                    Type</label>
+                                <select name="dependency_type" id="dependency_type"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <option value="blocks">This task blocks another task</option>
+                                    <option value="is_blocked_by">This task is blocked by another task</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="related_task_id"
+                                       class="block text-sm font-medium text-gray-700 dark:text-gray-300">Related
+                                    Task</label>
+                                <select name="related_task_id" id="related_task_id"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    @forelse($availableTasks as $relatedTask)
+                                        <option value="{{ $relatedTask->id }}">
+                                            {{ $project->key }}-{{ $relatedTask->id }}: {{ $relatedTask->title }}
+                                        </option>
+                                    @empty
+                                        <option value="" disabled>No available tasks to link</option>
+                                    @endforelse
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="btn btn-secondary w-full">Add Dependency</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Existing Dependencies -->
+                    @if ($task->blockingDependencies->count() > 0 || $task->blockedByDependencies->count() > 0)
+                        <h4 class="text-md font-medium text-gray-900 dark:text-white mb-2">Existing Dependencies</h4>
+                        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <!-- This task blocks other tasks -->
+                            @foreach ($task->blockingDependencies as $dependency)
+                                <li class="py-2 flex items-center justify-between">
+                                    <div>
+                                        <span class="font-semibold">{{ $task->project->key }}-{{ $task->id }}</span>
+                                        blocks
+                                        <a href="{{ route('tasks.show', ['project' => $dependency->dependentTask->project, 'task' => $dependency->dependentTask]) }}"
+                                           class="text-jira-blue hover:underline">
+                                            {{ $dependency->dependentTask->project->key }}-{{ $dependency->dependentTask->id }}:
+                                            {{ $dependency->dependentTask->title }}
+                                        </a>
+                                    </div>
+                                    <form method="POST"
+                                          action="{{ route('tasks.dependencies.remove', ['task' => $task, 'dependency' => $dependency]) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700">&times;</button>
+                                    </form>
+                                </li>
+                            @endforeach
+
+                            <!-- This task is blocked by other tasks -->
+                            @foreach ($task->blockedByDependencies as $dependency)
+                                <li class="py-2 flex items-center justify-between">
+                                    <div>
+                                        <a href="{{ route('tasks.show', ['project' => $dependency->task->project, 'task' => $dependency->task]) }}"
+                                           class="text-jira-blue hover:underline">
+                                            {{ $dependency->task->project->key }}-{{ $dependency->task->id }}:
+                                            {{ $dependency->task->title }}
+                                        </a>
+                                        blocks
+                                        <span class="font-semibold">{{ $task->project->key }}-{{ $task->id }}</span>
+                                    </div>
+                                    <form method="POST"
+                                          action="{{ route('tasks.dependencies.remove', ['task' => $task, 'dependency' => $dependency]) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700">&times;</button>
+                                    </form>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p>No dependencies for this task.</p>
+                    @endif
+                </div>
+            </div>
+
             <!-- Task Attachments -->
             @if ($task->attachments->count() > 0)
                 <div
@@ -204,7 +350,8 @@
                                                     {{ $comment->created_at->diffForHumans() }}</p>
                                             </div>
                                             <div class="mt-2 prose dark:prose-invert max-w-none">
-                                                <p class="text-sm text-gray-700 dark:text-gray-300">{{ $comment->content }}
+                                                <p class="text-sm text-gray-700 dark:text-gray-300">
+                                                    {{ $comment->content }}
                                                 </p>
                                             </div>
                                         </div>
@@ -358,6 +505,94 @@
                         submitButton.disabled = false;
                         submitButton.textContent = submitText;
                     });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const taskId = '{{ $task->id }}';
+            const checklistContainer = document.getElementById('checklist-container');
+            const addForm = document.getElementById('add-checklist-item-form');
+            const contentInput = document.getElementById('new-checklist-item-content');
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Handle adding a new item
+            addForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const content = contentInput.value.trim();
+                if (!content) return;
+
+                fetch(`/tasks/${taskId}/checklist-items`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            content: content
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            addForm.reset();
+                            // Just reload for simplicity to show the new item and update progress
+                            window.location.reload();
+                        }
+                    });
+            });
+
+            checklistContainer.addEventListener('click', function(e) {
+                const target = e.target;
+
+                // Handle checking/unchecking an item
+                if (target.classList.contains('checklist-item-toggle')) {
+                    const itemDiv = target.closest('.flex');
+                    const itemId = itemDiv.dataset.id;
+                    const is_completed = target.checked;
+
+                    fetch(`/checklist-items/${itemId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                is_completed: is_completed
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Just reload for simplicity to update progress bar and styles
+                                window.location.reload();
+                            }
+                        });
+                }
+
+                // Handle deleting an item
+                if (target.classList.contains('delete-checklist-item')) {
+                    if (!confirm('Are you sure you want to delete this item?')) return;
+
+                    const itemDiv = target.closest('.flex');
+                    const itemId = itemDiv.dataset.id;
+
+                    fetch(`/checklist-items/${itemId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                itemDiv.remove();
+                                // Just reload for simplicity to update progress bar
+                                window.location.reload();
+                            }
+                        });
+                }
             });
         });
     </script>

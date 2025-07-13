@@ -92,6 +92,11 @@ class User extends Authenticatable
         return $this->hasMany(TaskComment::class);
     }
 
+    public function savedFilters()
+    {
+        return $this->hasMany(SavedFilter::class);
+    }
+
     /**
      * Check if user is admin (the main manager).
      */

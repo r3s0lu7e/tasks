@@ -72,6 +72,12 @@ class PeriodCalendarController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Convert dates to proper timezone (treat input as user's local date)
+        $validated['start_date'] = Carbon::createFromFormat('Y-m-d', $validated['start_date'])->startOfDay();
+        if ($validated['end_date']) {
+            $validated['end_date'] = Carbon::createFromFormat('Y-m-d', $validated['end_date'])->startOfDay();
+        }
+
         $validated['user_id'] = $user->id;
 
         PeriodCalendar::create($validated);
@@ -128,6 +134,12 @@ class PeriodCalendarController extends Controller
             'symptoms' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
+
+        // Convert dates to proper timezone (treat input as user's local date)
+        $validated['start_date'] = Carbon::createFromFormat('Y-m-d', $validated['start_date'])->startOfDay();
+        if ($validated['end_date']) {
+            $validated['end_date'] = Carbon::createFromFormat('Y-m-d', $validated['end_date'])->startOfDay();
+        }
 
         $periodCalendar->update($validated);
 
@@ -218,7 +230,7 @@ class PeriodCalendarController extends Controller
                     $dayData['is_fertility_window'] = true;
                 }
 
-                if ($currentCalendarDate->isSameDay($period->ovulation_date)) {
+                if ($currentCalendarDate->toDateString() === $period->ovulation_date->toDateString()) {
                     $dayData['is_ovulation'] = true;
                 }
             }
@@ -226,7 +238,10 @@ class PeriodCalendarController extends Controller
             // Check if this date falls within any predicted period (only if not an actual period)
             if (!$dayData['is_period']) {
                 foreach ($predictedPeriods as $predictedPeriod) {
-                    if ($currentCalendarDate->between($predictedPeriod['start_date'], $predictedPeriod['end_date'])) {
+                    if (
+                        $currentCalendarDate->toDateString() >= $predictedPeriod['start_date']->toDateString() &&
+                        $currentCalendarDate->toDateString() <= $predictedPeriod['end_date']->toDateString()
+                    ) {
                         $dayData['is_predicted_period'] = true;
                         break;
                     }

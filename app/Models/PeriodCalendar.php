@@ -79,7 +79,9 @@ class PeriodCalendar extends Model
             $endDate = $this->end_date;
         }
 
-        return $date->between($this->start_date, $endDate);
+        // Use date-only comparison to avoid timezone issues
+        return $date->toDateString() >= $this->start_date->toDateString() &&
+            $date->toDateString() <= $endDate->toDateString();
     }
 
     /**
@@ -87,7 +89,9 @@ class PeriodCalendar extends Model
      */
     public function isWithinFertilityWindow(Carbon $date)
     {
-        return $date->between($this->fertility_window_start, $this->fertility_window_end);
+        // Use date-only comparison to avoid timezone issues
+        return $date->toDateString() >= $this->fertility_window_start->toDateString() &&
+            $date->toDateString() <= $this->fertility_window_end->toDateString();
     }
 
     /**

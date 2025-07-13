@@ -78,15 +78,94 @@ php artisan serve --host=0.0.0.0 --port=9000
 
 ## Environment Configuration
 
-### Update .env File (Optional)
+### Update .env File (IMPORTANT for Mobile Access)
 
-For better configuration, you can update your `.env` file:
+For proper mobile access, you **MUST** update your `.env` file with your actual IP address:
 
 ```env
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://192.168.1.100:8000  # Replace with your actual IP
+APP_URL=http://192.168.1.100:8000  # Replace with your actual IP and port
+
+# Optional: For Vite development server
+VITE_DEV_SERVER_URL=http://192.168.1.100:5173
 ```
+
+**Why this is important:**
+- Laravel uses `APP_URL` to generate asset URLs
+- If it's set to `localhost`, mobile devices won't be able to load CSS/JS files
+- This is the most common cause of missing styles on mobile devices
+
+### Create .env file from example:
+```bash
+cp .env.example .env
+# Edit the .env file with your IP address
+```
+
+## CSS/Assets Not Loading on Mobile? (COMMON ISSUE)
+
+### Quick Fix Steps:
+
+1. **Update your .env file** with your computer's IP address:
+   ```env
+   APP_URL=http://192.168.1.100:8000  # Use YOUR IP
+   ```
+
+2. **Clear Laravel cache:**
+   ```bash
+   php artisan config:clear
+   php artisan cache:clear
+   ```
+
+3. **Rebuild assets:**
+   ```bash
+   npm run build
+   ```
+
+4. **Restart the server:**
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=8000
+   ```
+
+### Detailed Troubleshooting:
+
+**Issue:** CSS/JS files don't load on mobile devices but work on desktop
+
+**Causes and Solutions:**
+
+1. **Wrong APP_URL in .env:**
+   ```env
+   # ❌ Wrong - won't work on mobile
+   APP_URL=http://localhost:8000
+   
+   # ✅ Correct - works on mobile
+   APP_URL=http://192.168.1.100:8000
+   ```
+
+2. **Assets not built:**
+   ```bash
+   # Build production assets
+   npm run build
+   
+   # Verify assets exist in public/build/
+   ls -la public/build/assets/
+   ```
+
+3. **Vite configuration issues:**
+   - The `vite.config.js` has been updated to support mobile access
+   - Make sure you're using built assets (`npm run build`) not dev server
+
+4. **Cache issues:**
+   ```bash
+   # Clear all Laravel caches
+   php artisan config:clear
+   php artisan cache:clear
+   php artisan view:clear
+   ```
+
+5. **Mixed content (HTTP/HTTPS):**
+   - Ensure both server and assets use the same protocol
+   - Usually should be HTTP for local development
 
 ## Firewall Configuration
 
@@ -117,14 +196,37 @@ netsh advfirewall firewall add rule name="Laravel Dev Server" dir=in action=allo
    - Check if your router has AP isolation enabled
    - Try disabling Windows Firewall temporarily to test
 
-3. **Assets not loading (CSS/JS)**
+3. **Assets not loading (CSS/JS) - MOST COMMON ISSUE**
+   - **First, check your .env file** - APP_URL must be your IP, not localhost
    - Make sure to run `npm run build` before starting the server
-   - Check that Vite assets are properly built
+   - Check that Vite assets are properly built in `public/build/assets/`
+   - Clear Laravel cache: `php artisan config:clear`
+   - Restart the server after changing .env
+
+4. **Styles work on desktop but not mobile**
+   - This is almost always an APP_URL configuration issue
+   - Update APP_URL in .env to your computer's IP address
+   - Clear cache and restart server
 
 ### Testing Connection:
 ```bash
 # Test from another device on the same network
 curl http://192.168.1.100:8000
+
+# Test asset loading specifically
+curl http://192.168.1.100:8000/build/assets/app-[hash].css
+```
+
+### Debug Asset Loading:
+```bash
+# Check if assets are built
+ls -la public/build/assets/
+
+# Check manifest file
+cat public/build/manifest.json
+
+# Verify asset URLs in browser developer tools
+# Should show your IP address, not localhost
 ```
 
 ## Security Notes
@@ -153,6 +255,8 @@ Update your `.env`:
 VITE_DEV_SERVER_URL=http://192.168.1.100:5173
 ```
 
+**Note:** For mobile access, it's usually better to use built assets (`npm run build`) rather than the dev server.
+
 ## Quick Commands Reference
 
 ```bash
@@ -162,17 +266,44 @@ php artisan serve --host=0.0.0.0 --port=8000
 # Find your IP (Windows)
 ipconfig | findstr "IPv4"
 
-# Build assets
+# Build assets (IMPORTANT for mobile)
 npm run build
+
+# Clear cache (after changing .env)
+php artisan config:clear
+php artisan cache:clear
 
 # Run migrations (if needed)
 php artisan migrate
 
-# Clear cache (if needed)
-php artisan cache:clear
-php artisan config:clear
+# Check built assets
+ls -la public/build/assets/
 ```
 
-## Stop the Server
+## Step-by-Step Mobile Setup Checklist
 
-To stop the server, press `Ctrl+C` in the terminal where it's running. 
+1. ✅ Find your computer's IP address: `ipconfig`
+2. ✅ Update `.env` file with your IP in `APP_URL`
+3. ✅ Build assets: `npm run build`
+4. ✅ Clear cache: `php artisan config:clear`
+5. ✅ Start server: `php artisan serve --host=0.0.0.0 --port=8000`
+6. ✅ Test on mobile: `http://YOUR_IP:8000`
+7. ✅ If CSS is missing, double-check steps 2-4
+
+## Environment File Template
+
+Create a `.env` file with these settings (replace IP with yours):
+
+```env
+APP_NAME="Ива's workstation"
+APP_ENV=local
+APP_KEY=base64:your-app-key-here
+APP_DEBUG=true
+APP_URL=http://192.168.1.100:8000  # ← CHANGE THIS TO YOUR IP
+
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+# Optional: For Vite dev server
+VITE_DEV_SERVER_URL=http://192.168.1.100:5173
+``` 

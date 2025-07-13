@@ -12,11 +12,17 @@ export default defineConfig({
 		host: "0.0.0.0",
 		port: 5173,
 		hmr: {
-			host: "localhost",
+			host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for mobile access
+			port: 5173,
 		},
 		cors: {
 			origin: true,
 			credentials: true,
+		},
+		// Add watch options for better file watching on network
+		watch: {
+			usePolling: true,
+			interval: 100,
 		},
 	},
 	build: {

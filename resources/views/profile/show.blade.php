@@ -11,7 +11,7 @@
                         <div class="flex items-center space-x-4">
                             <div class="h-16 w-16 rounded-full bg-jira-blue flex items-center justify-center">
                                 <span class="text-xl font-medium text-white">
-                                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                                    {{ $user->getInitials() }}
                                 </span>
                             </div>
                             <div>

@@ -159,6 +159,7 @@ class DashboardController extends Controller
                 ->map(function ($member) {
                     return [
                         'name' => $member->name,
+                        'initials' => $member->getInitials(),
                         'workload' => $member->getCurrentWorkload(),
                         'completion_rate' => $member->getCompletionRate(),
                         'overdue_count' => $member->getOverdueTasksCount(),

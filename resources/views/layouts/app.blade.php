@@ -114,7 +114,7 @@
                                     <span class="sr-only">Open user menu</span>
                                     <div class="h-8 w-8 rounded-full bg-jira-blue flex items-center justify-center">
                                         <span class="text-white text-sm font-medium">
-                                            {{ substr(auth()->user()->name, 0, 1) }}
+                                            {{ auth()->user()->getInitials() }}
                                         </span>
                                     </div>
                                 </button>
@@ -231,7 +231,7 @@
                             <div class="flex-shrink-0">
                                 <div class="h-10 w-10 rounded-full bg-jira-blue flex items-center justify-center">
                                     <span class="text-white text-sm font-medium">
-                                        {{ substr(auth()->user()->name, 0, 1) }}
+                                        {{ auth()->user()->getInitials() }}
                                     </span>
                                 </div>
                             </div>

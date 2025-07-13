@@ -69,7 +69,7 @@
                                                 <div
                                                      class="h-10 w-10 rounded-full bg-jira-blue flex items-center justify-center">
                                                     <span class="text-sm font-medium text-white">
-                                                        {{ strtoupper(substr($project->owner->name, 0, 2)) }}
+                                                        {{ $project->owner->getInitials() }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -102,7 +102,7 @@
                                                     <div
                                                          class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                                                         <span class="text-sm font-medium text-gray-700">
-                                                            {{ strtoupper(substr($member->name, 0, 2)) }}
+                                                            {{ $member->getInitials() }}
                                                         </span>
                                                     </div>
                                                 </div>

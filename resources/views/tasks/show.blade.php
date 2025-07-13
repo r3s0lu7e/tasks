@@ -338,7 +338,7 @@
                                             <div
                                                  class="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
                                                 <span class="text-xs font-medium text-gray-700 dark:text-gray-200">
-                                                    {{ strtoupper(substr($comment->user->name, 0, 2)) }}
+                                                    {{ $comment->user->getInitials() }}
                                                 </span>
                                             </div>
                                         </div>

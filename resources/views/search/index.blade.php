@@ -149,7 +149,7 @@
                                                              class="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
                                                             <span
                                                                   class="text-xs font-medium text-gray-700 dark:text-gray-200">
-                                                                {{ strtoupper(substr($task->assignee->name, 0, 2)) }}
+                                                                {{ $task->assignee->getInitials() }}
                                                             </span>
                                                         </div>
                                                         <span

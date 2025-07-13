@@ -164,9 +164,10 @@ class User extends Authenticatable
     {
         $nameParts = explode(' ', trim($this->name));
         if (count($nameParts) >= 2) {
-            return strtoupper(substr($nameParts[0], 0, 1) . substr($nameParts[1], 0, 1));
+            return mb_strtoupper(mb_substr($nameParts[0], 0, 1) . mb_substr($nameParts[1], 0, 1));
         }
-        return strtoupper(substr($this->name, 0, 2));
+        // If only one name, return the first letter
+        return mb_strtoupper(mb_substr($this->name, 0, 1));
     }
 
     /**

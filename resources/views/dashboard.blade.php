@@ -500,7 +500,7 @@
                                 <div class="text-center">
                                     <div
                                          class="h-16 w-16 mx-auto rounded-full bg-{{ $member['status'] === 'active' ? 'green' : 'gray' }}-500 flex items-center justify-center mb-2">
-                                        <span class="text-white font-medium">{{ substr($member['name'], 0, 2) }}</span>
+                                        <span class="text-white font-medium">{{ $member['initials'] }}</span>
                                     </div>
                                     <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member['name'] }}
                                     </h4>

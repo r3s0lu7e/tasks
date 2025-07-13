@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Task extends Model
 {
@@ -16,6 +17,11 @@ class Task extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::updating(function ($task) {
+            // Clean up removed images from description when task is updated
+            $task->cleanupRemovedDescriptionImages();
+        });
 
         static::deleting(function ($task) {
             // Delete task comments
@@ -171,6 +177,7 @@ class Task extends Model
             'in_progress' => 'blue',
             'completed' => 'green',
             'blocked' => 'red',
+            'cancelled' => 'red',
             default => 'gray',
         };
     }
@@ -225,6 +232,42 @@ class Task extends Model
     }
 
     /**
+     * Clean up images removed from task description when task is updated
+     */
+    public function cleanupRemovedDescriptionImages()
+    {
+        // Get original description before update
+        $originalDescription = $this->getOriginal('description') ?? '';
+        $newDescription = $this->description ?? '';
+
+        if (empty($originalDescription)) {
+            return;
+        }
+
+        // Get image URLs from both descriptions
+        $originalImageUrls = \App\Helpers\DescriptionHelper::extractImageUrls($originalDescription);
+        $newImageUrls = \App\Helpers\DescriptionHelper::extractImageUrls($newDescription);
+
+        // Find images that were removed (in original but not in new)
+        $removedImageUrls = array_diff($originalImageUrls, $newImageUrls);
+
+        foreach ($removedImageUrls as $imageUrl) {
+            // Extract filename from URL
+            $filename = basename(parse_url($imageUrl, PHP_URL_PATH));
+
+            // Check if it's one of our uploaded images (starts with 'desc_')
+            if (strpos($filename, 'desc_') === 0) {
+                $path = 'task-images/' . $filename;
+
+                // Delete from storage
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        }
+    }
+
+    /**
      * Clean up images from task description when task is deleted
      */
     public function cleanupDescriptionImages()
@@ -244,8 +287,8 @@ class Task extends Model
                 $path = 'task-images/' . $filename;
 
                 // Delete from storage
-                if (\Storage::disk('public')->exists($path)) {
-                    \Storage::disk('public')->delete($path);
+                if (Storage::disk('public')->exists($path)) {
+                    Storage::disk('public')->delete($path);
                 }
             }
         }

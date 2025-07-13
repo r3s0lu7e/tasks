@@ -53,7 +53,7 @@
                     <!-- Calendar Grid -->
                     <div class="grid grid-cols-7 gap-1 mb-2">
                         <!-- Day headers -->
-                        @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day)
+                        @foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $day)
                             <div class="p-2 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
                                 {{ $day }}
                             </div>
@@ -167,7 +167,7 @@
                                 <div class="flex justify-between">
                                     <span class="text-sm text-gray-700 dark:text-gray-300">Next Period:</span>
                                     <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $nextPeriod->format('M j, Y') }}
+                                        {{ $nextPeriod->format('d.m.Y') }}
                                     </span>
                                 </div>
                                 <div class="flex justify-between">
@@ -196,9 +196,9 @@
                                      class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg space-y-2 sm:space-y-0">
                                     <div class="flex-1">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $period->start_date->format('M j, Y') }}
+                                            {{ $period->start_date->format('d.m.Y') }}
                                             @if ($period->end_date)
-                                                - {{ $period->end_date->format('M j, Y') }}
+                                                - {{ $period->end_date->format('d.m.Y') }}
                                             @endif
                                         </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">

@@ -12,17 +12,15 @@ export default defineConfig({
 		host: "0.0.0.0",
 		port: 5173,
 		hmr: {
-			host: "0.0.0.0", // Changed from localhost to 0.0.0.0 for mobile access
-			port: 5173,
+			// For ngrok, this should be your ngrok URL without https://
+			// Update this when you get your ngrok URL for port 5173
+			host: process.env.VITE_HMR_HOST || "localhost",
+			protocol: process.env.VITE_HMR_PROTOCOL || "ws",
+			port: process.env.VITE_HMR_PORT || 5173,
 		},
 		cors: {
 			origin: true,
 			credentials: true,
-		},
-		// Add watch options for better file watching on network
-		watch: {
-			usePolling: true,
-			interval: 100,
 		},
 	},
 	build: {

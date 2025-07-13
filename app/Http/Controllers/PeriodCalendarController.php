@@ -21,6 +21,9 @@ class PeriodCalendarController extends Controller
             abort(403, 'Unauthorized access to period calendar.');
         }
 
+        // Set Carbon locale for European formatting
+        Carbon::setLocale('en_EU');
+
         $year = $request->get('year', now()->year);
         $month = $request->get('month', now()->month);
 
@@ -173,10 +176,11 @@ class PeriodCalendarController extends Controller
         $endOfMonth = $currentDate->copy()->endOfMonth();
 
         // Get the first day of the calendar (might be from previous month)
-        $startOfCalendar = $startOfMonth->copy()->startOfWeek();
+        // Force Sunday as the first day of the week to match the calendar header
+        $startOfCalendar = $startOfMonth->copy()->startOfWeek(Carbon::MONDAY);
 
         // Get the last day of the calendar (might be from next month)
-        $endOfCalendar = $endOfMonth->copy()->endOfWeek();
+        $endOfCalendar = $endOfMonth->copy()->endOfWeek(Carbon::MONDAY);
 
         // Get the latest period to predict next period
         $latestPeriod = $periods->sortByDesc('start_date')->first();

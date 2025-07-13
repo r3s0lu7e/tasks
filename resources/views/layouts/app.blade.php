@@ -64,6 +64,10 @@
                                    class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('tasks.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">
                                     Tasks
                                 </a>
+                                <a href="{{ route('personal-notes.index') }}"
+                                   class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('personal-notes.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">
+                                    Notes
+                                </a>
                                 @if (auth()->user()->isAdmin())
                                     <a href="{{ route('team.index') }}"
                                        class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('team.*') ? 'border-jira-blue text-gray-900 dark:text-white' : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600' }} text-sm font-medium">

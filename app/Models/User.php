@@ -106,6 +106,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the personal notes for this user.
+     */
+    public function personalNotes()
+    {
+        return $this->hasMany(PersonalNote::class);
+    }
+
+    /**
      * Check if user is admin (the main manager).
      */
     public function isAdmin()

@@ -74,6 +74,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');
     Route::get('/search/suggestions', [App\Http\Controllers\SearchController::class, 'suggestions'])->name('search.suggestions');
 
+    // Personal Notes routes
+    Route::resource('personal-notes', App\Http\Controllers\PersonalNotesController::class);
+    Route::post('/personal-notes/{personalNote}/toggle-pin', [App\Http\Controllers\PersonalNotesController::class, 'togglePin'])->name('personal-notes.toggle-pin');
+    Route::post('/personal-notes/{personalNote}/toggle-favorite', [App\Http\Controllers\PersonalNotesController::class, 'toggleFavorite'])->name('personal-notes.toggle-favorite');
+    Route::get('/api/personal-notes/quick-access', [App\Http\Controllers\PersonalNotesController::class, 'quickAccess'])->name('personal-notes.quick-access');
+
     // Saved Filter routes
     Route::post('/filters/save', [App\Http\Controllers\SavedFilterController::class, 'save'])->name('filters.save');
     Route::delete('/filters/{id}', [App\Http\Controllers\SavedFilterController::class, 'destroy'])->name('filters.destroy');

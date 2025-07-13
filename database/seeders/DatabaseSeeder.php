@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\Task;
@@ -142,6 +144,76 @@ class DatabaseSeeder extends Seeder
                 'start_date' => now()->subMonth(),
                 'end_date' => now()->addMonth(),
             ],
+            [
+                'name' => 'CRM System',
+                'description' => 'Customer Relationship Management system development',
+                'key' => 'CRM',
+                'status' => 'active',
+                'priority' => 'high',
+                'color' => '#EF4444',
+                'start_date' => now()->subMonths(1),
+                'end_date' => now()->addMonths(4),
+            ],
+            [
+                'name' => 'Analytics Dashboard',
+                'description' => 'Real-time analytics and reporting dashboard',
+                'key' => 'ANALYTICS',
+                'status' => 'active',
+                'priority' => 'medium',
+                'color' => '#8B5CF6',
+                'start_date' => now()->addWeeks(1),
+                'end_date' => now()->addMonths(2),
+            ],
+            [
+                'name' => 'API Integration',
+                'description' => 'Third-party API integration project',
+                'key' => 'API',
+                'status' => 'active',
+                'priority' => 'high',
+                'color' => '#EC4899',
+                'start_date' => now()->subWeeks(2),
+                'end_date' => now()->addMonths(1),
+            ],
+            [
+                'name' => 'DevOps Infrastructure',
+                'description' => 'Infrastructure modernization and automation',
+                'key' => 'DEVOPS',
+                'status' => 'active',
+                'priority' => 'high',
+                'color' => '#14B8A6',
+                'start_date' => now(),
+                'end_date' => now()->addMonths(5),
+            ],
+            [
+                'name' => 'Security Audit',
+                'description' => 'Comprehensive security audit and improvements',
+                'key' => 'SEC',
+                'status' => 'active',
+                'priority' => 'critical',
+                'color' => '#DC2626',
+                'start_date' => now()->addWeek(),
+                'end_date' => now()->addMonths(2),
+            ],
+            [
+                'name' => 'AI Integration',
+                'description' => 'AI and machine learning features implementation',
+                'key' => 'AI',
+                'status' => 'active',
+                'priority' => 'high',
+                'color' => '#6366F1',
+                'start_date' => now()->addMonths(1),
+                'end_date' => now()->addMonths(7),
+            ],
+            [
+                'name' => 'Legacy System Migration',
+                'description' => 'Migration of legacy systems to modern architecture',
+                'key' => 'LEGACY',
+                'status' => 'active',
+                'priority' => 'high',
+                'color' => '#F97316',
+                'start_date' => now()->subWeeks(1),
+                'end_date' => now()->addMonths(8),
+            ],
         ];
 
         $projectModels = collect();
@@ -197,7 +269,7 @@ class DatabaseSeeder extends Seeder
         foreach ($projectModels as $project) {
             $projectMembers = $project->members->push($project->owner);
 
-            for ($i = 0; $i < 200; $i++) {
+            for ($i = 0; $i < 500; $i++) {
                 $taskTitle = $taskTitles[array_rand($taskTitles)] . ' #' . ($i + 1);
 
                 $task = Task::create([

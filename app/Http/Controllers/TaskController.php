@@ -84,10 +84,20 @@ class TaskController extends Controller
                 $query->orderByRaw('due_date IS NULL ASC, due_date DESC');
                 break;
             case 'priority_desc':
-                $query->orderByRaw("FIELD(priority, 'critical', 'high', 'medium', 'low')");
+                $query->orderByRaw("CASE 
+                    WHEN priority = 'critical' THEN 1 
+                    WHEN priority = 'high' THEN 2 
+                    WHEN priority = 'medium' THEN 3 
+                    WHEN priority = 'low' THEN 4 
+                    ELSE 5 END");
                 break;
             case 'priority_asc':
-                $query->orderByRaw("FIELD(priority, 'low', 'medium', 'high', 'critical')");
+                $query->orderByRaw("CASE 
+                    WHEN priority = 'low' THEN 1 
+                    WHEN priority = 'medium' THEN 2 
+                    WHEN priority = 'high' THEN 3 
+                    WHEN priority = 'critical' THEN 4 
+                    ELSE 5 END");
                 break;
             case 'updated_at_desc':
                 $query->orderBy('updated_at', 'desc');
@@ -560,10 +570,20 @@ class TaskController extends Controller
                 $query->orderByRaw('due_date IS NULL ASC, due_date DESC');
                 break;
             case 'priority_desc':
-                $query->orderByRaw("FIELD(priority, 'critical', 'high', 'medium', 'low')");
+                $query->orderByRaw("CASE 
+                    WHEN priority = 'critical' THEN 1 
+                    WHEN priority = 'high' THEN 2 
+                    WHEN priority = 'medium' THEN 3 
+                    WHEN priority = 'low' THEN 4 
+                    ELSE 5 END");
                 break;
             case 'priority_asc':
-                $query->orderByRaw("FIELD(priority, 'low', 'medium', 'high', 'critical')");
+                $query->orderByRaw("CASE 
+                    WHEN priority = 'low' THEN 1 
+                    WHEN priority = 'medium' THEN 2 
+                    WHEN priority = 'high' THEN 3 
+                    WHEN priority = 'critical' THEN 4 
+                    ELSE 5 END");
                 break;
             case 'updated_at_desc':
                 $query->orderBy('updated_at', 'desc');

@@ -1,0 +1,220 @@
+/* Period Calendar Mobile Optimizations */
+
+/* Calendar grid responsive adjustments */
+@media (max-width: 640px) {
+	.calendar-day {
+		font-size: 0.75rem;
+		padding: 0.25rem;
+	}
+
+	.calendar-day-number {
+		font-size: 0.75rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.calendar-badge {
+		font-size: 0.625rem;
+		padding: 0.125rem 0.25rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.predicted-period-badge {
+		background-color: #fca5a5;
+		color: #991b1b;
+		border: 1px dashed #f87171;
+	}
+
+	/* Touch-friendly calendar cells */
+	.calendar-cell {
+		min-height: 60px;
+		touch-action: manipulation;
+	}
+
+	/* Improved form inputs for mobile */
+	.form-input {
+		font-size: 16px; /* Prevents zoom on iOS */
+		padding: 0.75rem;
+	}
+
+	.form-select {
+		font-size: 16px; /* Prevents zoom on iOS */
+		padding: 0.75rem;
+	}
+
+	.form-textarea {
+		font-size: 16px; /* Prevents zoom on iOS */
+		padding: 0.75rem;
+		min-height: 80px;
+	}
+
+	/* Mobile-optimized buttons */
+	.btn-mobile {
+		padding: 0.75rem 1rem;
+		font-size: 0.875rem;
+		min-height: 44px; /* iOS accessibility guideline */
+		touch-action: manipulation;
+	}
+
+	/* Navigation buttons */
+	.nav-btn {
+		padding: 0.5rem 0.75rem;
+		font-size: 0.875rem;
+		min-height: 44px;
+		touch-action: manipulation;
+	}
+
+	/* Legend items in grid layout */
+	.legend-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.75rem;
+	}
+
+	/* Period entry cards */
+	.period-entry-card {
+		padding: 0.75rem;
+		border-radius: 0.5rem;
+	}
+
+	.period-entry-actions {
+		margin-top: 0.5rem;
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.5rem;
+	}
+
+	/* Compact text for mobile */
+	.mobile-compact {
+		font-size: 0.875rem;
+		line-height: 1.25;
+	}
+
+	/* Hide secondary info on very small screens */
+	@media (max-width: 480px) {
+		.hide-mobile {
+			display: none;
+		}
+
+		.calendar-badge {
+			font-size: 0.5rem;
+			padding: 0.125rem;
+		}
+
+		.period-entry-symptoms {
+			display: none;
+		}
+	}
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+	.calendar-cell {
+		min-height: 70px;
+	}
+
+	.legend-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+/* Enhanced touch targets */
+.touch-target {
+	min-height: 44px;
+	min-width: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	touch-action: manipulation;
+}
+
+/* Improved accessibility for mobile */
+@media (max-width: 640px) {
+	.sr-only-mobile {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	/* Focus styles for mobile */
+	.mobile-focus:focus {
+		outline: 2px solid #ec4899;
+		outline-offset: 2px;
+	}
+}
+
+/* Swipe gestures support */
+.swipe-container {
+	touch-action: pan-x;
+	overflow-x: hidden;
+}
+
+/* Loading states for mobile */
+.mobile-loading {
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Mobile-specific animations */
+@media (max-width: 640px) {
+	.fade-in-mobile {
+		animation: fadeInMobile 0.3s ease-in-out;
+	}
+
+	@keyframes fadeInMobile {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+}
+
+/* Improved modal/popup styles for mobile */
+@media (max-width: 640px) {
+	.mobile-modal {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		z-index: 50;
+	}
+
+	.mobile-modal-content {
+		background: white;
+		border-radius: 1rem 1rem 0 0;
+		padding: 1rem;
+		width: 100%;
+		max-height: 80vh;
+		overflow-y: auto;
+		transform: translateY(100%);
+		transition: transform 0.3s ease-in-out;
+	}
+
+	.mobile-modal-content.show {
+		transform: translateY(0);
+	}
+}
+
+/* Dark mode adjustments for mobile */
+@media (max-width: 640px) and (prefers-color-scheme: dark) {
+	.mobile-modal-content {
+		background: #1f2937;
+		color: #f9fafb;
+	}
+}

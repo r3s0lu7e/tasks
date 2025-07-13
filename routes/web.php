@@ -77,6 +77,9 @@ Route::middleware(['auth'])->group(function () {
     // Saved Filter routes
     Route::post('/filters/save', [App\Http\Controllers\SavedFilterController::class, 'save'])->name('filters.save');
     Route::delete('/filters/{id}', [App\Http\Controllers\SavedFilterController::class, 'destroy'])->name('filters.destroy');
+
+    // Period Calendar routes (restricted to iva@wuvu.com)
+    Route::resource('period-calendar', App\Http\Controllers\PeriodCalendarController::class);
 });
 
 Auth::routes();

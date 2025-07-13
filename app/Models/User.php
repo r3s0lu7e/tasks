@@ -98,6 +98,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the period calendar entries for this user.
+     */
+    public function periodCalendar()
+    {
+        return $this->hasMany(PeriodCalendar::class);
+    }
+
+    /**
      * Check if user is admin (the main manager).
      */
     public function isAdmin()

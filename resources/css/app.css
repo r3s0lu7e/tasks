@@ -1,3 +1,6 @@
+/* Import period calendar mobile styles */
+@import "./period-calendar.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

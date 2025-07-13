@@ -75,7 +75,7 @@
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="text-sm font-medium text-gray-900 mb-2">Account Information</h4>
                                 <div class="text-sm text-gray-600 space-y-1">
-                                    <div><strong>Member Since:</strong> {{ $user->created_at->format('F j, Y') }}</div>
+                                    <div><strong>Member Since:</strong> {{ $user->created_at->format('d.m.Y') }}</div>
                                     <div><strong>Last Updated:</strong> {{ $user->updated_at->diffForHumans() }}</div>
                                 </div>
                             </div>

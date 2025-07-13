@@ -115,21 +115,21 @@
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Due Date</h3>
                             <p class="text-sm text-gray-900 dark:text-white">
-                                {{ $task->due_date ? $task->due_date->format('M j, Y') : 'No due date' }}
+                                {{ $task->due_date ? $task->due_date->format('d.m.Y') : 'No due date' }}
                             </p>
                         </div>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Created</h3>
                             <p class="text-sm text-gray-900 dark:text-white">
-                                {{ $task->created_at->format('M j, Y \a\t g:i A') }}
+                                {{ $task->created_at->format('d.m.Y H:i') }}
                             </p>
                         </div>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Last Updated</h3>
                             <p class="text-sm text-gray-900 dark:text-white">
-                                {{ $task->updated_at->format('M j, Y \a\t g:i A') }}
+                                {{ $task->updated_at->format('d.m.Y H:i') }}
                             </p>
                         </div>
                     </div>

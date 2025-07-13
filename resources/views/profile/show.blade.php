@@ -177,7 +177,7 @@
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Member Since</h4>
                                     <p class="text-sm text-gray-900 dark:text-white">
-                                        {{ $user->created_at->format('F j, Y') }}</p>
+                                        {{ $user->created_at->format('d.m.Y') }}</p>
                                 </div>
 
                                 <div>

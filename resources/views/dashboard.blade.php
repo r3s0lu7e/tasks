@@ -270,7 +270,7 @@
                                             @if ($task->assignee)
                                                 ({{ $task->assignee->name }})
                                             @endif
-                                            - Due: {{ $task->due_date->format('M j, Y') }}
+                                            - Due: {{ $task->due_date->format('d.m.Y') }}
                                         </li>
                                     @endforeach
                                     @if ($overdueTasks->count() > 3)

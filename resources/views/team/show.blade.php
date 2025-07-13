@@ -105,7 +105,7 @@
                                 @if ($team->hire_date)
                                     <div>
                                         <dt class="text-sm font-medium text-gray-500">Hire Date</dt>
-                                        <dd class="text-sm text-gray-900">{{ $team->hire_date->format('M j, Y') }}
+                                        <dd class="text-sm text-gray-900">{{ $team->hire_date->format('d.m.Y') }}
                                         </dd>
                                     </div>
                                 @endif
@@ -207,7 +207,7 @@
                                                     @if ($task->due_date)
                                                         <span
                                                               class="text-xs text-gray-500 {{ $task->due_date->isPast() && !in_array($task->status, ['completed', 'cancelled']) ? 'text-red-600 font-medium' : '' }}">
-                                                            Due: {{ $task->due_date->format('M j') }}
+                                                            Due: {{ $task->due_date->format('d.m') }}
                                                         </span>
                                                     @endif
                                                 </div>

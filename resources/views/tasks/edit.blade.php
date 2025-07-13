@@ -188,13 +188,13 @@
                             <h4 class="text-sm font-medium text-gray-900 mb-2">Task Information</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                                 <div>
-                                    <strong>Created:</strong> {{ $task->created_at->format('M j, Y \a\t g:i A') }}
+                                    <strong>Created:</strong> {{ $task->created_at->format('d.m.Y H:i') }}
                                 </div>
                                 <div>
                                     <strong>Creator:</strong> {{ $task->creator->name }}
                                 </div>
                                 <div>
-                                    <strong>Last Updated:</strong> {{ $task->updated_at->format('M j, Y \a\t g:i A') }}
+                                    <strong>Last Updated:</strong> {{ $task->updated_at->format('d.m.Y H:i') }}
                                 </div>
                                 <div>
                                     <strong>Project:</strong> {{ $project->name }} ({{ $project->key }})

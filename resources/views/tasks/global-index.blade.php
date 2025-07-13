@@ -299,7 +299,7 @@
                                             </td>
                                             <td class="px-3 py-4 text-sm text-gray-900 dark:text-white">
                                                 <span class="whitespace-nowrap">
-                                                    {{ $task->due_date ? $task->due_date->format('M j, Y') : 'No due date' }}
+                                                    {{ $task->due_date ? $task->due_date->format('d.m.Y') : 'No due date' }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-4 text-sm font-medium">

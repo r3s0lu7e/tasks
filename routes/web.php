@@ -79,6 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/personal-notes/{personalNote}/toggle-pin', [App\Http\Controllers\PersonalNotesController::class, 'togglePin'])->name('personal-notes.toggle-pin');
     Route::post('/personal-notes/{personalNote}/toggle-favorite', [App\Http\Controllers\PersonalNotesController::class, 'toggleFavorite'])->name('personal-notes.toggle-favorite');
     Route::get('/api/personal-notes/quick-access', [App\Http\Controllers\PersonalNotesController::class, 'quickAccess'])->name('personal-notes.quick-access');
+    Route::get('/api/personal-notes/tag-suggestions', [App\Http\Controllers\PersonalNotesController::class, 'tagSuggestions'])->name('personal-notes.tag-suggestions');
 
     // Saved Filter routes
     Route::post('/filters/save', [App\Http\Controllers\SavedFilterController::class, 'save'])->name('filters.save');

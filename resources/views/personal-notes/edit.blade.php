@@ -90,12 +90,13 @@
                         </div>
 
                         <!-- Tags -->
-                        <div>
+                        <div class="relative">
                             <label for="tags" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Tags
                             </label>
                             <input type="text" id="tags" name="tags"
                                    value="{{ old('tags', $personalNote->tags ? implode(', ', $personalNote->tags) : '') }}"
+                                   autocomplete="off"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white @error('tags') border-red-500 @enderror"
                                    placeholder="Enter tags separated by commas (e.g., work, important, todo)">
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Separate multiple tags with commas</p>

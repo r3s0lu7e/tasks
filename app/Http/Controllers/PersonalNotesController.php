@@ -297,4 +297,27 @@ class PersonalNotesController extends Controller
             'favorites' => $favoriteNotes
         ]);
     }
+
+    /**
+     * Return tag suggestions for autocomplete.
+     */
+    public function tagSuggestions(Request $request)
+    {
+        $user = Auth::user();
+        $query = $request->input('q', '');
+        $allTags = PersonalNote::getTagsForUser($user->id);
+        if ($query) {
+            $allTags = array_filter($allTags, function ($tag) use ($query) {
+                return stripos($tag, $query) !== false;
+            });
+        }
+        // Return as array of { value, label }
+        $suggestions = array_map(function ($tag) {
+            return [
+                'value' => $tag,
+                'label' => $tag
+            ];
+        }, array_values($allTags));
+        return response()->json($suggestions);
+    }
 }

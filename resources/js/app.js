@@ -282,3 +282,181 @@ document.addEventListener("DOMContentLoaded", () => {
 		})
 	}
 })
+
+// Tag autocomplete for personal notes
+function setupTagAutocomplete() {
+	const tagsInput = document.getElementById("tags")
+	if (!tagsInput) return
+
+	// Create dropdown
+	const dropdown = document.createElement("div")
+	dropdown.className = "autocomplete-dropdown bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg absolute z-50 hidden"
+	dropdown.style.minWidth = "200px"
+	dropdown.style.maxHeight = "180px"
+	dropdown.style.overflowY = "auto"
+	dropdown.style.top = "100%"
+	dropdown.style.left = "0"
+	dropdown.style.right = "0"
+	dropdown.style.marginTop = "2px"
+	tagsInput.parentNode.style.position = "relative"
+	tagsInput.parentNode.appendChild(dropdown)
+
+	let allTags = []
+	let currentSuggestions = []
+	let selectedIndex = -1
+
+	// Fetch all tags once at page load
+	async function loadAllTags() {
+		try {
+			const resp = await fetch("/api/personal-notes/tag-suggestions")
+			if (!resp.ok) throw new Error("Failed to fetch tags")
+			const tags = await resp.json()
+			allTags = tags.map((t) => t.value)
+		} catch (err) {
+			console.warn("Failed to load tags:", err)
+			allTags = []
+		}
+	}
+
+	function closeDropdown() {
+		dropdown.classList.add("hidden")
+		dropdown.innerHTML = ""
+		selectedIndex = -1
+	}
+
+	function openDropdown() {
+		dropdown.classList.remove("hidden")
+	}
+
+	function getEnteredTags() {
+		const val = tagsInput.value
+		return val
+			.split(",")
+			.map((t) => t.trim().toLowerCase())
+			.filter(Boolean)
+	}
+
+	function getCurrentTag() {
+		const val = tagsInput.value
+		const parts = val.split(",")
+		return parts[parts.length - 1].trim()
+	}
+
+	function getAvailableTags(query = "") {
+		const entered = getEnteredTags()
+		return allTags.filter((tag) => {
+			const tagLower = tag.toLowerCase()
+			const queryLower = query.toLowerCase()
+			return !entered.includes(tagLower) && (query === "" || tagLower.includes(queryLower))
+		})
+	}
+
+	function updateDropdown(suggestions) {
+		dropdown.innerHTML = ""
+		if (!suggestions.length) {
+			closeDropdown()
+			return
+		}
+
+		currentSuggestions = suggestions
+		suggestions.forEach((tag, idx) => {
+			const option = document.createElement("div")
+			option.className = "px-3 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100"
+			option.textContent = tag
+			option.addEventListener("mousedown", (e) => {
+				e.preventDefault()
+				selectSuggestion(idx)
+			})
+			dropdown.appendChild(option)
+		})
+		openDropdown()
+	}
+
+	function selectSuggestion(idx) {
+		const selectedTag = currentSuggestions[idx]
+		const val = tagsInput.value
+		const parts = val.split(",")
+
+		// Replace the current partial tag with selected tag
+		parts[parts.length - 1] = selectedTag
+
+		// Join with commas and add trailing comma + space for next tag
+		tagsInput.value = parts.join(", ") + ", "
+
+		closeDropdown()
+		tagsInput.focus()
+
+		// Show remaining available tags immediately
+		setTimeout(() => {
+			const availableTags = getAvailableTags()
+			if (availableTags.length > 0) {
+				updateDropdown(availableTags.slice(0, 10)) // Show max 10 suggestions
+			}
+		}, 50)
+	}
+
+	function handleInput() {
+		const currentTag = getCurrentTag()
+
+		if (currentTag === "") {
+			// Show all available tags when no current input
+			const availableTags = getAvailableTags()
+			updateDropdown(availableTags.slice(0, 10))
+		} else {
+			// Filter tags based on current input
+			const availableTags = getAvailableTags(currentTag)
+			updateDropdown(availableTags.slice(0, 10))
+		}
+	}
+
+	tagsInput.addEventListener("input", handleInput)
+
+	tagsInput.addEventListener("focus", () => {
+		// Show suggestions when focusing on input
+		handleInput()
+	})
+
+	tagsInput.addEventListener("keydown", function (e) {
+		if (dropdown.classList.contains("hidden")) return
+
+		if (e.key === "ArrowDown") {
+			e.preventDefault()
+			selectedIndex = Math.min(selectedIndex + 1, currentSuggestions.length - 1)
+			updateHighlight()
+		} else if (e.key === "ArrowUp") {
+			e.preventDefault()
+			selectedIndex = Math.max(selectedIndex - 1, -1)
+			updateHighlight()
+		} else if (e.key === "Enter" || e.key === "Tab") {
+			if (selectedIndex >= 0 && currentSuggestions[selectedIndex]) {
+				e.preventDefault()
+				selectSuggestion(selectedIndex)
+			} else {
+				closeDropdown()
+			}
+		} else if (e.key === "Escape") {
+			closeDropdown()
+		}
+	})
+
+	function updateHighlight() {
+		Array.from(dropdown.children).forEach((el, idx) => {
+			if (idx === selectedIndex) {
+				el.classList.add("bg-blue-200", "dark:bg-gray-600")
+			} else {
+				el.classList.remove("bg-blue-200", "dark:bg-gray-600")
+			}
+		})
+	}
+
+	document.addEventListener("click", function (e) {
+		if (!dropdown.contains(e.target) && e.target !== tagsInput) {
+			closeDropdown()
+		}
+	})
+
+	// Load all tags when setting up
+	loadAllTags()
+}
+
+document.addEventListener("DOMContentLoaded", setupTagAutocomplete)

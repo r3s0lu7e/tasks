@@ -300,10 +300,12 @@
                                     <div
                                          class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                         <div class="flex items-center">
-                                            <div
-                                                 class="h-8 w-8 rounded-full bg-{{ $member->status_color }}-500 flex items-center justify-center">
-                                                <span
-                                                      class="text-white text-sm font-medium">{{ strtoupper(substr($member->name, 0, 1)) . (str_contains($member->name, ' ') ? strtoupper(substr(explode(' ', $member->name)[1], 0, 1)) : '') }}</span>
+                                            <div class="h-8 w-8 rounded-full flex items-center justify-center"
+                                                 style="background-color: rgba({{ $member->status_color_rgb }}, 0.2)">
+                                                <span class="text-sm font-medium"
+                                                      style="color: {{ $member->status_color }}">
+                                                    {{ $member->getInitials() }}
+                                                </span>
                                             </div>
                                             <div class="ml-3">
                                                 <h4 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -493,9 +495,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             @foreach ($teamWorkload as $member)
                                 <div class="text-center">
-                                    <div
-                                         class="h-16 w-16 mx-auto rounded-full bg-{{ $member['status_color'] }}-500 flex items-center justify-center mb-2">
-                                        <span class="text-white font-medium">{{ $member['initials'] }}</span>
+                                    <div class="h-16 w-16 mx-auto rounded-full flex items-center justify-center mb-2"
+                                         style="background-color: rgba({{ $member['status_color_rgb'] }}, 0.2)">
+                                        <span class="font-medium" style="color: {{ $member['status_color'] }}">
+                                            {{ $member['initials'] }}
+                                        </span>
                                     </div>
                                     <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member['name'] }}
                                     </h4>

@@ -40,7 +40,7 @@
                         <!-- Task Info -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Status</h3>
-                            <span class="px-2 py-1 text-xs font-medium rounded-full"
+                            <span class="px-2 py-1 text-xs font-medium rounded-full dark:text-gray-200"
                                   style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
                                 {{ $task->status->name }}
                             </span>
@@ -49,19 +49,14 @@
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Priority</h3>
                             <span
-                                  class="px-2 py-1 text-xs font-medium rounded-full
-                                @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-white
-                                @elseif($task->priority === 'high') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
+                                  class="px-2 py-1 text-xs font-medium rounded-full {{ config('colors.task_priority')[$task->priority] ?? '' }}">
                                 {{ ucfirst($task->priority) }}
                             </span>
                         </div>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Type</h3>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium dark:text-gray-200"
                                   style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
                                 {{ $task->type->name }}
                             </span>

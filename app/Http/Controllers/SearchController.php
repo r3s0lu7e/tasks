@@ -45,7 +45,7 @@ class SearchController extends Controller
         if ($user->isAdmin()) {
             $tasks = Task::where('title', 'like', "%{$query}%")
                 ->orWhere('description', 'like', "%{$query}%")
-                ->with(['project', 'assignee'])
+                ->with(['project', 'assignee', 'status', 'type'])
                 ->paginate(20, ['*'], 'tasks_page');
         } else {
             $tasks = Task::where(function ($q) use ($query) {
@@ -56,7 +56,7 @@ class SearchController extends Controller
                     ->orWhereHas('members', function ($memberQuery) use ($user) {
                         $memberQuery->where('user_id', $user->id);
                     });
-            })->with(['project', 'assignee'])
+            })->with(['project', 'assignee', 'status', 'type'])
                 ->paginate(20, ['*'], 'tasks_page');
         }
 

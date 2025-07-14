@@ -129,11 +129,7 @@
                                                             {{ $project->key }}-{{ $task->id }}</p>
                                                         <div class="flex items-center space-x-2">
                                                             <span
-                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                                @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                                @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
-                                                                @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
-                                                                @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
                                                                 {{ ucfirst($task->priority) }}
                                                             </span>
                                                             @if ($task->assignee)
@@ -182,11 +178,7 @@
                                                             {{ $project->key }}-{{ $task->id }}</p>
                                                         <div class="flex items-center space-x-2">
                                                             <span
-                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                                @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                                @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
-                                                                @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
-                                                                @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
                                                                 {{ ucfirst($task->priority) }}
                                                             </span>
                                                             @if ($task->assignee)
@@ -321,7 +313,7 @@
                     zone.removeEventListener('dragover', handleDragOver);
                     zone.removeEventListener('drop', handleDrop);
                     zone.removeEventListener('dragleave', handleDragLeave);
-                    zone.removeEventListener('dragenter', handleDragEnter);
+                    zone.addEventListener('dragenter', handleDragEnter);
 
                     zone.addEventListener('dragover', handleDragOver);
                     zone.addEventListener('drop', handleDrop);

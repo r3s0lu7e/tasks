@@ -104,20 +104,16 @@
 
                             <!-- Status -->
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status <span
+                                          class="text-red-500">*</span></label>
                                 <select id="status" name="status" required
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="active"
-                                            {{ old('status', $team->status) == 'active' ? 'selected' : '' }}>Active
-                                    </option>
-                                    <option value="inactive"
-                                            {{ old('status', $team->status) == 'inactive' ? 'selected' : '' }}>Inactive
-                                    </option>
-                                    <option value="vacation"
-                                            {{ old('status', $team->status) == 'vacation' ? 'selected' : '' }}>On Vacation
-                                    </option>
-                                    <option value="busy" {{ old('status', $team->status) == 'busy' ? 'selected' : '' }}>
-                                        Busy</option>
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status }}"
+                                                {{ old('status', $team->status) === $status ? 'selected' : '' }}>
+                                            {{ $status === 'vacation' ? 'On Vacation' : ucfirst($status) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('status')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

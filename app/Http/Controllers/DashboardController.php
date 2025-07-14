@@ -176,6 +176,7 @@ class DashboardController extends Controller
                         'overdue_count' => $member->overdue_tasks,
                         'status' => $member->status,
                         'status_color' => $member->status_color,
+                        'status_color_rgb' => $member->status_color_rgb,
                     ];
                 });
         }

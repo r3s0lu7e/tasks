@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\TaskStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -96,14 +97,19 @@ class TeamMemberController extends Controller
      */
     public function show(User $team)
     {
-        $team->load(['assignedTasks.project', 'createdTasks.project']);
+        $team->load(['assignedTasks.project', 'assignedTasks.status', 'assignedTasks.type', 'createdTasks.project']);
+
+        $statuses = TaskStatus::all();
+        $completedStatus = $statuses->where('alias', 'completed')->first();
+        $activeStatuses = $statuses->whereNotIn('alias', ['completed', 'cancelled']);
 
         // Get performance metrics
         $totalTasks = $team->assignedTasks()->count();
-        $completedTasks = $team->assignedTasks()->where('status', 'completed')->count();
+        $completedTasks = $completedStatus ? $team->assignedTasks()->where('task_status_id', $completedStatus->id)->count() : 0;
         $overdueTasks = $team->getOverdueTasksCount();
-        $currentWorkload = $team->getCurrentWorkload();
-        $completionRate = $team->getCompletionRate();
+        $currentWorkload = $team->assignedTasks()->whereIn('task_status_id', $activeStatuses->pluck('id'))->count();
+        $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+
 
         return view('team.show', compact(
             'team',
@@ -120,7 +126,11 @@ class TeamMemberController extends Controller
      */
     public function edit(User $team)
     {
-        return view('team.edit', compact('team'));
+        return view('team.edit', [
+            'team' => $team,
+            'roles' => User::ROLES,
+            'statuses' => User::STATUSES,
+        ]);
     }
 
     /**
@@ -133,8 +143,8 @@ class TeamMemberController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $team->id,
             'department' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'role' => ['required', Rule::in(User::select('role')->distinct()->pluck('role'))],
-            'status' => ['required', Rule::in(User::select('status')->distinct()->pluck('status'))],
+            'role' => ['required', Rule::in(User::ROLES)],
+            'status' => ['required', Rule::in(User::STATUSES)],
             'hourly_rate' => 'nullable|numeric|min:0|max:999.99',
             'hire_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',

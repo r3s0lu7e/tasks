@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\TaskStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -93,7 +94,11 @@ class Project extends Model
      */
     public function completedTasks()
     {
-        return $this->tasks()->where('status', 'completed');
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        if (!$completedStatus) {
+            return $this->tasks()->whereRaw('1 = 0');
+        }
+        return $this->tasks()->where('task_status_id', $completedStatus->id);
     }
 
     /**
@@ -101,7 +106,19 @@ class Project extends Model
      */
     public function pendingTasks()
     {
-        return $this->tasks()->whereIn('status', ['todo', 'in_progress']);
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        $cancelledStatus = TaskStatus::where('alias', 'cancelled')->first();
+
+        $query = $this->tasks();
+
+        if ($completedStatus) {
+            $query->where('task_status_id', '!=', $completedStatus->id);
+        }
+        if ($cancelledStatus) {
+            $query->where('task_status_id', '!=', $cancelledStatus->id);
+        }
+
+        return $query;
     }
 
     /**

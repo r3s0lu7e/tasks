@@ -77,8 +77,8 @@
                                                       class="text-sm text-gray-500 dark:text-gray-400">{{ $project->tasks->count() }}
                                                     tasks</span>
                                                 <span
-                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $project->status === 'active' ? 'green' : 'gray' }}-100 dark:bg-{{ $project->status === 'active' ? 'green' : 'gray' }}-900 text-{{ $project->status === 'active' ? 'green' : 'gray' }}-800 dark:text-{{ $project->status === 'active' ? 'green' : 'gray' }}-200">
-                                                    {{ ucfirst($project->status) }}
+                                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full {{ config('colors.project_status')[$project->status] ?? config('colors.project_status.default') }}">
+                                                    {{ ucfirst(str_replace('_', ' ', $project->status)) }}
                                                 </span>
                                             </div>
                                         </div>
@@ -123,39 +123,30 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="flex items-center space-x-3">
-                                                <span
-                                                      class="px-2 py-1 text-xs font-medium rounded-full
-                                                    @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
-                                                    @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
-                                                    @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                                    @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $task->status)) }}
-                                                </span>
-                                                <span
-                                                      class="px-2 py-1 text-xs font-medium rounded-full
-                                                    @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                                    @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-white
-                                                    @elseif($task->priority === 'high') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
-                                                    {{ ucfirst($task->priority) }}
-                                                </span>
-                                                @if ($task->assignee)
-                                                    <div class="flex items-center space-x-1">
-                                                        <div
-                                                             class="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                                            <div class="mt-2 flex items-center justify-between">
+                                                <div class="flex items-center space-x-3">
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full dark:text-gray-200"
+                                                          style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
+                                                        {{ $task->status->name }}
+                                                    </span>
+                                                    <span
+                                                          class="px-2 py-1 text-xs font-medium rounded-full {{ config('colors.task_priority')[$task->priority] ?? '' }}">
+                                                        {{ ucfirst($task->priority) }}
+                                                    </span>
+                                                    @if ($task->assignee)
+                                                        <div class="flex items-center space-x-1">
+                                                            <div
+                                                                 class="h-6 w-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                                                                <span
+                                                                      class="text-xs font-medium text-gray-700 dark:text-gray-200">
+                                                                    {{ $task->assignee->getInitials() }}
+                                                                </span>
+                                                            </div>
                                                             <span
-                                                                  class="text-xs font-medium text-gray-700 dark:text-gray-200">
-                                                                {{ $task->assignee->getInitials() }}
-                                                            </span>
+                                                                  class="text-sm text-gray-600 dark:text-gray-300">{{ $task->assignee->name }}</span>
                                                         </div>
-                                                        <span
-                                                              class="text-sm text-gray-600 dark:text-gray-300">{{ $task->assignee->name }}</span>
-                                                    </div>
-                                                @endif
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach

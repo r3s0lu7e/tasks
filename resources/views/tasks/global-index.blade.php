@@ -52,13 +52,12 @@
                             <select name="status" id="status"
                                     class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 <option value="">All Statuses</option>
-                                <option value="todo" {{ request('status') === 'todo' ? 'selected' : '' }}>To Do</option>
-                                <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In
-                                    Progress</option>
-                                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>
-                                    Completed</option>
-                                <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>
-                                    Cancelled</option>
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status->id }}"
+                                            {{ request('status') == $status->id ? 'selected' : '' }}>
+                                        {{ $status->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -83,10 +82,12 @@
                             <select name="type" id="type"
                                     class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 <option value="">All Types</option>
-                                <option value="story" {{ request('type') === 'story' ? 'selected' : '' }}>Story</option>
-                                <option value="bug" {{ request('type') === 'bug' ? 'selected' : '' }}>Bug</option>
-                                <option value="task" {{ request('type') === 'task' ? 'selected' : '' }}>Task</option>
-                                <option value="epic" {{ request('type') === 'epic' ? 'selected' : '' }}>Epic</option>
+                                @foreach ($types as $type)
+                                    <option value="{{ $type->id }}"
+                                            {{ request('type') == $type->id ? 'selected' : '' }}>
+                                        {{ $type->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -236,13 +237,9 @@
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td class="px-4 py-4">
                                                 <div class="flex items-center">
-                                                    <div
-                                                         class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium
-                                                        @if ($task->type === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                        @elseif($task->type === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                        @elseif($task->type === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
-                                                        @else bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 @endif">
-                                                        {{ strtoupper(substr($task->type, 0, 1)) }}
+                                                    <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium dark:text-gray-200"
+                                                         style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
+                                                        <i class="fas {{ $task->type->icon }}"></i>
                                                     </div>
                                                     <div class="ml-3">
                                                         <div
@@ -270,24 +267,14 @@
                                                 </div>
                                             </td>
                                             <td class="px-3 py-4">
-                                                <span
-                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                        @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200
-                                                        @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200
-                                                        @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                        @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                        @else bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium dark:text-gray-200"
+                                                      style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
+                                                    {{ $task->status->name }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-4">
                                                 <span
-                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                        @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
-                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
-                                                        @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                        @else bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 @endif">
+                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
                                                     {{ ucfirst($task->priority) }}
                                                 </span>
                                             </td>

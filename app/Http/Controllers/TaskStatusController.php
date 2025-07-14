@@ -80,7 +80,7 @@ class TaskStatusController extends Controller
             return redirect()->route('task-statuses.index')->with('error', 'The "Completed" status cannot be deleted.');
         }
 
-        if ($taskStatus->tasks()->count() > 0) {
+        if ($taskStatus->tasks()->exists()) {
             return redirect()->route('task-statuses.index')->with('error', 'Cannot delete status that is in use by tasks.');
         }
 

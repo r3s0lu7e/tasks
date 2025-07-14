@@ -247,7 +247,7 @@
                                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td class="px-4 py-4">
                                                 <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium"
+                                                    <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium dark:text-gray-200"
                                                          style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
                                                         <i class="fas {{ $task->type->icon }}"></i>
                                                     </div>
@@ -266,33 +266,15 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            {{-- <td class="px-3 py-4 text-center">
-                                                <div
-                                                     class="h-6 w-6 flex items-center justify-center rounded-full text-xs font-medium mx-auto
-                                                    @if ($task->type === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                    @elseif($task->type === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                    @elseif($task->type === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
-                                                    @else bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 @endif">
-                                                    {{ $task->type }}
-                                                </div>
-                                            </td> --}}
-                                            {{-- could use one of these above --}}
-                                            {{-- {{ $task->type }} --}}
-                                            {{-- {{ strtoupper(substr($task->type, 0, 1)) }} --}}
                                             <td class="px-3 py-4">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium dark:text-gray-200"
                                                       style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
                                                     {{ $task->status->name }}
                                                 </span>
                                             </td>
                                             <td class="px-3 py-4">
                                                 <span
-                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                        @if ($task->priority === 'low') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
-                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
-                                                        @elseif($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                        @else bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 @endif">
+                                                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
                                                     {{ ucfirst($task->priority) }}
                                                 </span>
                                             </td>

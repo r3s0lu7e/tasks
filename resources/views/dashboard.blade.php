@@ -303,7 +303,7 @@
                                             <div
                                                  class="h-8 w-8 rounded-full bg-{{ $member->status_color }}-500 flex items-center justify-center">
                                                 <span
-                                                      class="text-white text-sm font-medium">{{ $member->initials }}</span>
+                                                      class="text-white text-sm font-medium">{{ strtoupper(substr($member->name, 0, 1)) . (str_contains($member->name, ' ') ? strtoupper(substr(explode(' ', $member->name)[1], 0, 1)) : '') }}</span>
                                             </div>
                                             <div class="ml-3">
                                                 <h4 class="text-sm font-medium text-gray-900 dark:text-white">
@@ -372,8 +372,8 @@
                                                 </a>
                                             </h4>
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                {{ $project->tasks->count() }} tasks •
-                                                {{ $project->members->count() }} members</p>
+                                                {{ $project->tasks_count }} tasks •
+                                                {{ $project->members_count }} members</p>
                                         </div>
                                     </div>
                                     <div class="text-right">
@@ -385,9 +385,10 @@
                                         </div>
                                         <div class="w-20 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                             <div class="bg-blue-600 dark:bg-blue-500 h-2 rounded-full"
-                                                 style="width: {{ $project->progress }}%"></div>
+                                                 style="width: {{ $project->calculated_progress }}%"></div>
                                         </div>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $project->progress }}%
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            {{ $project->calculated_progress }}%
                                             complete</p>
                                     </div>
                                 </div>

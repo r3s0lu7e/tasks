@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\TaskStatusController;
+use App\Http\Controllers\TaskTypeController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -66,6 +67,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Task Statuses
         Route::resource('task-statuses', TaskStatusController::class)->except(['show']);
+        Route::resource('task-types', TaskTypeController::class)->except(['show']);
     });
 
     // Profile routes

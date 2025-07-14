@@ -161,6 +161,35 @@
                 </div>
             </div>
 
+            @if (auth()->user()->isAdmin())
+                <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Admin Settings</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <a href="{{ route('task-statuses.index') }}"
+                                   class="text-sm font-medium text-jira-blue hover:text-blue-700">
+                                    Manage Task Statuses &rarr;
+                                </a>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Define the statuses that tasks can be assigned to (e.g., To Do, In Progress, Done).
+                                </p>
+                            </div>
+                            <div class="border-t border-gray-200 my-4"></div>
+                            <div>
+                                <a href="{{ route('task-types.index') }}"
+                                   class="text-sm font-medium text-jira-blue hover:text-blue-700">
+                                    Manage Task Types &rarr;
+                                </a>
+                                <p class="mt-1 text-sm text-gray-500">
+                                    Define the types of tasks, like Bug, Story, or Epic, each with a unique icon and color.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Delete Account Section -->
             <div class="mt-6">
                 <div class="bg-red-50 border border-red-200 overflow-hidden shadow-sm sm:rounded-lg">

@@ -79,18 +79,20 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Type -->
                             <div>
-                                <label for="type" class="block text-sm font-medium text-gray-700">
+                                <label for="task_type_id" class="block text-sm font-medium text-gray-700">
                                     Type <span class="text-red-500">*</span>
                                 </label>
-                                <select id="type" name="type" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('type') border-red-300 @enderror">
+                                <select id="task_type_id" name="task_type_id" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('task_type_id') border-red-300 @enderror">
                                     <option value="">Select Type</option>
-                                    <option value="story" {{ old('type') == 'story' ? 'selected' : '' }}>Story</option>
-                                    <option value="bug" {{ old('type') == 'bug' ? 'selected' : '' }}>Bug</option>
-                                    <option value="task" {{ old('type') == 'task' ? 'selected' : '' }}>Task</option>
-                                    <option value="epic" {{ old('type') == 'epic' ? 'selected' : '' }}>Epic</option>
+                                    @foreach ($types as $type)
+                                        <option value="{{ $type->id }}"
+                                                {{ old('task_type_id') == $type->id ? 'selected' : '' }}>
+                                            {{ $type->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('type')
+                                @error('task_type_id')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -119,22 +121,20 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Status -->
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">
+                                <label for="task_status_id" class="block text-sm font-medium text-gray-700">
                                     Status <span class="text-red-500">*</span>
                                 </label>
-                                <select id="status" name="status" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('status') border-red-300 @enderror">
+                                <select id="task_status_id" name="task_status_id" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('task_status_id') border-red-300 @enderror">
                                     <option value="">Select Status</option>
-                                    <option value="todo" {{ old('status', 'todo') == 'todo' ? 'selected' : '' }}>To Do
-                                    </option>
-                                    <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>In
-                                        Progress</option>
-                                    <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>
-                                        Completed</option>
-                                    <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>
-                                        Cancelled</option>
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status->id }}"
+                                                {{ old('task_status_id') == $status->id ? 'selected' : '' }}>
+                                            {{ $status->name }}
+                                        </option>
+                                    @endforeach
                                 </select>
-                                @error('status')
+                                @error('task_status_id')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -185,8 +185,8 @@
                             <label for="story_points" class="block text-sm font-medium text-gray-700">
                                 Story Points
                             </label>
-                            <input type="number" id="story_points" name="story_points"
-                                   value="{{ old('story_points') }}" min="1" max="100"
+                            <input type="number" id="story_points" name="story_points" value="{{ old('story_points') }}"
+                                   min="1" max="100"
                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('story_points') border-red-300 @enderror">
                             <p class="mt-1 text-sm text-gray-500">Estimate effort required (1-100)</p>
                             @error('story_points')

@@ -220,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		saveFilterBtn.addEventListener("click", () => {
 			const filterName = prompt("Enter a name for this filter view:")
 			if (filterName) {
-				const form = document.querySelector("form.grid")
+				const form = document.getElementById("filter-form")
 				const formData = new FormData(form)
 				const filters = Object.fromEntries(formData.entries())
 

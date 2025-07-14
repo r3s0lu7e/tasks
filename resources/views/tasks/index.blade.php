@@ -39,7 +39,8 @@
             <div
                  class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('projects.tasks.index', $project) }}" class="space-y-4">
+                    <form method="GET" action="{{ route('projects.tasks.index', $project) }}" id="filter-form"
+                          class="space-y-4">
                         <input type="hidden" name="project" value="{{ $project->id }}">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-9 gap-4">
                             <!-- Search -->

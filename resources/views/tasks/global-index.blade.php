@@ -22,7 +22,8 @@
             <div
                  class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
-                    <form method="GET" action="{{ route('tasks.index') }}" class="grid grid-cols-1 md:grid-cols-9 gap-4">
+                    <form method="GET" action="{{ route('tasks.index') }}" id="filter-form"
+                          class="grid grid-cols-1 md:grid-cols-9 gap-4">
                         <div>
                             <label for="search"
                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search</label>

@@ -9,13 +9,9 @@
                 <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <div
-                                 class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-sm font-medium
-                            @if ($task->type === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                            @elseif($task->type === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                            @elseif($task->type === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
-                            @else bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 @endif">
-                                {{ strtoupper(substr($task->type, 0, 1)) }}
+                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-sm font-medium"
+                                 style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
+                                <i class="fas {{ $task->type->icon }}"></i>
                             </div>
                             <div>
                                 <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
@@ -44,15 +40,9 @@
                         <!-- Task Info -->
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Status</h3>
-                            <span
-                                  class="px-2 py-1 text-xs font-medium rounded-full
-                                @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
-                                @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
-                                @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
-                                {{ ucfirst(str_replace('_', ' ', $task->status)) }}
+                            <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                  style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
+                                {{ $task->status->name }}
                             </span>
                         </div>
 
@@ -71,13 +61,9 @@
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Type</h3>
-                            <span
-                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                            @if ($task->type === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                            @elseif($task->type === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                            @elseif($task->type === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
-                            @else bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 @endif">
-                                {{ ucfirst($task->type) }}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                  style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
+                                {{ $task->type->name }}
                             </span>
                         </div>
 

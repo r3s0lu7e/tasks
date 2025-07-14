@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\TaskStatus;
 
 class DashboardController extends Controller
 {
@@ -14,12 +15,19 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        $statuses = TaskStatus::all();
+        $completedStatus = $statuses->where('alias', 'completed')->first();
+        $cancelledStatus = $statuses->where('alias', 'cancelled')->first();
+        $activeStatuses = $statuses->whereNotIn('alias', ['completed', 'cancelled']);
+
         // Get active projects with optimized eager loading and counts
         if ($user->isAdmin()) {
             $projects = Project::with(['owner:id,name'])
                 ->withCount(['tasks', 'members'])
-                ->withCount(['tasks as completed_tasks_count' => function ($query) {
-                    $query->where('status', 'completed');
+                ->withCount(['tasks as completed_tasks_count' => function ($query) use ($completedStatus) {
+                    if ($completedStatus) {
+                        $query->where('task_status_id', $completedStatus->id);
+                    }
                 }])
                 ->where('status', 'active')
                 ->orderBy('created_at', 'desc')
@@ -29,8 +37,10 @@ class DashboardController extends Controller
             // Get projects owned by user or user is a member of
             $projects = Project::with(['owner:id,name'])
                 ->withCount(['tasks', 'members'])
-                ->withCount(['tasks as completed_tasks_count' => function ($query) {
-                    $query->where('status', 'completed');
+                ->withCount(['tasks as completed_tasks_count' => function ($query) use ($completedStatus) {
+                    if ($completedStatus) {
+                        $query->where('task_status_id', $completedStatus->id);
+                    }
                 }])
                 ->where('status', 'active')
                 ->where(function ($query) use ($user) {
@@ -55,8 +65,8 @@ class DashboardController extends Controller
         $teamMembers = collect();
         if ($user->isAdmin()) {
             $teamMembers = User::where('id', '!=', $user->id)
-                ->withCount(['assignedTasks as assigned_tasks_count' => function ($query) {
-                    $query->whereIn('status', ['todo', 'in_progress']);
+                ->withCount(['assignedTasks as assigned_tasks_count' => function ($query) use ($activeStatuses) {
+                    $query->whereIn('task_status_id', $activeStatuses->pluck('id'));
                 }])
                 ->orderBy('name')
                 ->limit(6)
@@ -75,24 +85,24 @@ class DashboardController extends Controller
 
         // Get tasks due today with proper query
         $todayTasks = (clone $baseTaskQuery)
-            ->with(['project:id,name,color', 'assignee:id,name'])
+            ->with(['project:id,name,color', 'assignee:id,name', 'status'])
             ->whereDate('due_date', today())
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('task_status_id', [$completedStatus?->id, $cancelledStatus?->id])
             ->orderBy('due_date', 'asc')
             ->get();
 
         // Get overdue tasks with proper query
         $overdueTasks = (clone $baseTaskQuery)
-            ->with(['project:id,name,color', 'assignee:id,name'])
+            ->with(['project:id,name,color', 'assignee:id,name', 'status'])
             ->whereDate('due_date', '<', today())
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('task_status_id', [$completedStatus?->id, $cancelledStatus?->id])
             ->orderBy('due_date', 'asc')
             ->get();
 
         // Get recent activity tasks separately
         $recentActivity = (clone $baseTaskQuery)
-            ->with(['project:id,name,color', 'assignee:id,name', 'creator:id,name'])
-            ->select('id', 'title', 'status', 'priority', 'due_date', 'project_id', 'assignee_id', 'creator_id', 'updated_at')
+            ->with(['project:id,name,color', 'assignee:id,name', 'creator:id,name', 'status', 'type'])
+            ->select('id', 'title', 'task_status_id', 'task_type_id', 'priority', 'due_date', 'project_id', 'assignee_id', 'creator_id', 'updated_at')
             ->orderBy('updated_at', 'desc')
             ->limit(8)
             ->get();
@@ -103,7 +113,7 @@ class DashboardController extends Controller
             $stats = [
                 'total_projects' => Project::count(),
                 'total_tasks' => Task::count(),
-                'completed_tasks' => Task::where('status', 'completed')->count(),
+                'completed_tasks' => $completedStatus ? Task::where('task_status_id', $completedStatus->id)->count() : 0,
                 'overdue_tasks' => $overdueTasks->count(),
                 'today_tasks' => $todayTasks->count(),
                 'team_members' => User::where('id', '!=', $user->id)->count(),
@@ -120,8 +130,8 @@ class DashboardController extends Controller
             $taskStats = Task::whereIn('project_id', $userProjectIds)
                 ->selectRaw('
                     COUNT(*) as total,
-                    SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed
-                ')
+                    SUM(CASE WHEN task_status_id = ? THEN 1 ELSE 0 END) as completed
+                ', [$completedStatus ? $completedStatus->id : -1])
                 ->first();
 
             $stats = [
@@ -141,15 +151,17 @@ class DashboardController extends Controller
                 ->select('id', 'name', 'status')
                 ->withCount([
                     'assignedTasks as total_tasks',
-                    'assignedTasks as active_tasks' => function ($query) {
-                        $query->whereIn('status', ['todo', 'in_progress']);
+                    'assignedTasks as active_tasks' => function ($query) use ($activeStatuses) {
+                        $query->whereIn('task_status_id', $activeStatuses->pluck('id'));
                     },
-                    'assignedTasks as completed_tasks' => function ($query) {
-                        $query->where('status', 'completed');
+                    'assignedTasks as completed_tasks' => function ($query) use ($completedStatus) {
+                        if ($completedStatus) {
+                            $query->where('task_status_id', $completedStatus->id);
+                        }
                     },
-                    'assignedTasks as overdue_tasks' => function ($query) {
+                    'assignedTasks as overdue_tasks' => function ($query) use ($completedStatus, $cancelledStatus) {
                         $query->whereDate('due_date', '<', today())
-                            ->whereNotIn('status', ['completed', 'cancelled']);
+                            ->whereNotIn('task_status_id', [$completedStatus?->id, $cancelledStatus?->id]);
                     }
                 ])
                 ->get()
@@ -163,6 +175,7 @@ class DashboardController extends Controller
                             : 0,
                         'overdue_count' => $member->overdue_tasks,
                         'status' => $member->status,
+                        'status_color' => $member->status_color,
                     ];
                 });
         }

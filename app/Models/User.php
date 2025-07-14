@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\TaskStatus;
 
 class User extends Authenticatable
 {
@@ -142,8 +143,9 @@ class User extends Authenticatable
      */
     public function getCurrentWorkload()
     {
+        $activeStatuses = TaskStatus::whereNotIn('alias', ['completed', 'cancelled'])->pluck('id');
         return $this->assignedTasks()
-            ->whereIn('status', ['todo', 'in_progress'])
+            ->whereIn('task_status_id', $activeStatuses)
             ->count();
     }
 
@@ -155,8 +157,11 @@ class User extends Authenticatable
         $totalTasks = $this->assignedTasks()->count();
         if ($totalTasks === 0) return 0;
 
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        if (!$completedStatus) return 0;
+
         $completedTasks = $this->assignedTasks()
-            ->where('status', 'completed')
+            ->where('task_status_id', $completedStatus->id)
             ->count();
 
         return round(($completedTasks / $totalTasks) * 100);
@@ -167,9 +172,12 @@ class User extends Authenticatable
      */
     public function getOverdueTasksCount()
     {
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        $cancelledStatus = TaskStatus::where('alias', 'cancelled')->first();
+
         return $this->assignedTasks()
             ->whereDate('due_date', '<', today())
-            ->whereNotIn('status', ['completed', 'cancelled'])
+            ->whereNotIn('task_status_id', [$completedStatus?->id, $cancelledStatus?->id])
             ->count();
     }
 
@@ -208,11 +216,26 @@ class User extends Authenticatable
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
-            'active' => 'green',
-            'inactive' => 'gray',
-            'vacation' => 'yellow',
-            'busy' => 'red',
-            default => 'gray',
+            'active' => '#22C55E',
+            'inactive' => '#6B7280',
+            'vacation' => '#F59E0B',
+            'busy' => '#EF4444',
+            default => '#6B7280',
         };
+    }
+
+    public function getStatusColorRgbAttribute()
+    {
+        $hex = ltrim($this->getStatusColorAttribute(), '#');
+        if (strlen($hex) == 3) {
+            $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+            $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+            $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+        } else {
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+        }
+        return "$r, $g, $b";
     }
 }

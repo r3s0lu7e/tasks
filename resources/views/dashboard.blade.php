@@ -449,15 +449,9 @@
                                         </div>
                                     </div>
                                     <div class="flex flex-col items-end space-y-1">
-                                        <span
-                                              class="px-2 py-1 text-xs font-medium rounded-full
-                                            @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
-                                            @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
-                                            @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                            @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                            @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                            @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $task->status)) }}
+                                        <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                              style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
+                                            {{ $task->status->name }}
                                         </span>
                                         <span
                                               class="px-2 py-1 text-xs font-medium rounded-full
@@ -500,7 +494,7 @@
                             @foreach ($teamWorkload as $member)
                                 <div class="text-center">
                                     <div
-                                         class="h-16 w-16 mx-auto rounded-full bg-{{ $member['status'] === 'active' ? 'green' : 'gray' }}-500 flex items-center justify-center mb-2">
+                                         class="h-16 w-16 mx-auto rounded-full bg-{{ $member['status_color'] }}-500 flex items-center justify-center mb-2">
                                         <span class="text-white font-medium">{{ $member['initials'] }}</span>
                                     </div>
                                     <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ $member['name'] }}

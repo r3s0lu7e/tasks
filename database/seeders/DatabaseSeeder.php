@@ -10,6 +10,9 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskComment;
+use App\Models\TaskStatus;
+use App\Models\TaskType;
+use App\Models\PersonalNote;
 
 class DatabaseSeeder extends Seeder
 {
@@ -228,8 +231,8 @@ class DatabaseSeeder extends Seeder
         }
 
         // Create sample tasks
-        $taskTypes = ['story', 'bug', 'task', 'epic'];
-        $taskStatuses = ['todo', 'in_progress', 'completed', 'blocked'];
+        $taskTypes = TaskType::all();
+        $taskStatuses = TaskStatus::all();
         $taskPriorities = ['low', 'medium', 'high'];
 
         // More varied task titles for realistic data
@@ -275,8 +278,8 @@ class DatabaseSeeder extends Seeder
                 $task = Task::create([
                     'title' => $taskTitle,
                     'description' => 'This is a sample task description for ' . $project->name . '. Task: ' . $taskTitle . '. It contains detailed information about what needs to be done and includes specific requirements and acceptance criteria.',
-                    'type' => $taskTypes[array_rand($taskTypes)],
-                    'status' => $taskStatuses[array_rand($taskStatuses)],
+                    'task_type_id' => $taskTypes->random()->id,
+                    'task_status_id' => $taskStatuses->random()->id,
                     'priority' => $taskPriorities[array_rand($taskPriorities)],
                     'project_id' => $project->id,
                     'creator_id' => $admin->id,
@@ -297,6 +300,33 @@ class DatabaseSeeder extends Seeder
                     }
                 }
             }
+        }
+
+        // Create some personal notes
+        PersonalNote::create([
+            'user_id' => $admin->id,
+            'title' => 'Q3 Marketing Strategy',
+            'content' => 'Finalize the marketing strategy for the upcoming quarter. Focus on social media engagement and content marketing. Review the budget and allocate resources for key campaigns.',
+            'color' => '#3B82F6',
+            'is_pinned' => true,
+        ]);
+
+        PersonalNote::create([
+            'user_id' => $admin->id,
+            'title' => 'Meeting with a potential client',
+            'content' => 'Prepare a presentation for the meeting with the new client. Highlight our key strengths and successful projects. Include a detailed proposal and timeline.',
+            'color' => '#10B981',
+            'is_favorite' => true,
+        ]);
+
+        if ($users->isNotEmpty()) {
+            $randomUser = $users->random();
+            PersonalNote::create([
+                'user_id' => $randomUser->id,
+                'title' => 'Ideas for the new project',
+                'content' => 'Brainstorming session for the new mobile app. Think about the target audience, key features, and monetization strategy. Create a mood board for the UI/UX design.',
+                'color' => '#F59E0B',
+            ]);
         }
     }
 }

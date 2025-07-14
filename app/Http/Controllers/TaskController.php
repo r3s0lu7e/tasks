@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\TaskDependency;
+use App\Models\TaskStatus;
+use App\Models\TaskType;
 
 class TaskController extends Controller
 {
@@ -24,14 +26,14 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
-        $project->load(['tasks.assignee', 'tasks.creator', 'members']);
+        $project->load(['tasks.assignee', 'tasks.creator', 'tasks.status', 'tasks.type', 'members']);
 
         // Get tasks with filters
-        $query = $project->tasks()->with(['assignee', 'creator']);
+        $query = $project->tasks()->with(['assignee', 'creator', 'status', 'type']);
 
         // Apply filters
         if (request('status')) {
-            $query->where('status', request('status'));
+            $query->where('task_status_id', request('status'));
         }
 
         if (request('assignee')) {
@@ -43,7 +45,7 @@ class TaskController extends Controller
         }
 
         if (request('type')) {
-            $query->where('type', request('type'));
+            $query->where('task_type_id', request('type'));
         }
 
         if (request('search')) {
@@ -56,6 +58,9 @@ class TaskController extends Controller
         // Due date range filter
         if (request()->filled('due_date_range')) {
             $range = request('due_date_range');
+            $completedStatus = TaskStatus::where('alias', 'completed')->first();
+            $cancelledStatus = TaskStatus::where('alias', 'cancelled')->first();
+
             if ($range === 'today') {
                 $query->whereDate('due_date', today());
             } elseif ($range === 'this_week') {
@@ -65,7 +70,9 @@ class TaskController extends Controller
             } elseif ($range === 'this_month') {
                 $query->whereMonth('due_date', now()->month);
             } elseif ($range === 'overdue') {
-                $query->where('due_date', '<', today())->whereNotIn('status', ['completed', 'cancelled']);
+                $query->where('due_date', '<', today())
+                    ->where('task_status_id', '!=', $completedStatus ? $completedStatus->id : -1)
+                    ->where('task_status_id', '!=', $cancelledStatus ? $cancelledStatus->id : -1);
             } elseif ($range === 'no_due_date') {
                 $query->whereNull('due_date');
             }
@@ -111,9 +118,11 @@ class TaskController extends Controller
         $tasks = $query->paginate(20);
 
         // Group tasks by status for kanban view
-        $tasksByStatus = $project->tasks->groupBy('status');
+        $tasksByStatus = $project->tasks->groupBy('task_status_id');
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
-        return view('tasks.index', compact('project', 'tasks', 'tasksByStatus'));
+        return view('tasks.index', compact('project', 'tasks', 'tasksByStatus', 'statuses', 'types'));
     }
 
     /**
@@ -127,6 +136,9 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
+
         // Get project members (including owner) for assignment
         $assignableUsers = collect([$project->owner])
             ->merge($project->members)
@@ -134,7 +146,7 @@ class TaskController extends Controller
             ->sortBy('name')
             ->values();
 
-        return view('tasks.create', compact('project', 'assignableUsers'));
+        return view('tasks.create', compact('project', 'assignableUsers', 'statuses', 'types'));
     }
 
     /**
@@ -151,9 +163,9 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'type' => 'required|in:story,bug,task,epic',
+            'task_type_id' => 'required|exists:task_types,id',
             'priority' => 'required|in:low,medium,high,critical',
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date|after_or_equal:today',
             'story_points' => 'nullable|integer|min:1|max:100',
@@ -171,9 +183,9 @@ class TaskController extends Controller
         $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => $request->type,
+            'task_type_id' => $request->task_type_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'task_status_id' => $request->task_status_id,
             'project_id' => $project->id,
             'creator_id' => Auth::id(),
             'assignee_id' => $request->assignee_id,
@@ -218,7 +230,7 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
-        $task->load(['assignee', 'creator', 'comments.user', 'blockingDependencies.dependentTask.project', 'blockedByDependencies.task.project']);
+        $task->load(['assignee', 'creator', 'comments.user', 'status', 'type', 'blockingDependencies.dependentTask.project', 'blockedByDependencies.task.project']);
 
         // Get IDs of all related tasks
         $blockingIds = $task->blockingDependencies->pluck('depends_on_task_id');
@@ -234,8 +246,10 @@ class TaskController extends Controller
 
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
-        return view('tasks.show', compact('project', 'task', 'assignableUsers', 'availableTasks'));
+        return view('tasks.show', compact('project', 'task', 'assignableUsers', 'availableTasks', 'statuses', 'types'));
     }
 
     /**
@@ -254,6 +268,9 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
+
         // Get project members (including owner) for assignment
         $assignableUsers = collect([$project->owner])
             ->merge($project->members)
@@ -261,7 +278,7 @@ class TaskController extends Controller
             ->sortBy('name')
             ->values();
 
-        return view('tasks.edit', compact('project', 'task', 'assignableUsers'));
+        return view('tasks.edit', compact('project', 'task', 'assignableUsers', 'statuses', 'types'));
     }
 
     /**
@@ -283,9 +300,9 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'type' => 'required|in:story,bug,task,epic',
+            'task_type_id' => 'required|exists:task_types,id',
             'priority' => 'required|in:low,medium,high,critical',
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
             'story_points' => 'nullable|integer|min:1|max:100',
@@ -303,9 +320,9 @@ class TaskController extends Controller
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => $request->type,
+            'task_type_id' => $request->task_type_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'task_status_id' => $request->task_status_id,
             'assignee_id' => $request->assignee_id,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
@@ -370,8 +387,8 @@ class TaskController extends Controller
     public function updateStatus(Request $request, Task $task)
     {
         $request->validate([
-            'status' => 'sometimes|required|in:todo,in_progress,completed,cancelled',
-            'type' => 'sometimes|required|in:story,bug,task,epic',
+            'status_id' => 'sometimes|required|exists:task_statuses,id',
+            'type_id' => 'sometimes|required|exists:task_types,id',
         ]);
 
         // Check if user has access to this task's project
@@ -381,19 +398,19 @@ class TaskController extends Controller
         }
 
         // Update status if provided
-        if ($request->has('status')) {
-            $task->update(['status' => $request->status]);
+        if ($request->has('status_id')) {
+            $task->update(['task_status_id' => $request->status_id]);
         }
 
-        // Update type if provided (for bug column drag and drop)
-        if ($request->has('type')) {
-            $task->update(['type' => $request->type]);
+        // Update type if provided
+        if ($request->has('type_id')) {
+            $task->update(['task_type_id' => $request->type_id]);
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Task updated successfully.',
-            'task' => $task->load(['assignee', 'creator'])
+            'task' => $task->load(['assignee', 'creator', 'status', 'type'])
         ]);
     }
 
@@ -444,7 +461,7 @@ class TaskController extends Controller
         }
 
         $tasks = $project->tasks()->with(['assignee', 'creator'])->get();
-        $tasksByStatus = $tasks->groupBy('status');
+        $tasksByStatus = $tasks->groupBy('task_status_id');
 
         return response()->json([
             'tasks' => $tasksByStatus,
@@ -505,7 +522,7 @@ class TaskController extends Controller
 
         // Admin users can see all tasks
         if ($user->isAdmin()) {
-            $query = Task::with(['project', 'assignee', 'creator']);
+            $query = Task::with(['project', 'assignee', 'creator', 'status', 'type']);
         } else {
             // Get all tasks from user's projects
             $query = Task::whereHas('project', function ($q) use ($user) {
@@ -513,12 +530,12 @@ class TaskController extends Controller
                     ->orWhereHas('members', function ($memberQuery) use ($user) {
                         $memberQuery->where('user_id', $user->id);
                     });
-            })->with(['project', 'assignee', 'creator']);
+            })->with(['project', 'assignee', 'creator', 'status', 'type']);
         }
 
         // Apply filters
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $query->where('task_status_id', $request->status);
         }
 
         if ($request->filled('priority')) {
@@ -526,7 +543,7 @@ class TaskController extends Controller
         }
 
         if ($request->filled('type')) {
-            $query->where('type', $request->type);
+            $query->where('task_type_id', $request->type);
         }
 
         if ($request->filled('project')) {
@@ -551,6 +568,9 @@ class TaskController extends Controller
         // Due date range filter
         if ($request->filled('due_date_range')) {
             $range = $request->due_date_range;
+            $completedStatus = TaskStatus::where('alias', 'completed')->first();
+            $cancelledStatus = TaskStatus::where('alias', 'cancelled')->first();
+
             if ($range === 'today') {
                 $query->whereDate('due_date', today());
             } elseif ($range === 'this_week') {
@@ -560,7 +580,9 @@ class TaskController extends Controller
             } elseif ($range === 'this_month') {
                 $query->whereMonth('due_date', now()->month);
             } elseif ($range === 'overdue') {
-                $query->where('due_date', '<', today())->whereNotIn('status', ['completed', 'cancelled']);
+                $query->where('due_date', '<', today())
+                    ->where('task_status_id', '!=', $completedStatus ? $completedStatus->id : -1)
+                    ->where('task_status_id', '!=', $cancelledStatus ? $cancelledStatus->id : -1);
             } elseif ($range === 'no_due_date') {
                 $query->whereNull('due_date');
             }
@@ -616,8 +638,10 @@ class TaskController extends Controller
 
         // Get all users for assignee filter
         $users = User::orderBy('name')->get();
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
-        return view('tasks.global-index', compact('tasks', 'projects', 'users'));
+        return view('tasks.global-index', compact('tasks', 'projects', 'users', 'statuses', 'types'));
     }
 
     /**
@@ -644,12 +668,14 @@ class TaskController extends Controller
 
         // Use the first project as default, or let user choose
         $project = $projects->first();
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
         // Get all team members (users) for assignment - keep all users for standalone form
         // since user can change project and we'll validate on submission
         $assignableUsers = User::orderBy('name')->get();
 
-        return view('tasks.create-standalone', compact('projects', 'project', 'assignableUsers'));
+        return view('tasks.create-standalone', compact('projects', 'project', 'assignableUsers', 'statuses', 'types'));
     }
 
     /**
@@ -663,9 +689,9 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'project_id' => 'required|exists:projects,id',
-            'type' => 'required|in:story,bug,task,epic',
+            'task_type_id' => 'required|exists:task_types,id',
             'priority' => 'required|in:low,medium,high,critical',
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date|after_or_equal:today',
             'story_points' => 'nullable|integer|min:1|max:100',
@@ -689,9 +715,9 @@ class TaskController extends Controller
         $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => $request->type,
+            'task_type_id' => $request->task_type_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'task_status_id' => $request->task_status_id,
             'project_id' => $request->project_id,
             'creator_id' => $user->id,
             'assignee_id' => $request->assignee_id,
@@ -732,6 +758,9 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this task.');
         }
 
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
+
         // Get projects for admin users or user's projects
         if ($user->isAdmin()) {
             $projects = Project::all();
@@ -749,7 +778,7 @@ class TaskController extends Controller
         // Use the existing edit view with project context
         $project = $task->project;
 
-        return view('tasks.edit', compact('task', 'project', 'assignableUsers'));
+        return view('tasks.edit', compact('task', 'project', 'assignableUsers', 'statuses', 'types'));
     }
 
     /**
@@ -768,9 +797,9 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'project_id' => 'required|exists:projects,id',
-            'type' => 'required|in:story,bug,task,epic',
+            'task_type_id' => 'required|exists:task_types,id',
             'priority' => 'required|in:low,medium,high,critical',
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
             'story_points' => 'nullable|integer|min:1|max:100',
@@ -797,9 +826,9 @@ class TaskController extends Controller
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => $request->type,
+            'task_type_id' => $request->task_type_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'task_status_id' => $request->task_status_id,
             'project_id' => $request->project_id,
             'assignee_id' => $request->assignee_id,
             'due_date' => $request->due_date,
@@ -892,8 +921,10 @@ class TaskController extends Controller
 
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
-        return view('tasks.show', compact('task', 'project', 'assignableUsers', 'availableTasks'));
+        return view('tasks.show', compact('task', 'project', 'assignableUsers', 'availableTasks', 'statuses', 'types'));
     }
 
     /**
@@ -908,6 +939,9 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this task.');
         }
 
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
+
         // Get projects for admin users or user's projects
         if ($user->isAdmin()) {
             $projects = Project::all();
@@ -921,7 +955,7 @@ class TaskController extends Controller
         // Get all team members (users) for assignment
         $assignableUsers = User::orderBy('name')->get();
 
-        return view('tasks.global-edit', compact('task', 'projects', 'assignableUsers'));
+        return view('tasks.global-edit', compact('task', 'projects', 'assignableUsers', 'statuses', 'types'));
     }
 
     /**
@@ -940,9 +974,9 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'project_id' => 'required|exists:projects,id',
-            'type' => 'required|in:story,bug,task,epic',
+            'task_type_id' => 'required|exists:task_types,id',
             'priority' => 'required|in:low,medium,high,critical',
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
             'due_date' => 'nullable|date',
             'story_points' => 'nullable|integer|min:1|max:100',
@@ -960,9 +994,9 @@ class TaskController extends Controller
         $task->update([
             'title' => $request->title,
             'description' => $request->description,
-            'type' => $request->type,
+            'task_type_id' => $request->task_type_id,
             'priority' => $request->priority,
-            'status' => $request->status,
+            'task_status_id' => $request->task_status_id,
             'project_id' => $request->project_id,
             'assignee_id' => $request->assignee_id,
             'due_date' => $request->due_date,

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Models\TaskStatus;
+use App\Models\TaskType;
 
 class ProjectController extends Controller
 {
@@ -40,7 +42,12 @@ class ProjectController extends Controller
         // Add statistics to each project
         $projects = $projects->map(function ($project) {
             $project->total_tasks = $project->tasks->count();
-            $project->completed_tasks = $project->tasks->where('status', 'completed')->count();
+            $completedStatus = TaskStatus::where('alias', 'completed')->first();
+            if ($completedStatus) {
+                $project->completed_tasks = $project->tasks->where('task_status_id', $completedStatus->id)->count();
+            } else {
+                $project->completed_tasks = 0;
+            }
             $project->progress = $project->total_tasks > 0 ?
                 round(($project->completed_tasks / $project->total_tasks) * 100, 1) : 0;
             return $project;
@@ -100,30 +107,31 @@ class ProjectController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
-        $project->load(['tasks.assignee', 'tasks.creator', 'members', 'owner']);
+        $project->load(['tasks.assignee', 'tasks.creator', 'tasks.status', 'tasks.type', 'members', 'owner']);
 
-        // Group tasks by status for kanban view
-        $tasksByStatus = $project->tasks->groupBy('status');
+        $statuses = TaskStatus::orderBy('order')->get();
+        $types = TaskType::all();
 
-        // Get bug tasks separately (these are tasks with type='bug' that are not completed or cancelled)
-        $bugTasks = $project->tasks->where('type', 'bug')
-            ->whereNotIn('status', ['completed', 'cancelled']);
-
-        // Add bug tasks to the tasksByStatus collection for the view
-        $tasksByStatus->put('bug', $bugTasks);
+        // Group tasks by status ID for kanban view
+        $tasksByStatus = $project->tasks->groupBy('task_status_id');
 
         // Get project statistics
+        $completedStatus = $statuses->where('alias', 'completed')->first();
+        $inProgressStatus = $statuses->where('alias', 'in_progress')->first();
+        $todoStatus = $statuses->where('alias', 'todo')->first();
+        $cancelledStatus = $statuses->where('alias', 'cancelled')->first();
+
         $stats = [
             'total_tasks' => $project->tasks->count(),
-            'completed_tasks' => $project->tasks->where('status', 'completed')->count(),
-            'in_progress_tasks' => $project->tasks->where('status', 'in_progress')->count(),
-            'todo_tasks' => $project->tasks->where('status', 'todo')->count(),
-            'bug_tasks' => $project->tasks->where('type', 'bug')->whereNotIn('status', ['completed', 'cancelled'])->count(),
-            'overdue_tasks' => $project->tasks->where('due_date', '<', now())
-                ->whereNotIn('status', ['completed', 'cancelled'])->count(),
+            'completed_tasks' => $completedStatus ? $tasksByStatus->get($completedStatus->id, collect())->count() : 0,
+            'overdue_tasks' => $project->tasks
+                ->where('due_date', '<', now())
+                ->where('task_status_id', '!=', $completedStatus ? $completedStatus->id : -1)
+                ->where('task_status_id', '!=', $cancelledStatus ? $cancelledStatus->id : -1)
+                ->count(),
         ];
 
-        return view('projects.show', compact('project', 'tasksByStatus', 'stats'));
+        return view('projects.show', compact('project', 'tasksByStatus', 'stats', 'statuses', 'types'));
     }
 
     /**

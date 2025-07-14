@@ -94,11 +94,9 @@
 
                             <!-- Status -->
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">
-                                    Status <span class="text-red-500">*</span>
-                                </label>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
                                 <select id="status" name="status" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('status') border-red-500 @enderror">
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active
                                     </option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
@@ -107,9 +105,6 @@
                                         Vacation</option>
                                     <option value="busy" {{ old('status') == 'busy' ? 'selected' : '' }}>Busy</option>
                                 </select>
-                                @error('status')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
                             </div>
 
                             <!-- Hourly Rate -->

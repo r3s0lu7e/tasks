@@ -101,9 +101,10 @@
                                     <div class="p-6">
                                         <div class="flex items-center justify-between mb-4">
                                             <div class="flex items-center">
-                                                <div
-                                                     class="h-12 w-12 bg-gray-300 rounded-full flex items-center justify-center">
-                                                    <span class="text-lg font-medium text-gray-700">
+                                                <div class="h-12 w-12 rounded-full flex items-center justify-center"
+                                                     style="background-color: rgba({{ $member->status_color_rgb }}, 0.2)">
+                                                    <span class="text-lg font-medium"
+                                                          style="color: {{ $member->status_color }}">
                                                         {{ $member->getInitials() }}
                                                     </span>
                                                 </div>
@@ -117,12 +118,8 @@
                                                     <p class="text-sm text-gray-600">{{ $member->email }}</p>
                                                 </div>
                                             </div>
-                                            <span
-                                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if ($member->status === 'active') bg-green-100 text-green-800
-                                                @elseif($member->status === 'vacation') bg-yellow-100 text-yellow-800
-                                                @elseif($member->status === 'busy') bg-red-100 text-red-800
-                                                @else bg-gray-100 text-gray-800 @endif">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                                  style="background-color: rgba({{ $member->status_color_rgb }}, 0.2); color: {{ $member->status_color }}">
                                                 {{ ucfirst($member->status) }}
                                             </span>
                                         </div>

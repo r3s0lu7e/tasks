@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TeamMemberController;
+use App\Http\Controllers\TaskStatusController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,6 +63,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         Route::resource('team', App\Http\Controllers\TeamMemberController::class);
         Route::get('/team/workload/data', [App\Http\Controllers\TeamMemberController::class, 'workloadData'])->name('team.workload.data');
+
+        // Task Statuses
+        Route::resource('task-statuses', TaskStatusController::class)->except(['show']);
     });
 
     // Profile routes

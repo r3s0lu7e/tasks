@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class TeamMemberController extends Controller
 {
@@ -42,8 +43,8 @@ class TeamMemberController extends Controller
         $teamMembers = $query->orderBy('name')->get();
 
         // Get available statuses and roles for filters
-        $statuses = ['active', 'inactive', 'vacation', 'busy'];
-        $roles = ['developer', 'designer', 'tester', 'project_manager', 'client'];
+        $statuses = User::select('status')->distinct()->pluck('status');
+        $roles = User::select('role')->distinct()->pluck('role');
 
         return view('team.index', compact('teamMembers', 'statuses', 'roles'));
     }
@@ -66,8 +67,8 @@ class TeamMemberController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'department' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:developer,designer,tester,project_manager,client',
-            'status' => 'required|in:active,inactive,vacation,busy',
+            'role' => ['required', Rule::in(User::select('role')->distinct()->pluck('role'))],
+            'status' => ['required', Rule::in(User::select('status')->distinct()->pluck('status'))],
             'hourly_rate' => 'nullable|numeric|min:0|max:999.99',
             'hire_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
@@ -132,8 +133,8 @@ class TeamMemberController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $team->id,
             'department' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:developer,designer,tester,project_manager,client',
-            'status' => 'required|in:active,inactive,vacation,busy',
+            'role' => ['required', Rule::in(User::select('role')->distinct()->pluck('role'))],
+            'status' => ['required', Rule::in(User::select('status')->distinct()->pluck('status'))],
             'hourly_rate' => 'nullable|numeric|min:0|max:999.99',
             'hire_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',

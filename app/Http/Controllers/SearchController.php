@@ -120,8 +120,8 @@ class SearchController extends Controller
 
         if ($user->isAdmin()) {
             $tasks = Task::where('title', 'like', "%{$query}%")
-                ->with('project:id,name,color')
-                ->select('id', 'title', 'project_id', 'status', 'priority')
+                ->with(['project:id,name,color', 'status'])
+                ->select('id', 'title', 'project_id', 'task_status_id', 'priority')
                 ->limit(5)
                 ->get()
                 ->map(function ($task) {
@@ -131,7 +131,7 @@ class SearchController extends Controller
                         'title' => $task->title,
                         'subtitle' => $task->project->name,
                         'color' => $task->project->color,
-                        'status' => $task->status,
+                        'status' => $task->status->name,
                         'priority' => $task->priority,
                         'url' => route('tasks.show', $task)
                     ];
@@ -144,8 +144,8 @@ class SearchController extends Controller
                             $memberQuery->where('user_id', $user->id);
                         });
                 })
-                ->with('project:id,name,color')
-                ->select('id', 'title', 'project_id', 'status', 'priority')
+                ->with(['project:id,name,color', 'status'])
+                ->select('id', 'title', 'project_id', 'task_status_id', 'priority')
                 ->limit(5)
                 ->get()
                 ->map(function ($task) {
@@ -155,7 +155,7 @@ class SearchController extends Controller
                         'title' => $task->title,
                         'subtitle' => $task->project->name,
                         'color' => $task->project->color,
-                        'status' => $task->status,
+                        'status' => $task->status->name,
                         'priority' => $task->priority,
                         'url' => route('tasks.show', $task)
                     ];

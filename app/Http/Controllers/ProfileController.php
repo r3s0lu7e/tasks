@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Models\TaskStatus;
 
 class ProfileController extends Controller
 {
@@ -16,12 +17,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+
         // Get user statistics
         $stats = [
             'owned_projects' => $user->ownedProjects()->count(),
             'member_projects' => $user->projects()->count(),
             'assigned_tasks' => $user->assignedTasks()->count(),
-            'completed_tasks' => $user->assignedTasks()->where('status', 'completed')->count(),
+            'completed_tasks' => $completedStatus ? $user->assignedTasks()->where('task_status_id', $completedStatus->id)->count() : 0,
             'created_tasks' => $user->createdTasks()->count(),
         ];
 

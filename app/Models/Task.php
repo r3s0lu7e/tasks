@@ -40,9 +40,7 @@ class Task extends Model
     protected $fillable = [
         'title',
         'description',
-        'status',
         'priority',
-        'type',
         'project_id',
         'assignee_id',
         'creator_id',
@@ -51,6 +49,8 @@ class Task extends Model
         'estimated_hours',
         'actual_hours',
         'tags',
+        'task_status_id',
+        'task_type_id',
     ];
 
     /**
@@ -72,6 +72,16 @@ class Task extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(TaskStatus::class, 'task_status_id');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(TaskType::class, 'task_type_id');
     }
 
     /**
@@ -143,7 +153,7 @@ class Task extends Model
      */
     public function isOverdue()
     {
-        return $this->due_date && $this->due_date->isPast() && $this->status !== 'completed';
+        return $this->due_date && $this->due_date->isPast() && $this->status->alias !== 'completed';
     }
 
     /**
@@ -151,7 +161,7 @@ class Task extends Model
      */
     public function isCompleted()
     {
-        return $this->status === 'completed';
+        return $this->status->alias === 'completed';
     }
 
     /**
@@ -172,22 +182,15 @@ class Task extends Model
      */
     public function getStatusColorAttribute()
     {
-        return match ($this->status) {
-            'todo' => 'gray',
-            'in_progress' => 'blue',
-            'completed' => 'green',
-            'blocked' => 'red',
-            'cancelled' => 'red',
-            default => 'gray',
-        };
+        return $this->status->color;
     }
 
     /**
      * Scope to filter tasks by status.
      */
-    public function scopeByStatus($query, $status)
+    public function scopeByStatus($query, $statusId)
     {
-        return $query->where('status', $status);
+        return $query->where('task_status_id', $statusId);
     }
 
     /**
@@ -220,7 +223,9 @@ class Task extends Model
     public function scopeOverdue($query)
     {
         return $query->where('due_date', '<', now())
-            ->where('status', '!=', 'completed');
+            ->whereHas('status', function ($q) {
+                $q->where('alias', '!=', 'completed');
+            });
     }
 
     /**

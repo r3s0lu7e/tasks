@@ -26,6 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('projects.tasks', TaskController::class)->except(['index']);
     Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])->name('projects.tasks.index');
 
+    // Project-specific task attachment routes
+    Route::delete('/projects/{project}/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachment'])->name('projects.tasks.attachments.delete');
+    Route::get('/projects/{project}/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->name('projects.tasks.attachments.download');
+
     // Standalone task routes for single-user convenience
     Route::get('/tasks', [TaskController::class, 'globalIndex'])->name('tasks.index');
     Route::get('/tasks/create', [TaskController::class, 'createStandalone'])->name('tasks.create');
@@ -40,8 +44,8 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/tasks/{task}/assign', [TaskController::class, 'assign'])->name('tasks.assign');
 
     // Task attachment routes
-    Route::delete('/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachment'])->name('tasks.attachments.delete');
-    Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachment'])->name('tasks.attachments.download');
+    Route::delete('/tasks/{task}/attachments/{attachment}', [TaskController::class, 'deleteAttachmentStandalone'])->name('tasks.attachments.delete');
+    Route::get('/tasks/{task}/attachments/{attachment}/download', [TaskController::class, 'downloadAttachmentStandalone'])->name('tasks.attachments.download');
 
     // Task Dependency routes
     Route::post('/tasks/{task}/dependencies', [TaskController::class, 'addDependency'])->name('tasks.dependencies.add');

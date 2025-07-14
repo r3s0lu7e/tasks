@@ -473,18 +473,23 @@ class TaskController extends Controller
         ]);
     }
 
-    public function deleteAttachment(Task $task, TaskAttachment $attachment)
+    public function deleteAttachment(Project $project, Task $task, TaskAttachment $attachment)
     {
         $user = Auth::user();
+
+        // Check if user has access to this project
+        if (!$project->hasMember($user)) {
+            abort(403, 'You do not have access to this project.');
+        }
+
+        // Ensure task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404, 'Task not found in this project.');
+        }
 
         // Ensure attachment belongs to this task
         if ($attachment->task_id !== $task->id) {
             abort(404, 'Attachment not found for this task.');
-        }
-
-        // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
-            abort(403, 'You do not have access to this project.');
         }
 
         // Only creator, assignee, project owner, attachment uploader, or admin can delete attachments
@@ -508,8 +513,77 @@ class TaskController extends Controller
         return back()->with('success', 'Attachment deleted successfully.');
     }
 
-    public function downloadAttachment(Task $task, TaskAttachment $attachment)
+    public function downloadAttachment(Project $project, Task $task, TaskAttachment $attachment)
     {
+        $user = Auth::user();
+
+        // Check if user has access to this project
+        if (!$project->hasMember($user)) {
+            abort(403, 'You do not have access to this project.');
+        }
+
+        // Ensure task belongs to the project
+        if ($task->project_id !== $project->id) {
+            abort(404, 'Task not found in this project.');
+        }
+
+        // Ensure attachment belongs to this task
+        if ($attachment->task_id !== $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
+
+        if (Storage::disk('public')->exists($attachment->path)) {
+            return Storage::disk('public')->download($attachment->path, $attachment->filename);
+        }
+
+        return back()->with('error', 'File not found.');
+    }
+
+    // Standalone attachment methods (for backward compatibility)
+    public function deleteAttachmentStandalone(Task $task, TaskAttachment $attachment)
+    {
+        $user = Auth::user();
+
+        // Check if user has access to this task's project
+        if (!$task->project->hasMember($user)) {
+            abort(403, 'You do not have access to this project.');
+        }
+
+        // Ensure attachment belongs to this task
+        if ($attachment->task_id !== $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
+
+        // Only creator, assignee, project owner, attachment uploader, or admin can delete attachments
+        if (
+            $task->creator_id !== $user->id &&
+            $task->assignee_id !== $user->id &&
+            $task->project->owner_id !== $user->id &&
+            $attachment->uploaded_by !== $user->id &&
+            !$user->isAdmin()
+        ) {
+            abort(403, 'You do not have permission to delete this attachment.');
+        }
+
+        // Delete file from storage
+        if (Storage::disk('public')->exists($attachment->path)) {
+            Storage::disk('public')->delete($attachment->path);
+        }
+
+        $attachment->delete();
+
+        return back()->with('success', 'Attachment deleted successfully.');
+    }
+
+    public function downloadAttachmentStandalone(Task $task, TaskAttachment $attachment)
+    {
+        $user = Auth::user();
+
+        // Check if user has access to this task's project
+        if (!$task->project->hasMember($user)) {
+            abort(403, 'You do not have access to this project.');
+        }
+
         // Ensure attachment belongs to this task
         if ($attachment->task_id !== $task->id) {
             abort(404, 'Attachment not found for this task.');

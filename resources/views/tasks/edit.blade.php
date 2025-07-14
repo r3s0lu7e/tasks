@@ -253,7 +253,7 @@
                                                     </div>
                                                 </div>
                                                 <form method="POST"
-                                                      action="{{ route('tasks.attachments.delete', [$task, $attachment]) }}"
+                                                      action="{{ route('projects.tasks.attachments.delete', [$project, $task, $attachment]) }}"
                                                       class="inline">
                                                     @csrf
                                                     @method('DELETE')

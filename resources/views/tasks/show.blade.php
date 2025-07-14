@@ -320,7 +320,7 @@
                                                     {{ $attachment->file_size_human }}</p>
                                             </div>
                                         </div>
-                                        <a href="{{ route('tasks.attachments.download', [$task, $attachment]) }}"
+                                        <a href="{{ route('projects.tasks.attachments.download', [$project, $task, $attachment]) }}"
                                            class="text-jira-blue dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                                             Download
                                         </a>

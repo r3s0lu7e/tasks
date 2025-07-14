@@ -116,6 +116,14 @@ class Task extends Model
         return $this->hasMany(TaskAttachment::class);
     }
 
+    /**
+     * Get the description images for the task.
+     */
+    public function descriptionImages()
+    {
+        return $this->hasMany(TaskDescriptionImage::class);
+    }
+
     public function checklistItems()
     {
         return $this->hasMany(ChecklistItem::class)->orderBy('order');

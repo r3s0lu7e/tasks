@@ -274,24 +274,53 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             @foreach ($task->attachments as $attachment)
                                 <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                    @if (str_starts_with($attachment->mime_type, 'image/'))
+                                        <!-- Image Preview -->
+                                        <div class="mb-3">
+                                            <img src="{{ asset('storage/' . $attachment->path) }}"
+                                                 alt="{{ $attachment->original_filename }}"
+                                                 class="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:opacity-90 transition-opacity"
+                                                 onclick="openImageModal('{{ asset('storage/' . $attachment->path) }}', '{{ $attachment->original_filename }}')">
+                                        </div>
+                                    @endif
+
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-3">
                                             <div class="flex-shrink-0">
-                                                <svg class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none"
-                                                     stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                                    </path>
-                                                </svg>
+                                                @if (str_starts_with($attachment->mime_type, 'image/'))
+                                                    <svg class="h-8 w-8 text-blue-500 dark:text-blue-400" fill="none"
+                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                @elseif (str_starts_with($attachment->mime_type, 'application/pdf'))
+                                                    <svg class="h-8 w-8 text-red-500 dark:text-red-400" fill="none"
+                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                @else
+                                                    <svg class="h-8 w-8 text-gray-400 dark:text-gray-500" fill="none"
+                                                         stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                        </path>
+                                                    </svg>
+                                                @endif
                                             </div>
                                             <div>
                                                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $attachment->original_name }}</p>
+                                                    {{ $attachment->original_filename }}</p>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">
                                                     {{ $attachment->file_size_human }}</p>
                                             </div>
                                         </div>
-                                        <a href="{{ route('attachments.download', $attachment) }}"
+                                        <a href="{{ route('tasks.attachments.download', [$task, $attachment]) }}"
                                            class="text-jira-blue dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                                             Download
                                         </a>
@@ -369,6 +398,21 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4">
+        <div class="relative max-w-4xl max-h-full">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <img id="modalImage" class="max-w-full max-h-full object-contain rounded-lg" src="" alt="">
+            <div id="imageCaption"
+                 class="absolute bottom-4 left-4 right-4 text-white text-center bg-black bg-opacity-50 p-2 rounded"></div>
         </div>
     </div>
 
@@ -575,6 +619,38 @@
                         });
                 }
             });
+        });
+
+        // Image modal functionality
+        function openImageModal(imageSrc, imageName) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const caption = document.getElementById('imageCaption');
+
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+            caption.textContent = imageName;
+
+            // Add body overflow hidden to prevent scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside the image
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeImageModal();
+                    }
+                });
+            }
         });
     </script>
 @endsection

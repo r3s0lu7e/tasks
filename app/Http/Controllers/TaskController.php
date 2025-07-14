@@ -268,6 +268,9 @@ class TaskController extends Controller
             abort(404, 'Task not found in this project.');
         }
 
+        // Load attachments for displaying existing attachments
+        $task->load('attachments');
+
         $statuses = TaskStatus::orderBy('order')->get();
         $types = TaskType::all();
 
@@ -1067,13 +1070,25 @@ class TaskController extends Controller
         // Store in public/task-images directory
         $path = $file->storeAs('task-images', $filename, 'public');
 
+        // Create database record for the description image
+        $descriptionImage = \App\Models\TaskDescriptionImage::create([
+            'task_id' => null, // Will be set when task is saved
+            'filename' => $filename,
+            'path' => $path,
+            'size' => $file->getSize(),
+            'mime_type' => $file->getMimeType(),
+            'uploaded_by' => $user->id,
+            'is_used' => true,
+        ]);
+
         // Return the URL for the image
         $url = asset('storage/' . $path);
 
         return response()->json([
             'success' => true,
             'url' => $url,
-            'filename' => $filename
+            'filename' => $filename,
+            'image_id' => $descriptionImage->id
         ]);
     }
 

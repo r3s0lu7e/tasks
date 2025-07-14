@@ -186,6 +186,96 @@
                             </div>
                         </div>
 
+                        <!-- File Attachments -->
+                        <div>
+                            <label for="attachments" class="block text-sm font-medium text-gray-700">
+                                Attachments
+                            </label>
+                            <input type="file" id="attachments" name="attachments[]" multiple
+                                   accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.zip,.rar"
+                                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 @error('attachments') border-red-300 @enderror">
+                            <p class="mt-1 text-sm text-gray-500">
+                                Upload new files (max 10MB each). Supported formats: JPG, PNG, PDF, DOC, TXT, ZIP
+                            </p>
+                            @error('attachments')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            @error('attachments.*')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Existing Attachments -->
+                        @if ($task->attachments->count() > 0)
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Current Attachments
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    @foreach ($task->attachments as $attachment)
+                                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-2">
+                                                    <div class="flex-shrink-0">
+                                                        @if (str_starts_with($attachment->mime_type, 'image/'))
+                                                            <svg class="h-6 w-6 text-blue-500" fill="none"
+                                                                 stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      stroke-width="2"
+                                                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                                </path>
+                                                            </svg>
+                                                        @elseif (str_starts_with($attachment->mime_type, 'application/pdf'))
+                                                            <svg class="h-6 w-6 text-red-500" fill="none"
+                                                                 stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      stroke-width="2"
+                                                                      d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                                </path>
+                                                            </svg>
+                                                        @else
+                                                            <svg class="h-6 w-6 text-gray-400" fill="none"
+                                                                 stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      stroke-width="2"
+                                                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                                                </path>
+                                                            </svg>
+                                                        @endif
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-gray-900 truncate">
+                                                            {{ $attachment->original_filename }}
+                                                        </p>
+                                                        <p class="text-xs text-gray-500">
+                                                            {{ $attachment->file_size_human }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <form method="POST"
+                                                      action="{{ route('tasks.attachments.delete', [$task, $attachment]) }}"
+                                                      class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-500 hover:text-red-700"
+                                                            onclick="return confirm('Are you sure you want to delete this attachment?')"
+                                                            title="Delete attachment">
+                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor"
+                                                             viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                  stroke-width="2"
+                                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         <!-- Task Information -->
                         <div class="bg-gray-50 p-4 rounded-lg">
                             <h4 class="text-sm font-medium text-gray-900 mb-2">Task Information</h4>

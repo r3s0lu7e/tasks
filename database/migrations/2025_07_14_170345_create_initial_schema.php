@@ -122,7 +122,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Task Attachments Table
+        // Task Attachments Table (for file uploads)
         Schema::create('task_attachments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('task_id')->constrained()->onDelete('cascade');
@@ -133,6 +133,30 @@ return new class extends Migration
             $table->string('mime_type');
             $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
+
+            // Indexes for better performance
+            $table->index('task_id');
+            $table->index('uploaded_by');
+            $table->index('mime_type');
+        });
+
+        // Task Description Images Table (for pasted images in descriptions)
+        Schema::create('task_description_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('task_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('filename');
+            $table->string('path');
+            $table->unsignedBigInteger('size');
+            $table->string('mime_type');
+            $table->foreignId('uploaded_by')->constrained('users')->onDelete('cascade');
+            $table->boolean('is_used')->default(true); // Track if image is still referenced in description
+            $table->timestamps();
+
+            // Indexes for better performance
+            $table->index('task_id');
+            $table->index('uploaded_by');
+            $table->index('filename');
+            $table->index('is_used');
         });
 
         // Checklist Items Table
@@ -250,6 +274,7 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('task_dependencies');
         Schema::dropIfExists('checklist_items');
+        Schema::dropIfExists('task_description_images');
         Schema::dropIfExists('task_attachments');
         Schema::dropIfExists('task_comments');
         Schema::dropIfExists('tasks');

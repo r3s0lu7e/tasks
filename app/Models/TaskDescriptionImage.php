@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TaskAttachment extends Model
+class TaskDescriptionImage extends Model
 {
     use HasFactory;
 
@@ -17,15 +17,24 @@ class TaskAttachment extends Model
     protected $fillable = [
         'task_id',
         'filename',
-        'original_filename',
         'path',
         'size',
         'mime_type',
         'uploaded_by',
+        'is_used',
     ];
 
     /**
-     * Get the task that owns the attachment.
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_used' => 'boolean',
+    ];
+
+    /**
+     * Get the task that owns the description image.
      */
     public function task()
     {
@@ -33,7 +42,7 @@ class TaskAttachment extends Model
     }
 
     /**
-     * Get the user who uploaded the attachment.
+     * Get the user who uploaded the image.
      */
     public function uploader()
     {
@@ -53,5 +62,29 @@ class TaskAttachment extends Model
         }
 
         return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    /**
+     * Get the full URL for the image.
+     */
+    public function getUrlAttribute()
+    {
+        return asset('storage/' . $this->path);
+    }
+
+    /**
+     * Mark image as unused.
+     */
+    public function markAsUnused()
+    {
+        $this->update(['is_used' => false]);
+    }
+
+    /**
+     * Mark image as used.
+     */
+    public function markAsUsed()
+    {
+        $this->update(['is_used' => true]);
     }
 }

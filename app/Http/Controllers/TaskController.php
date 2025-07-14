@@ -370,7 +370,8 @@ class TaskController extends Controller
     public function updateStatus(Request $request, Task $task)
     {
         $request->validate([
-            'status' => 'required|in:todo,in_progress,completed,cancelled',
+            'status' => 'sometimes|required|in:todo,in_progress,completed,cancelled',
+            'type' => 'sometimes|required|in:story,bug,task,epic',
         ]);
 
         // Check if user has access to this task's project
@@ -379,11 +380,19 @@ class TaskController extends Controller
             abort(403, 'You do not have access to this project.');
         }
 
-        $task->update(['status' => $request->status]);
+        // Update status if provided
+        if ($request->has('status')) {
+            $task->update(['status' => $request->status]);
+        }
+
+        // Update type if provided (for bug column drag and drop)
+        if ($request->has('type')) {
+            $task->update(['type' => $request->type]);
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Task status updated successfully.',
+            'message' => 'Task updated successfully.',
             'task' => $task->load(['assignee', 'creator'])
         ]);
     }

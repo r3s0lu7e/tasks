@@ -105,12 +105,20 @@ class ProjectController extends Controller
         // Group tasks by status for kanban view
         $tasksByStatus = $project->tasks->groupBy('status');
 
+        // Get bug tasks separately (these are tasks with type='bug' that are not completed or cancelled)
+        $bugTasks = $project->tasks->where('type', 'bug')
+            ->whereNotIn('status', ['completed', 'cancelled']);
+
+        // Add bug tasks to the tasksByStatus collection for the view
+        $tasksByStatus->put('bug', $bugTasks);
+
         // Get project statistics
         $stats = [
             'total_tasks' => $project->tasks->count(),
             'completed_tasks' => $project->tasks->where('status', 'completed')->count(),
             'in_progress_tasks' => $project->tasks->where('status', 'in_progress')->count(),
             'todo_tasks' => $project->tasks->where('status', 'todo')->count(),
+            'bug_tasks' => $project->tasks->where('type', 'bug')->whereNotIn('status', ['completed', 'cancelled'])->count(),
             'overdue_tasks' => $project->tasks->where('due_date', '<', now())
                 ->whereNotIn('status', ['completed', 'cancelled'])->count(),
         ];

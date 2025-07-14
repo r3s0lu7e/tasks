@@ -95,7 +95,7 @@
                     @endif
 
                     <!-- Project Statistics -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
                         <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
                             <div class="text-2xl font-bold text-blue-600 dark:text-blue-200">{{ $stats['total_tasks'] }}
                             </div>
@@ -116,6 +116,11 @@
                             </div>
                             <div class="text-sm text-gray-600 dark:text-gray-200">To Do</div>
                         </div>
+                        <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-200">{{ $stats['bug_tasks'] }}
+                            </div>
+                            <div class="text-sm text-purple-600 dark:text-purple-200">Bugs</div>
+                        </div>
                         <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
                             <div class="text-2xl font-bold text-red-600 dark:text-red-200">{{ $stats['overdue_tasks'] }}
                             </div>
@@ -132,6 +137,19 @@
                     <div class="flex items-center justify-between">
                         <h3 class="font-semibold text-lg text-gray-800 dark:text-white">Tasks</h3>
                         <div class="flex items-center space-x-3">
+                            <!-- View Toggle Switch -->
+                            <div class="flex items-center space-x-2">
+                                <label class="text-sm text-gray-600 dark:text-gray-400">Status View</label>
+                                <button type="button" id="viewToggle"
+                                        class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-jira-blue focus:ring-offset-2"
+                                        role="switch" aria-checked="false">
+                                    <span class="sr-only">Toggle view</span>
+                                    <span id="toggleButton"
+                                          class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1">
+                                    </span>
+                                </button>
+                                <label class="text-sm text-gray-600 dark:text-gray-400">Types View</label>
+                            </div>
                             <a href="{{ route('projects.tasks.index', $project) }}"
                                class="text-sm text-jira-blue dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                                 View All Tasks
@@ -141,7 +159,8 @@
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Status View (Default) -->
+                    <div id="statusView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                         <!-- To Do Column -->
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 drop-zone" data-status="todo">
                             <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
@@ -154,6 +173,51 @@
                             </h4>
                             <div class="space-y-3 task-container">
                                 @foreach ($tasksByStatus->get('todo', []) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->type }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                        @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                        @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                            {{ ucfirst($task->priority) }}
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Bugs Column -->
+                        <div class="bg-purple-50 dark:bg-purple-900 rounded-lg p-4 drop-zone" data-status="bug">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-purple-400 rounded-full mr-2"></span>
+                                Bugs
+                                <span
+                                      class="ml-auto bg-purple-200 dark:bg-purple-800 text-purple-600 dark:text-purple-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $tasksByStatus->get('bug', collect())->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($tasksByStatus->get('bug', []) as $task)
                                     <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
                                          draggable="true" data-task-id="{{ $task->id }}">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
@@ -322,6 +386,231 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Types View (Hidden by default) -->
+                    <div id="typesView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 hidden">
+                        <!-- Story Column -->
+                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 drop-zone" data-type="story">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
+                                Stories
+                                <span
+                                      class="ml-auto bg-blue-200 dark:bg-blue-800 text-blue-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $project->tasks->where('type', 'story')->whereNotIn('status', ['completed', 'cancelled'])->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($project->tasks->where('type', 'story')->whereNotIn('status', ['completed', 'cancelled']) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->status }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                        @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                        @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                            {{ ucfirst($task->priority) }}
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Bug Column -->
+                        <div class="bg-red-50 dark:bg-red-900 rounded-lg p-4 drop-zone" data-type="bug">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span>
+                                Bugs
+                                <span
+                                      class="ml-auto bg-red-200 dark:bg-red-800 text-red-600 dark:text-red-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $project->tasks->where('type', 'bug')->whereNotIn('status', ['completed', 'cancelled'])->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($project->tasks->where('type', 'bug')->whereNotIn('status', ['completed', 'cancelled']) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->status }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                        @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                        @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                            {{ ucfirst($task->priority) }}
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Task Column -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 drop-zone" data-type="task">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
+                                Tasks
+                                <span
+                                      class="ml-auto bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $project->tasks->where('type', 'task')->whereNotIn('status', ['completed', 'cancelled'])->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($project->tasks->where('type', 'task')->whereNotIn('status', ['completed', 'cancelled']) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->status }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                        @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                        @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                            {{ ucfirst($task->priority) }}
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Epic Column -->
+                        <div class="bg-purple-50 dark:bg-purple-900 rounded-lg p-4 drop-zone" data-type="epic">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-purple-400 rounded-full mr-2"></span>
+                                Epics
+                                <span
+                                      class="ml-auto bg-purple-200 dark:bg-purple-800 text-purple-600 dark:text-purple-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $project->tasks->where('type', 'epic')->whereNotIn('status', ['completed', 'cancelled'])->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($project->tasks->where('type', 'epic')->whereNotIn('status', ['completed', 'cancelled']) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->status }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                                        @if ($task->priority === 'critical') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                        @elseif($task->priority === 'high') bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200
+                                                        @elseif($task->priority === 'medium') bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200
+                                                        @else bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 @endif">
+                                                            {{ ucfirst($task->priority) }}
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Completed Column -->
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4 drop-zone" data-type="completed">
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
+                                Completed
+                                <span
+                                      class="ml-auto bg-green-200 dark:bg-green-800 text-green-600 dark:text-green-200 text-xs px-2 py-1 rounded-full">
+                                    {{ $project->tasks->where('status', 'completed')->count() }}
+                                </span>
+                            </h4>
+                            <div class="space-y-3 task-container">
+                                @foreach ($project->tasks->where('status', 'completed')->take(10) as $task)
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card opacity-75"
+                                         draggable="true" data-task-id="{{ $task->id }}">
+                                        <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
+                                            <div class="flex items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h5
+                                                        class="text-sm font-medium text-gray-900 dark:text-white mb-1 line-through">
+                                                        {{ $task->title }}
+                                                    </h5>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                        {{ $task->type }} •
+                                                        {{ $project->key }}-{{ $task->id }}</p>
+                                                    <div class="flex items-center space-x-2">
+                                                        <span
+                                                              class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                                            Completed
+                                                        </span>
+                                                        @if ($task->assignee)
+                                                            <span
+                                                                  class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -333,24 +622,70 @@
         document.addEventListener('DOMContentLoaded', function() {
             let draggedElement = null;
             let draggedTaskId = null;
+            let currentView = 'status'; // Track current view
 
-            // Get all draggable task cards
-            const taskCards = document.querySelectorAll('.task-card');
-            const dropZones = document.querySelectorAll('.drop-zone');
+            // View toggle functionality
+            const viewToggle = document.getElementById('viewToggle');
+            const toggleButton = document.getElementById('toggleButton');
+            const statusView = document.getElementById('statusView');
+            const typesView = document.getElementById('typesView');
 
-            // Add drag event listeners to task cards
-            taskCards.forEach(card => {
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
+            viewToggle.addEventListener('click', function() {
+                if (currentView === 'status') {
+                    // Switch to types view
+                    currentView = 'types';
+                    statusView.classList.add('hidden');
+                    typesView.classList.remove('hidden');
+                    toggleButton.classList.remove('translate-x-1');
+                    toggleButton.classList.add('translate-x-6');
+                    viewToggle.classList.remove('bg-gray-200', 'dark:bg-gray-600');
+                    viewToggle.classList.add('bg-jira-blue');
+                    viewToggle.setAttribute('aria-checked', 'true');
+                } else {
+                    // Switch to status view
+                    currentView = 'status';
+                    typesView.classList.add('hidden');
+                    statusView.classList.remove('hidden');
+                    toggleButton.classList.remove('translate-x-6');
+                    toggleButton.classList.add('translate-x-1');
+                    viewToggle.classList.remove('bg-jira-blue');
+                    viewToggle.classList.add('bg-gray-200', 'dark:bg-gray-600');
+                    viewToggle.setAttribute('aria-checked', 'false');
+                }
+
+                // Reinitialize drag and drop for the new view
+                initializeDragAndDrop();
             });
 
-            // Add drop event listeners to drop zones
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', handleDragOver);
-                zone.addEventListener('drop', handleDrop);
-                zone.addEventListener('dragleave', handleDragLeave);
-                zone.addEventListener('dragenter', handleDragEnter);
-            });
+            // Initialize drag and drop
+            initializeDragAndDrop();
+
+            function initializeDragAndDrop() {
+                // Get all draggable task cards
+                const taskCards = document.querySelectorAll('.task-card');
+                const dropZones = document.querySelectorAll('.drop-zone');
+
+                // Add drag event listeners to task cards
+                taskCards.forEach(card => {
+                    card.removeEventListener('dragstart', handleDragStart);
+                    card.removeEventListener('dragend', handleDragEnd);
+                    card.addEventListener('dragstart', handleDragStart);
+                    card.addEventListener('dragend', handleDragEnd);
+                });
+
+                // Add drop event listeners to drop zones
+                dropZones.forEach(zone => {
+                    zone.removeEventListener('dragover', handleDragOver);
+                    zone.removeEventListener('drop', handleDrop);
+                    zone.removeEventListener('dragleave', handleDragLeave);
+                    zone.removeEventListener('dragenter', handleDragEnter);
+
+                    zone.addEventListener('dragover', handleDragOver);
+                    zone.addEventListener('drop', handleDrop);
+                    zone.addEventListener('dragleave', handleDragLeave);
+                    zone.addEventListener('dragenter', handleDragEnter);
+                });
+            }
 
             function handleDragStart(e) {
                 draggedElement = this;
@@ -368,6 +703,7 @@
                 this.classList.remove('dragging');
 
                 // Remove all drag-over classes
+                const dropZones = document.querySelectorAll('.drop-zone');
                 dropZones.forEach(zone => {
                     zone.classList.remove('drag-over');
                 });
@@ -399,12 +735,39 @@
 
                 this.classList.remove('drag-over');
 
-                const newStatus = this.getAttribute('data-status');
                 const taskContainer = this.querySelector('.task-container');
 
                 if (draggedElement && draggedTaskId && taskContainer) {
-                    // Update task status via AJAX
-                    updateTaskStatus(draggedTaskId, newStatus, () => {
+                    let updateData = {};
+
+                    if (currentView === 'status') {
+                        // In status view, update status or type based on column
+                        const newStatus = this.getAttribute('data-status');
+                        if (newStatus === 'bug') {
+                            updateData = {
+                                type: 'bug'
+                            };
+                        } else {
+                            updateData = {
+                                status: newStatus
+                            };
+                        }
+                    } else {
+                        // In types view, update type or status based on column
+                        const newType = this.getAttribute('data-type');
+                        if (newType === 'completed') {
+                            updateData = {
+                                status: 'completed'
+                            };
+                        } else {
+                            updateData = {
+                                type: newType
+                            };
+                        }
+                    }
+
+                    // Update task via AJAX
+                    updateTask(draggedTaskId, updateData, () => {
                         // Move the element to the new column
                         taskContainer.appendChild(draggedElement);
 
@@ -422,7 +785,7 @@
                 return false;
             }
 
-            function updateTaskStatus(taskId, newStatus, onSuccess) {
+            function updateTask(taskId, updateData, onSuccess) {
                 // Get CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -433,9 +796,7 @@
                             'X-CSRF-TOKEN': csrfToken,
                             'Accept': 'application/json'
                         },
-                        body: JSON.stringify({
-                            status: newStatus
-                        })
+                        body: JSON.stringify(updateData)
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -443,16 +804,16 @@
                             onSuccess();
 
                             // Show success message (optional)
-                            showNotification('Task status updated successfully', 'success');
+                            showNotification('Task updated successfully', 'success');
                         } else {
-                            showNotification('Failed to update task status', 'error');
+                            showNotification('Failed to update task', 'error');
                             // Reload page to reset state
                             window.location.reload();
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showNotification('An error occurred while updating task status', 'error');
+                        showNotification('An error occurred while updating task', 'error');
                         // Reload page to reset state
                         window.location.reload();
                     });
@@ -514,6 +875,15 @@
 
         .task-container {
             min-height: 100px;
+        }
+
+        /* Toggle button transitions */
+        #toggleButton {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #viewToggle {
+            transition: background-color 0.2s ease-in-out;
         }
     </style>
 @endpush

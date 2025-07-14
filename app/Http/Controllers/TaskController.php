@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TaskAttachment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -472,10 +473,14 @@ class TaskController extends Controller
         ]);
     }
 
-    public function deleteAttachment(Task $task, $attachmentId)
+    public function deleteAttachment(Task $task, TaskAttachment $attachment)
     {
         $user = Auth::user();
-        $attachment = $task->attachments()->findOrFail($attachmentId);
+
+        // Ensure attachment belongs to this task
+        if ($attachment->task_id !== $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
 
         // Check if user has access to this task's project
         if (!$task->project->hasMember($user)) {
@@ -503,9 +508,12 @@ class TaskController extends Controller
         return back()->with('success', 'Attachment deleted successfully.');
     }
 
-    public function downloadAttachment(Task $task, $attachmentId)
+    public function downloadAttachment(Task $task, TaskAttachment $attachment)
     {
-        $attachment = $task->attachments()->findOrFail($attachmentId);
+        // Ensure attachment belongs to this task
+        if ($attachment->task_id !== $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
 
         if (Storage::disk('public')->exists($attachment->path)) {
             return Storage::disk('public')->download($attachment->path, $attachment->filename);

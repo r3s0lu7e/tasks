@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Task extends Model
 {
@@ -20,12 +21,25 @@ class Task extends Model
 
         static::updating(function ($task) {
             // Clean up removed images from description when task is updated
-            $task->cleanupRemovedDescriptionImages();
+            try {
+                $task->cleanupRemovedDescriptionImages();
+            } catch (\Exception $e) {
+                // Log the error but don't fail the update
+                Log::error('Failed to cleanup description images: ' . $e->getMessage());
+            }
         });
 
         static::deleting(function ($task) {
             // Delete task comments
             $task->comments()->delete();
+
+            // Clean up file attachments
+            foreach ($task->attachments as $attachment) {
+                if (Storage::disk('public')->exists($attachment->path)) {
+                    Storage::disk('public')->delete($attachment->path);
+                }
+            }
+            $task->attachments()->delete();
 
             // Clean up images from description
             $task->cleanupDescriptionImages();

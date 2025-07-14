@@ -43,21 +43,28 @@
                 <!-- Project Details -->
                 <div class="p-6">
                     <!-- Project Statistics -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-200">{{ $stats['total_tasks'] }}
+                    <div class="mb-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                            <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-200">{{ $stats['total_tasks'] }}
+                                </div>
+                                <div class="text-sm text-blue-600 dark:text-blue-200">Total Tasks</div>
                             </div>
-                            <div class="text-sm text-blue-600 dark:text-blue-200">Total Tasks</div>
-                        </div>
-                        <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-green-600 dark:text-green-200">
-                                {{ $stats['completed_tasks'] }}</div>
-                            <div class="text-sm text-green-600 dark:text-green-200">Completed</div>
-                        </div>
-                        <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-red-600 dark:text-red-200">{{ $stats['overdue_tasks'] }}
+                            <div class="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600 dark:text-green-200">
+                                    {{ $stats['completed_tasks'] }}</div>
+                                <div class="text-sm text-green-600 dark:text-green-200">Completed</div>
                             </div>
-                            <div class="text-sm text-red-600 dark:text-red-200">Overdue</div>
+                            <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-red-600 dark:text-red-200">{{ $stats['overdue_tasks'] }}
+                                </div>
+                                <div class="text-sm text-red-600 dark:text-red-200">Overdue</div>
+                            </div>
+                            <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
+                                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-200">
+                                    {{ $stats['due_today_tasks'] }}</div>
+                                <div class="text-sm text-yellow-600 dark:text-yellow-200">Due Today</div>
+                            </div>
                         </div>
                     </div>
 

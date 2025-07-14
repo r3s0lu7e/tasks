@@ -88,11 +88,11 @@
                                             <div class="flex items-center space-x-3">
                                                 <div
                                                      class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium
-                                                @if ($task->type === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
-                                                @elseif($task->type === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
-                                                @elseif($task->type === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
+                                                @if (optional($task->type)->alias === 'story') bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200
+                                                @elseif(optional($task->type)->alias === 'bug') bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200
+                                                @elseif(optional($task->type)->alias === 'epic') bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200
                                                 @else bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 @endif">
-                                                    {{ strtoupper(substr($task->type, 0, 1)) }}
+                                                    {{ strtoupper(substr(optional($task->type)->name ?? 'T', 0, 1)) }}
                                                 </div>
                                                 <div>
                                                     <div class="text-sm font-medium text-gray-900 dark:text-white">
@@ -108,15 +108,9 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center space-x-2">
-                                                <span
-                                                      class="px-2 py-1 text-xs font-medium rounded-full
-                                                    @if ($task->status === 'todo') bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white
-                                                    @elseif($task->status === 'in_progress') bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-white
-                                                    @elseif($task->status === 'completed') bg-green-100 dark:bg-green-900 text-green-800 dark:text-white
-                                                    @elseif($task->status === 'blocked') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @elseif($task->status === 'cancelled') bg-red-100 dark:bg-red-900 text-red-800 dark:text-white
-                                                    @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $task->status)) }}
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                                      style="background-color: {{ optional($task->status)->color }}1A; color: {{ optional($task->status)->color }};">
+                                                    {{ optional($task->status)->name }}
                                                 </span>
                                                 <span
                                                       class="px-2 py-1 text-xs font-medium rounded-full

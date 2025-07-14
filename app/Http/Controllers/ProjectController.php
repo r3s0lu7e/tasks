@@ -117,8 +117,6 @@ class ProjectController extends Controller
 
         // Get project statistics
         $completedStatus = $statuses->where('alias', 'completed')->first();
-        $inProgressStatus = $statuses->where('alias', 'in_progress')->first();
-        $todoStatus = $statuses->where('alias', 'todo')->first();
         $cancelledStatus = $statuses->where('alias', 'cancelled')->first();
 
         $stats = [
@@ -128,6 +126,12 @@ class ProjectController extends Controller
                 ->where('due_date', '<', now())
                 ->where('task_status_id', '!=', $completedStatus ? $completedStatus->id : -1)
                 ->where('task_status_id', '!=', $cancelledStatus ? $cancelledStatus->id : -1)
+                ->count(),
+            'due_today_tasks' => $project->tasks
+                ->where('due_date', '>=', today()->startOfDay())
+                ->where('due_date', '<=', today()->endOfDay())
+                ->where('task_status_id', '!=', optional($completedStatus)->id)
+                ->where('task_status_id', '!=', optional($cancelledStatus)->id)
                 ->count(),
         ];
 

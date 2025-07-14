@@ -30,7 +30,7 @@ class ProfileController extends Controller
 
         // Get recent activity
         $recentTasks = $user->assignedTasks()
-            ->with(['project'])
+            ->with(['project', 'status', 'type'])
             ->orderBy('updated_at', 'desc')
             ->limit(10)
             ->get();

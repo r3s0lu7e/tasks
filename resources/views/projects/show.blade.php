@@ -143,7 +143,7 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- To Do Column -->
-                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 drop-zone" data-status="todo">
                             <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                                 <span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
                                 To Do
@@ -152,10 +152,10 @@
                                     {{ $tasksByStatus->get('todo', collect())->count() }}
                                 </span>
                             </h4>
-                            <div class="space-y-3">
+                            <div class="space-y-3 task-container">
                                 @foreach ($tasksByStatus->get('todo', []) as $task)
-                                    <div
-                                         class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow">
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1">
@@ -188,7 +188,7 @@
                         </div>
 
                         <!-- In Progress Column -->
-                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
+                        <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4 drop-zone" data-status="in_progress">
                             <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                                 <span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span>
                                 In Progress
@@ -197,10 +197,10 @@
                                     {{ $tasksByStatus->get('in_progress', collect())->count() }}
                                 </span>
                             </h4>
-                            <div class="space-y-3">
+                            <div class="space-y-3 task-container">
                                 @foreach ($tasksByStatus->get('in_progress', []) as $task)
-                                    <div
-                                         class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow">
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1">
@@ -233,7 +233,7 @@
                         </div>
 
                         <!-- Completed Column -->
-                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+                        <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4 drop-zone" data-status="completed">
                             <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                                 <span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span>
                                 Completed
@@ -242,10 +242,10 @@
                                     {{ $tasksByStatus->get('completed', collect())->count() }}
                                 </span>
                             </h4>
-                            <div class="space-y-3">
+                            <div class="space-y-3 task-container">
                                 @foreach ($tasksByStatus->get('completed', []) as $task)
-                                    <div
-                                         class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow">
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1">
@@ -278,7 +278,7 @@
                         </div>
 
                         <!-- Cancelled Column -->
-                        <div class="bg-red-50 dark:bg-red-900 rounded-lg p-4">
+                        <div class="bg-red-50 dark:bg-red-900 rounded-lg p-4 drop-zone" data-status="cancelled">
                             <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
                                 <span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span>
                                 Cancelled
@@ -287,10 +287,10 @@
                                     {{ $tasksByStatus->get('cancelled', collect())->count() }}
                                 </span>
                             </h4>
-                            <div class="space-y-3">
+                            <div class="space-y-3 task-container">
                                 @foreach ($tasksByStatus->get('cancelled', []) as $task)
-                                    <div
-                                         class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow">
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                         draggable="true" data-task-id="{{ $task->id }}">
                                         <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1">
@@ -327,3 +327,193 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let draggedElement = null;
+            let draggedTaskId = null;
+
+            // Get all draggable task cards
+            const taskCards = document.querySelectorAll('.task-card');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            // Add drag event listeners to task cards
+            taskCards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Add drop event listeners to drop zones
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('dragenter', handleDragEnter);
+            });
+
+            function handleDragStart(e) {
+                draggedElement = this;
+                draggedTaskId = this.getAttribute('data-task-id');
+                this.style.opacity = '0.5';
+                this.classList.add('dragging');
+
+                // Store the drag data
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            }
+
+            function handleDragEnd(e) {
+                this.style.opacity = '';
+                this.classList.remove('dragging');
+
+                // Remove all drag-over classes
+                dropZones.forEach(zone => {
+                    zone.classList.remove('drag-over');
+                });
+            }
+
+            function handleDragOver(e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+                e.dataTransfer.dropEffect = 'move';
+                return false;
+            }
+
+            function handleDragEnter(e) {
+                this.classList.add('drag-over');
+            }
+
+            function handleDragLeave(e) {
+                if (e.target === this) {
+                    this.classList.remove('drag-over');
+                }
+            }
+
+            function handleDrop(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                e.preventDefault();
+
+                this.classList.remove('drag-over');
+
+                const newStatus = this.getAttribute('data-status');
+                const taskContainer = this.querySelector('.task-container');
+
+                if (draggedElement && draggedTaskId && taskContainer) {
+                    // Update task status via AJAX
+                    updateTaskStatus(draggedTaskId, newStatus, () => {
+                        // Move the element to the new column
+                        taskContainer.appendChild(draggedElement);
+
+                        // Update the count in the column header
+                        updateColumnCount(this);
+
+                        // Update the count in the original column
+                        const originalColumn = draggedElement.closest('.drop-zone');
+                        if (originalColumn && originalColumn !== this) {
+                            updateColumnCount(originalColumn);
+                        }
+                    });
+                }
+
+                return false;
+            }
+
+            function updateTaskStatus(taskId, newStatus, onSuccess) {
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch(`/tasks/${taskId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: newStatus
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            onSuccess();
+
+                            // Show success message (optional)
+                            showNotification('Task status updated successfully', 'success');
+                        } else {
+                            showNotification('Failed to update task status', 'error');
+                            // Reload page to reset state
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('An error occurred while updating task status', 'error');
+                        // Reload page to reset state
+                        window.location.reload();
+                    });
+            }
+
+            function updateColumnCount(column) {
+                const countBadge = column.querySelector('h4 span:last-child');
+                const taskCount = column.querySelectorAll('.task-card').length;
+                if (countBadge) {
+                    countBadge.textContent = taskCount;
+                }
+            }
+
+            function showNotification(message, type) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+            type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+                notification.textContent = message;
+
+                // Add to body
+                document.body.appendChild(notification);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }, 3000);
+            }
+        });
+    </script>
+
+    <style>
+        .task-card {
+            cursor: move;
+            transition: all 0.3s ease;
+        }
+
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .task-card.dragging {
+            cursor: grabbing;
+        }
+
+        .drop-zone {
+            min-height: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(59, 130, 246, 0.1) !important;
+            border: 2px dashed rgba(59, 130, 246, 0.5);
+        }
+
+        .task-container {
+            min-height: 100px;
+        }
+    </style>
+@endpush

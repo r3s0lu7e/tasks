@@ -3,10 +3,10 @@
 @section('content')
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
                             Create New Project
                         </h2>
                         <a href="{{ route('projects.index') }}"
@@ -22,50 +22,51 @@
 
                         <!-- Project Name -->
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700">
+                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Project Name <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('name') border-red-300 @enderror">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('name') border-red-300 @enderror">
                             @error('name')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Project Key -->
                         <div>
-                            <label for="key" class="block text-sm font-medium text-gray-700">
+                            <label for="key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Project Key <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="key" name="key" value="{{ old('key') }}" required
                                    maxlength="10" placeholder="e.g., PROJ"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('key') border-red-300 @enderror">
-                            <p class="mt-1 text-sm text-gray-500">Short identifier for the project (max 10 characters)</p>
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('key') border-red-300 @enderror">
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Short identifier for the project (max
+                                10 characters)</p>
                             @error('key')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Description -->
                         <div>
-                            <label for="description" class="block text-sm font-medium text-gray-700">
+                            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Description
                             </label>
                             <textarea id="description" name="description" rows="4"
-                                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('description') border-red-300 @enderror">{{ old('description') }}</textarea>
+                                      class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('description') border-red-300 @enderror">{{ old('description') }}</textarea>
                             @error('description')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Status -->
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">
+                                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Status <span class="text-red-500">*</span>
                                 </label>
                                 <select id="status" name="status" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('status') border-red-300 @enderror">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('status') border-red-300 @enderror">
                                     <option value="">Select Status</option>
                                     <option value="planning" {{ old('status') == 'planning' ? 'selected' : '' }}>Planning
                                     </option>
@@ -78,17 +79,17 @@
                                         Cancelled</option>
                                 </select>
                                 @error('status')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <!-- Priority -->
                             <div>
-                                <label for="priority" class="block text-sm font-medium text-gray-700">
+                                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Priority <span class="text-red-500">*</span>
                                 </label>
                                 <select id="priority" name="priority" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('priority') border-red-300 @enderror">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('priority') border-red-300 @enderror">
                                     <option value="">Select Priority</option>
                                     <option value="low" {{ old('priority') == 'low' ? 'selected' : '' }}>Low</option>
                                     <option value="medium" {{ old('priority') == 'medium' ? 'selected' : '' }}>Medium
@@ -98,7 +99,7 @@
                                     </option>
                                 </select>
                                 @error('priority')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
@@ -106,41 +107,42 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Start Date -->
                             <div>
-                                <label for="start_date" class="block text-sm font-medium text-gray-700">
+                                <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Start Date
                                 </label>
                                 <input type="date" id="start_date" name="start_date" value="{{ old('start_date') }}"
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('start_date') border-red-300 @enderror">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('start_date') border-red-300 @enderror">
                                 @error('start_date')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
 
                             <!-- End Date -->
                             <div>
-                                <label for="end_date" class="block text-sm font-medium text-gray-700">
+                                <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     End Date
                                 </label>
                                 <input type="date" id="end_date" name="end_date" value="{{ old('end_date') }}"
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('end_date') border-red-300 @enderror">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('end_date') border-red-300 @enderror">
                                 @error('end_date')
-                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
 
                         <!-- Color -->
                         <div>
-                            <label for="color" class="block text-sm font-medium text-gray-700">
+                            <label for="color" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Project Color
                             </label>
                             <div class="mt-1 flex items-center space-x-3">
                                 <input type="color" id="color" name="color" value="{{ old('color', '#3B82F6') }}"
-                                       class="h-10 w-20 border border-gray-300 rounded-md">
-                                <span class="text-sm text-gray-500">Choose a color to identify your project</span>
+                                       class="h-10 w-20 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Choose a color to identify your
+                                    project</span>
                             </div>
                             @error('color')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
                         </div>
 

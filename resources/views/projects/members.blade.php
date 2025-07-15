@@ -3,16 +3,16 @@
 @section('content')
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
                             <div class="w-4 h-4 rounded" style="background-color: {{ $project->color }}"></div>
                             <div>
-                                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                                <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
                                     Project Members: {{ $project->name }}
                                 </h2>
-                                <p class="text-sm text-gray-600">{{ $project->key }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $project->key }}</p>
                             </div>
                         </div>
                         <a href="{{ route('projects.show', $project) }}"
@@ -25,17 +25,18 @@
                 <div class="p-6">
                     <!-- Add Member Form -->
                     @if ($project->owner_id === auth()->id() || auth()->user()->isAdmin())
-                        <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Add New Member</h3>
+                        <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg mb-6">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Add New Member</h3>
                             <form method="POST" action="{{ route('projects.add-member', $project) }}"
                                   class="flex items-end space-x-4">
                                 @csrf
                                 <div class="flex-1">
-                                    <label for="user_id" class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label for="user_id"
+                                           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Select User
                                     </label>
                                     <select id="user_id" name="user_id" required
-                                            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('user_id') border-red-300 @enderror">
+                                            class="block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('user_id') border-red-300 @enderror">
                                         <option value="">Choose a user...</option>
                                         @foreach ($availableUsers as $user)
                                             <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})
@@ -43,7 +44,7 @@
                                         @endforeach
                                     </select>
                                     @error('user_id')
-                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
                                 <button type="submit"
@@ -56,11 +57,11 @@
 
                     <!-- Current Members -->
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Current Members
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Current Members
                             ({{ $project->members->count() + 1 }})</h3>
 
-                        <div class="bg-white shadow overflow-hidden sm:rounded-md">
-                            <ul class="divide-y divide-gray-200">
+                        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+                            <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <!-- Project Owner -->
                                 <li class="px-6 py-4">
                                     <div class="flex items-center justify-between">
@@ -75,19 +76,21 @@
                                             </div>
                                             <div class="ml-4">
                                                 <div class="flex items-center">
-                                                    <div class="text-sm font-medium text-gray-900">
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $project->owner->name }}</div>
                                                     <span
                                                           class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                         Owner
                                                     </span>
                                                 </div>
-                                                <div class="text-sm text-gray-500">{{ $project->owner->email }}</div>
-                                                <div class="text-sm text-gray-500">{{ ucfirst($project->owner->role) }}
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ $project->owner->email }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {{ ucfirst($project->owner->role) }}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="text-sm text-gray-500">
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
                                             Cannot be removed
                                         </div>
                                     </div>
@@ -100,23 +103,26 @@
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10">
                                                     <div
-                                                         class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                                        <span class="text-sm font-medium text-gray-700">
+                                                         class="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
                                                             {{ $member->getInitials() }}
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div class="ml-4">
                                                     <div class="flex items-center">
-                                                        <div class="text-sm font-medium text-gray-900">{{ $member->name }}
+                                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                            {{ $member->name }}
                                                         </div>
                                                         <span
                                                               class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                             Member
                                                         </span>
                                                     </div>
-                                                    <div class="text-sm text-gray-500">{{ $member->email }}</div>
-                                                    <div class="text-sm text-gray-500">{{ ucfirst($member->role) }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ $member->email }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ ucfirst($member->role) }}</div>
                                                 </div>
                                             </div>
 
@@ -141,7 +147,7 @@
 
                                 @if ($project->members->isEmpty())
                                     <li class="px-6 py-4">
-                                        <div class="text-center text-gray-500">
+                                        <div class="text-center text-gray-500 dark:text-gray-400">
                                             No additional members yet. Add members to collaborate on this project.
                                         </div>
                                     </li>
@@ -152,26 +158,27 @@
 
                     <!-- Member Statistics -->
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-blue-600">{{ $project->members->count() + 1 }}</div>
-                            <div class="text-sm text-blue-600">Total Members</div>
+                        <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                {{ $project->members->count() + 1 }}</div>
+                            <div class="text-sm text-blue-600 dark:text-blue-400">Total Members</div>
                         </div>
-                        <div class="bg-green-50 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-green-600">
+                        <div class="bg-green-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">
                                 {{ $project->members->where('role', 'developer')->count() }}</div>
-                            <div class="text-sm text-green-600">Developers</div>
+                            <div class="text-sm text-green-600 dark:text-green-400">Developers</div>
                         </div>
-                        <div class="bg-purple-50 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-purple-600">
+                        <div class="bg-purple-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
                                 {{ $project->members->where('role', 'tester')->count() }}</div>
-                            <div class="text-sm text-purple-600">Testers</div>
+                            <div class="text-sm text-purple-600 dark:text-purple-400">Testers</div>
                         </div>
                     </div>
 
                     <!-- Member Roles Info -->
-                    <div class="mt-6 bg-gray-50 p-4 rounded-lg">
-                        <h4 class="text-sm font-medium text-gray-900 mb-2">Member Roles</h4>
-                        <div class="text-sm text-gray-600 space-y-1">
+                    <div class="mt-6 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Member Roles</h4>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                             <div><strong>Admin:</strong> Full system access, can manage all projects</div>
                             <div><strong>Project Manager:</strong> Can create and manage projects, assign tasks</div>
                             <div><strong>Developer:</strong> Can work on assigned tasks, create subtasks</div>

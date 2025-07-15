@@ -17,6 +17,12 @@ use App\Models\PersonalNote;
 class DatabaseSeeder extends Seeder
 {
     /**
+     * Configuration variables for seeding
+     */
+    private int $numberOfProjects = 300;
+    private int $tasksPerProject = 1000;
+
+    /**
      * Seed the application's database.
      */
     public function run(): void
@@ -34,7 +40,7 @@ class DatabaseSeeder extends Seeder
             'hire_date' => now()->subMonths(24),
         ]);
 
-        // Create more team members for better distribution across 50 projects
+        // Create more team members for better distribution across projects
         $teamMembers = [
             [
                 'name' => 'Daniel Marinov',
@@ -83,7 +89,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'active',
                 'password' => Hash::make('password'),
             ],
-            // Additional team members for 50 projects
+            // Additional team members for projects
             [
                 'name' => 'Alex Frontend',
                 'email' => 'alex@wuvu.com',
@@ -185,7 +191,7 @@ class DatabaseSeeder extends Seeder
             $users->push($user);
         }
 
-        // Create 50 projects with varied data
+        // Create projects with varied data
         $projectTypes = [
             'E-commerce Platform',
             'Mobile App Development',
@@ -245,15 +251,16 @@ class DatabaseSeeder extends Seeder
 
         $projectModels = collect();
 
-        echo "Creating 50 projects...\n";
+        echo "Creating {$this->numberOfProjects} projects...\n";
 
-        for ($i = 0; $i < 50; $i++) {
-            $projectName = $projectTypes[$i] . ' ' . ($i + 1);
-            $projectKey = 'PROJ' . str_pad($i + 1, 2, '0', STR_PAD_LEFT);
+        for ($i = 0; $i < $this->numberOfProjects; $i++) {
+            $projectTypeIndex = $i % count($projectTypes);
+            $projectName = $projectTypes[$projectTypeIndex] . ' ' . ($i + 1);
+            $projectKey = 'PROJ' . str_pad($i + 1, 3, '0', STR_PAD_LEFT);
 
             $project = Project::create([
                 'name' => $projectName,
-                'description' => 'Advanced ' . strtolower($projectTypes[$i]) . ' with modern features and scalable architecture. This project includes comprehensive planning, development, testing, and deployment phases.',
+                'description' => 'Advanced ' . strtolower($projectTypes[$projectTypeIndex]) . ' with modern features and scalable architecture. This project includes comprehensive planning, development, testing, and deployment phases.',
                 'key' => $projectKey,
                 'status' => $statuses[array_rand($statuses)],
                 'priority' => $priorities[array_rand($priorities)],
@@ -270,7 +277,7 @@ class DatabaseSeeder extends Seeder
 
             $projectModels->push($project);
 
-            if (($i + 1) % 10 == 0) {
+            if (($i + 1) % 50 == 0) {
                 echo "Created " . ($i + 1) . " projects...\n";
             }
         }
@@ -388,7 +395,7 @@ class DatabaseSeeder extends Seeder
             'Implement live chat support',
         ];
 
-        echo "Creating tasks for 50 projects (1000 tasks each)...\n";
+        echo "Creating tasks for {$this->numberOfProjects} projects ({$this->tasksPerProject} tasks each)...\n";
 
         // Create tasks for each project
         foreach ($projectModels as $index => $project) {
@@ -398,7 +405,7 @@ class DatabaseSeeder extends Seeder
             $tasks = [];
             $now = now();
 
-            for ($i = 0; $i < 1000; $i++) {
+            for ($i = 0; $i < $this->tasksPerProject; $i++) {
                 $taskTitle = $taskTitles[array_rand($taskTitles)] . ' #' . ($i + 1);
 
                 $tasks[] = [
@@ -424,7 +431,7 @@ class DatabaseSeeder extends Seeder
                 Task::insert($chunk);
             }
 
-            echo "Created 1000 tasks for project " . ($index + 1) . ": " . $project->name . "\n";
+            echo "Created {$this->tasksPerProject} tasks for project " . ($index + 1) . ": " . $project->name . "\n";
         }
 
         echo "Creating task comments...\n";
@@ -549,8 +556,8 @@ class DatabaseSeeder extends Seeder
 
         echo "Database seeding completed successfully!\n";
         echo "Created:\n";
-        echo "- 50 projects\n";
-        echo "- 50,000 tasks (1000 per project)\n";
+        echo "- {$this->numberOfProjects} projects\n";
+        echo "- " . ($this->numberOfProjects * $this->tasksPerProject) . " tasks ({$this->tasksPerProject} per project)\n";
         echo "- 100 personal notes\n";
         echo "- " . ($users->count() + 1) . " users\n";
         echo "- Task comments for better realism\n";

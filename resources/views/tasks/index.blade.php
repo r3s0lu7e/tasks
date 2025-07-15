@@ -249,8 +249,9 @@
                                             <td class="px-4 py-4">
                                                 <div class="flex items-center">
                                                     <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium dark:text-gray-200"
-                                                         style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
-                                                        <i class="fas {{ $task->type->icon }}"></i>
+                                                         style="background-color: {{ $task->type->color }};">
+                                                        <i class="fa-solid {{ $task->type->icon }}"
+                                                           style="color: {{ $task->type->icon_color }};"></i>
                                                     </div>
                                                     <div class="ml-3">
                                                         <div

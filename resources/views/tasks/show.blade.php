@@ -10,8 +10,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-sm font-medium"
-                                 style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
-                                <i class="fas {{ $task->type->icon }}"></i>
+                                 style="background-color: {{ $task->type->color }};">
+                                <i class="fa-solid {{ $task->type->icon }}" style="color: {{ $task->type->icon_color }};"></i>
                             </div>
                             <div>
                                 <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">

@@ -107,151 +107,163 @@
 
                 <div class="p-6">
                     <!-- Status View (Default) -->
-                    <div id="statusView" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ count($statuses) }} gap-6">
-                        @foreach ($statuses as $status)
-                            <div class="rounded-lg p-4 drop-zone"
-                                 style="background-color: rgba({{ $status->rgb_color }}, 0.1)"
-                                 data-status-id="{{ $status->id }}">
-                                <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
-                                    <span class="w-3 h-3 rounded-full mr-2"
-                                          style="background-color: {{ $status->color }}"></span>
-                                    {{ $status->name }}
-                                    <span
-                                          class="ml-auto bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
-                                        {{ $tasksByStatus->get($status->id, collect())->count() }}
-                                    </span>
-                                </h4>
-                                <div class="space-y-3 task-container">
-                                    @foreach ($tasksByStatus->get($status->id, []) as $task)
-                                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
-                                             draggable="true" data-task-id="{{ $task->id }}">
-                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
-                                                <div class="flex items-start justify-between">
-                                                    <div class="flex-1">
-                                                        <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                                                            {{ $task->title }}
-                                                        </h5>
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                                            {{ $task->type->name }} •
-                                                            {{ $project->key }}-{{ $task->id }}</p>
-                                                        <div class="flex items-center space-x-2">
-                                                            <span
-                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
-                                                                {{ ucfirst($task->priority) }}
-                                                            </span>
-                                                            @if ($task->assignee)
+                    <div id="statusView">
+                        <div class="grid gap-6"
+                             style="grid-template-columns: repeat({{ min(count($statuses), 6) }}, 1fr);">
+                            @foreach ($statuses as $status)
+                                <div class="rounded-lg p-4 drop-zone"
+                                     style="background-color: rgba({{ $status->rgb_color }}, 0.1)"
+                                     data-status-id="{{ $status->id }}">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                        <span class="w-3 h-3 rounded-full mr-2"
+                                              style="background-color: {{ $status->color }}"></span>
+                                        {{ $status->name }}
+                                        <span
+                                              class="ml-auto bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
+                                            {{ $tasksByStatus->get($status->id, collect())->count() }}
+                                        </span>
+                                    </h4>
+                                    <div class="space-y-3 task-container">
+                                        @foreach ($tasksByStatus->get($status->id, []) as $task)
+                                            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                                 draggable="true" data-task-id="{{ $task->id }}">
+                                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}"
+                                                   class="block">
+                                                    <div class="flex items-start justify-between">
+                                                        <div class="flex-1">
+                                                            <h5
+                                                                class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                                {{ $task->title }}
+                                                            </h5>
+                                                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                                {{ $task->type->name }} •
+                                                                {{ $project->key }}-{{ $task->id }}</p>
+                                                            <div class="flex items-center space-x-2">
                                                                 <span
-                                                                      class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
-                                                            @endif
+                                                                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
+                                                                    {{ ucfirst($task->priority) }}
+                                                                </span>
+                                                                @if ($task->assignee)
+                                                                    <span
+                                                                          class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
 
                     <!-- Types View (Hidden by default) -->
-                    <div id="typesView"
-                         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ count($types) + 1 }} gap-6 hidden">
-                        @foreach ($types as $type)
-                            <div class="rounded-lg p-4 drop-zone"
-                                 style="background-color: rgba({{ $type->rgb_color }}, 0.1)"
-                                 data-type-id="{{ $type->id }}">
-                                <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
-                                    <span class="w-3 h-3 rounded-full mr-2"
-                                          style="background-color: {{ $type->color }}"></span>
-                                    {{ $type->name }}
-                                    <span
-                                          class="ml-auto bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
-                                        {{ $project->tasks->where('task_type_id', $type->id)->where('status.alias', '!=', 'completed')->count() }}
-                                    </span>
-                                </h4>
-                                <div class="space-y-3 task-container">
-                                    @foreach ($project->tasks->where('task_type_id', $type->id)->where('status.alias', '!=', 'completed') as $task)
-                                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
-                                             draggable="true" data-task-id="{{ $task->id }}">
-                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}" class="block">
-                                                <div class="flex items-start justify-between">
-                                                    <div class="flex-1">
-                                                        <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                                                            {{ $task->title }}
-                                                        </h5>
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                                            {{ $task->status->name }} •
-                                                            {{ $project->key }}-{{ $task->id }}</p>
-                                                        <div class="flex items-center space-x-2">
-                                                            <span
-                                                                  class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
-                                                                {{ ucfirst($task->priority) }}
-                                                            </span>
-                                                            @if ($task->assignee)
+                    @php
+                        $completedStatus = $statuses->where('alias', 'completed')->first();
+                        $totalColumns = count($types) + ($completedStatus ? 1 : 0);
+                    @endphp
+                    <div id="typesView" class="hidden">
+                        <div class="grid gap-6" style="grid-template-columns: repeat({{ min($totalColumns, 6) }}, 1fr);">
+                            @foreach ($types as $type)
+                                <div class="rounded-lg p-4 drop-zone"
+                                     style="background-color: rgba({{ $type->rgb_color }}, 0.1)"
+                                     data-type-id="{{ $type->id }}">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-md mr-2"
+                                              style="background-color: {{ $type->color }};">
+                                            <i class="fa-solid {{ $type->icon }}"
+                                               style="color: {{ $type->icon_color }};"></i>
+                                        </span>
+                                        {{ $type->name }}
+                                        <span
+                                              class="ml-auto bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
+                                            {{ $project->tasks->where('task_type_id', $type->id)->where('status.alias', '!=', 'completed')->count() }}
+                                        </span>
+                                    </h4>
+                                    <div class="space-y-3 task-container">
+                                        @foreach ($project->tasks->where('task_type_id', $type->id)->where('status.alias', '!=', 'completed') as $task)
+                                            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card"
+                                                 draggable="true" data-task-id="{{ $task->id }}">
+                                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}"
+                                                   class="block">
+                                                    <div class="flex items-start justify-between">
+                                                        <div class="flex-1">
+                                                            <h5
+                                                                class="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                                                                {{ $task->title }}
+                                                            </h5>
+                                                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                                {{ $task->status->name }} •
+                                                                {{ $project->key }}-{{ $task->id }}</p>
+                                                            <div class="flex items-center space-x-2">
                                                                 <span
-                                                                      class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
-                                                            @endif
+                                                                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ config('colors.task_priority')[$task->priority] ?? '' }}">
+                                                                    {{ ucfirst($task->priority) }}
+                                                                </span>
+                                                                @if ($task->assignee)
+                                                                    <span
+                                                                          class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
 
-                        <!-- Completed Column -->
-                        @php
-                            $completedStatus = $statuses->where('alias', 'completed')->first();
-                        @endphp
-                        @if ($completedStatus)
-                            <div class="rounded-lg p-4 drop-zone"
-                                 style="background-color: rgba({{ $completedStatus->rgb_color }}, 0.1)"
-                                 data-status-id="{{ $completedStatus->id }}">
-                                <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
-                                    <span class="w-3 h-3 rounded-full mr-2"
-                                          style="background-color: {{ $completedStatus->color }}"></span>
-                                    {{ $completedStatus->name }}
-                                    <span
-                                          class="ml-auto bg-green-200 dark:bg-green-800 text-green-600 dark:text-green-200 text-xs px-2 py-1 rounded-full">
-                                        {{ $project->tasks->where('task_status_id', $completedStatus->id)->count() }}
-                                    </span>
-                                </h4>
-                                <div class="space-y-3 task-container">
-                                    @foreach ($project->tasks->where('task_status_id', $completedStatus->id)->take(10) as $task)
-                                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card opacity-75"
-                                             draggable="true" data-task-id="{{ $task->id }}">
-                                            <a href="{{ route('projects.tasks.show', [$project, $task]) }}"
-                                               class="block">
-                                                <div class="flex items-start justify-between">
-                                                    <div class="flex-1">
-                                                        <h5
-                                                            class="text-sm font-medium text-gray-900 dark:text-white mb-1 line-through">
-                                                            {{ $task->title }}
-                                                        </h5>
-                                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                                                            {{ $task->type->name }} •
-                                                            {{ $project->key }}-{{ $task->id }}</p>
-                                                        <div class="flex items-center space-x-2">
-                                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                                                                  style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
-                                                                {{ $task->status->name }}
-                                                            </span>
-                                                            @if ($task->assignee)
-                                                                <span
-                                                                      class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
-                                                            @endif
+                            <!-- Completed Column -->
+                            @if ($completedStatus)
+                                <div class="rounded-lg p-4 drop-zone"
+                                     style="background-color: rgba({{ $completedStatus->rgb_color }}, 0.1)"
+                                     data-status-id="{{ $completedStatus->id }}">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                                        <span class="w-3 h-3 rounded-full mr-2"
+                                              style="background-color: {{ $completedStatus->color }}"></span>
+                                        {{ $completedStatus->name }}
+                                        <span
+                                              class="ml-auto bg-green-200 dark:bg-green-800 text-green-600 dark:text-green-200 text-xs px-2 py-1 rounded-full">
+                                            {{ $project->tasks->where('task_status_id', $completedStatus->id)->count() }}
+                                        </span>
+                                    </h4>
+                                    <div class="space-y-3 task-container">
+                                        @foreach ($project->tasks->where('task_status_id', $completedStatus->id)->take(10) as $task)
+                                            <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md dark:hover:shadow-lg transition-shadow task-card opacity-75"
+                                                 draggable="true" data-task-id="{{ $task->id }}">
+                                                <a href="{{ route('projects.tasks.show', [$project, $task]) }}"
+                                                   class="block">
+                                                    <div class="flex items-start justify-between">
+                                                        <div class="flex-1">
+                                                            <h5
+                                                                class="text-sm font-medium text-gray-900 dark:text-white mb-1 line-through">
+                                                                {{ $task->title }}
+                                                            </h5>
+                                                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                                {{ $task->type->name }} •
+                                                                {{ $project->key }}-{{ $task->id }}</p>
+                                                            <div class="flex items-center space-x-2">
+                                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                                                                      style="background-color: rgba({{ $task->status->rgb_color }}, 0.2); color: {{ $task->status->color }}">
+                                                                    {{ $task->status->name }}
+                                                                </span>
+                                                                @if ($task->assignee)
+                                                                    <span
+                                                                          class="text-xs text-gray-500 dark:text-gray-400">{{ $task->assignee->name }}</span>
+                                                                @endif
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    @endforeach
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

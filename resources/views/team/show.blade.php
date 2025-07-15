@@ -138,8 +138,9 @@
                                              class="flex items-start justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                                             <div class="flex items-center space-x-4">
                                                 <div class="flex-shrink-0 h-8 w-8 flex items-center justify-center rounded-full text-xs font-medium dark:text-gray-200"
-                                                     style="background-color: rgba({{ $task->type->rgb_color }}, 0.2); color: {{ $task->type->color }}">
-                                                    <i class="fas {{ $task->type->icon }}"></i>
+                                                     style="background-color: {{ $task->type->color }};">
+                                                    <i class="fa-solid {{ $task->type->icon }}"
+                                                       style="color: {{ $task->type->icon_color }};"></i>
                                                 </div>
                                                 <div>
                                                     <a href="{{ route('tasks.show', $task) }}"

@@ -43,7 +43,10 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                <i class="fas {{ $type->icon }}"></i>
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full"
+                                      style="background-color: {{ $type->color }};">
+                                    <i class="fa-solid {{ $type->icon }}" style="color: {{ $type->icon_color }};"></i>
+                                </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{{ route('task-types.edit', $type) }}"

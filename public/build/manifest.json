@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-bf567e8f.css",
+    "file": "assets/app-b2fbcd12.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -8,5 +8,10 @@
     "file": "assets/app-efa2861d.js",
     "isEntry": true,
     "src": "resources/js/app.js"
+  },
+  "resources/js/icon-picker.js": {
+    "file": "assets/icon-picker-1c6a1993.js",
+    "isEntry": true,
+    "src": "resources/js/icon-picker.js"
   }
 }

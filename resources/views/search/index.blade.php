@@ -74,7 +74,7 @@
                                             </div>
                                             <div class="flex items-center space-x-4">
                                                 <span
-                                                      class="text-sm text-gray-500 dark:text-gray-400">{{ $project->tasks->count() }}
+                                                      class="text-sm text-gray-500 dark:text-gray-400">{{ $project->tasks_count }}
                                                     tasks</span>
                                                 <span
                                                       class="inline-flex items-center px-2.5 py-0.5 rounded-full {{ config('colors.project_status')[$project->status] ?? config('colors.project_status.default') }}">

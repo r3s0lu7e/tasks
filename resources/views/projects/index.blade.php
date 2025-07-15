@@ -58,7 +58,7 @@
                                              class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                                             <div class="flex items-center space-x-4">
                                                 <span>{{ $project->total_tasks }} tasks</span>
-                                                <span>{{ $project->members->count() }} members</span>
+                                                <span>{{ $project->members_count }} members</span>
                                             </div>
                                             <div class="flex items-center">
                                                 <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mr-2"

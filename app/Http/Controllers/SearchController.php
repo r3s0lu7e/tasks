@@ -27,6 +27,7 @@ class SearchController extends Controller
             $projects = Project::where('name', 'like', "%{$query}%")
                 ->orWhere('description', 'like', "%{$query}%")
                 ->orWhere('key', 'like', "%{$query}%")
+                ->withCount('tasks')
                 ->paginate(10, ['*'], 'projects_page');
         } else {
             $projects = Project::where(function ($q) use ($query) {
@@ -38,7 +39,8 @@ class SearchController extends Controller
                     ->orWhereHas('members', function ($memberQuery) use ($user) {
                         $memberQuery->where('user_id', $user->id);
                     });
-            })->paginate(10, ['*'], 'projects_page');
+            })->withCount('tasks')
+                ->paginate(10, ['*'], 'projects_page');
         }
 
         // Search tasks based on user access

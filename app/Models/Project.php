@@ -139,13 +139,40 @@ class Project extends Model
      */
     public function getProgressAttribute()
     {
-        $totalTasks = $this->tasks()->count();
+        // Use count attributes if available (from withCount)
+        if (isset($this->attributes['tasks_count'])) {
+            $totalTasks = $this->tasks_count;
+            $completedTasks = $this->completed_tasks_count ?? 0;
+        } else {
+            // Fallback to direct queries
+            $totalTasks = $this->tasks()->count();
+            $completedTasks = $this->completedTasks()->count();
+        }
+
         if ($totalTasks === 0) {
             return 0;
         }
 
-        $completedTasks = $this->completedTasks()->count();
         return round(($completedTasks / $totalTasks) * 100);
+    }
+
+    /**
+     * Scope to include task counts for efficient loading.
+     */
+    public function scopeWithTaskCounts($query)
+    {
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        $completedStatusId = $completedStatus ? $completedStatus->id : null;
+
+        return $query->withCount([
+            'tasks',
+            'members',
+            'tasks as completed_tasks_count' => function ($query) use ($completedStatusId) {
+                if ($completedStatusId) {
+                    $query->where('task_status_id', $completedStatusId);
+                }
+            }
+        ]);
     }
 
     /**

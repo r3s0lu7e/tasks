@@ -20,37 +20,55 @@ class ProjectController extends Controller
     {
         $user = Auth::user();
 
+        // Cache the completed status to avoid repeated queries
+        $completedStatus = TaskStatus::where('alias', 'completed')->first();
+        $completedStatusId = $completedStatus ? $completedStatus->id : null;
+
         // Admin users can see all projects
         if ($user->isAdmin()) {
-            $projects = Project::with(['tasks', 'members', 'owner'])
+            $projects = Project::with(['owner:id,name'])
+                ->withCount([
+                    'tasks',
+                    'members',
+                    'tasks as completed_tasks_count' => function ($query) use ($completedStatusId) {
+                        if ($completedStatusId) {
+                            $query->where('task_status_id', $completedStatusId);
+                        }
+                    }
+                ])
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
                 ->orderBy('name')
                 ->get();
         } else {
             // Get projects owned by user or user is a member of
-            $ownedProjects = $user->ownedProjects()->with(['tasks', 'members', 'owner'])
+            $projects = Project::with(['owner:id,name'])
+                ->withCount([
+                    'tasks',
+                    'members',
+                    'tasks as completed_tasks_count' => function ($query) use ($completedStatusId) {
+                        if ($completedStatusId) {
+                            $query->where('task_status_id', $completedStatusId);
+                        }
+                    }
+                ])
+                ->where(function ($query) use ($user) {
+                    $query->where('owner_id', $user->id)
+                        ->orWhereHas('members', function ($q) use ($user) {
+                            $q->where('user_id', $user->id);
+                        });
+                })
                 ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
                 ->orderBy('name')
-                ->get();
-            $memberProjects = $user->projects()->with(['tasks', 'members', 'owner'])
-                ->orderByRaw("CASE WHEN status = 'active' THEN 0 ELSE 1 END")
-                ->orderBy('name')
-                ->get();
-            $projects = $ownedProjects->merge($memberProjects)->unique('id');
+                ->get()
+                ->unique('id'); // Remove duplicates in case user is both owner and member
         }
 
-        // Add statistics to each project
-        $projects = $projects->map(function ($project) {
-            $project->total_tasks = $project->tasks->count();
-            $completedStatus = TaskStatus::where('alias', 'completed')->first();
-            if ($completedStatus) {
-                $project->completed_tasks = $project->tasks->where('task_status_id', $completedStatus->id)->count();
-            } else {
-                $project->completed_tasks = 0;
-            }
+        // Calculate progress efficiently using the count data
+        $projects->each(function ($project) {
+            $project->total_tasks = $project->tasks_count;
+            $project->completed_tasks = $project->completed_tasks_count ?? 0;
             $project->progress = $project->total_tasks > 0 ?
                 round(($project->completed_tasks / $project->total_tasks) * 100, 1) : 0;
-            return $project;
         });
 
         return view('projects.index', compact('projects'));

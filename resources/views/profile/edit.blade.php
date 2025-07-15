@@ -3,10 +3,11 @@
 @section('content')
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 bg-white border-b border-gray-200">
+            <div
+                 class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6 border border-gray-200 dark:border-gray-700">
+                <div class="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                        <h2 class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
                             Edit Profile
                         </h2>
                         <a href="{{ route('profile.show') }}"
@@ -19,9 +20,10 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Profile Information -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Profile Information</h3>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Profile Information</h3>
 
                         <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
                             @csrf
@@ -29,12 +31,12 @@
 
                             <!-- Name -->
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">
+                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Full Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}"
                                        required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('name') border-red-300 @enderror">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('name') border-red-300 @enderror">
                                 @error('name')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -42,12 +44,12 @@
 
                             <!-- Email -->
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700">
+                                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Email Address <span class="text-red-500">*</span>
                                 </label>
                                 <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}"
                                        required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('email') border-red-300 @enderror">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('email') border-red-300 @enderror">
                                 @error('email')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -55,7 +57,7 @@
 
                             <!-- Role (Read-only) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Role
                                 </label>
                                 <div class="mt-1">
@@ -68,13 +70,14 @@
                                         {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                                     </span>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500">Contact an administrator to change your role.</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Contact an administrator to change
+                                    your role.</p>
                             </div>
 
                             <!-- Account Information -->
-                            <div class="bg-gray-50 p-4 rounded-lg">
-                                <h4 class="text-sm font-medium text-gray-900 mb-2">Account Information</h4>
-                                <div class="text-sm text-gray-600 space-y-1">
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Account Information</h4>
+                                <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                                     <div><strong>Member Since:</strong> {{ $user->created_at->format('d.m.Y') }}</div>
                                     <div><strong>Last Updated:</strong> {{ $user->updated_at->diffForHumans() }}</div>
                                 </div>
@@ -96,9 +99,10 @@
                 </div>
 
                 <!-- Change Password -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Change Password</h3>
 
                         <form method="POST" action="{{ route('profile.password') }}" class="space-y-6">
                             @csrf
@@ -106,11 +110,12 @@
 
                             <!-- Current Password -->
                             <div>
-                                <label for="current_password" class="block text-sm font-medium text-gray-700">
+                                <label for="current_password"
+                                       class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Current Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" id="current_password" name="current_password" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('current_password') border-red-300 @enderror">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('current_password') border-red-300 @enderror">
                                 @error('current_password')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -118,12 +123,13 @@
 
                             <!-- New Password -->
                             <div>
-                                <label for="password" class="block text-sm font-medium text-gray-700">
+                                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     New Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" id="password" name="password" required minlength="8"
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('password') border-red-300 @enderror">
-                                <p class="mt-1 text-sm text-gray-500">Password must be at least 8 characters long.</p>
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('password') border-red-300 @enderror">
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Password must be at least 8
+                                    characters long.</p>
                                 @error('password')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
@@ -131,18 +137,20 @@
 
                             <!-- Confirm Password -->
                             <div>
-                                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+                                <label for="password_confirmation"
+                                       class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Confirm New Password <span class="text-red-500">*</span>
                                 </label>
                                 <input type="password" id="password_confirmation" name="password_confirmation" required
                                        minlength="8"
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm">
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm">
                             </div>
 
                             <!-- Password Requirements -->
-                            <div class="bg-yellow-50 p-4 rounded-lg">
-                                <h4 class="text-sm font-medium text-yellow-800 mb-2">Password Requirements</h4>
-                                <ul class="text-sm text-yellow-700 space-y-1">
+                            <div class="bg-yellow-50 dark:bg-yellow-900 p-4 rounded-lg">
+                                <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">Password
+                                    Requirements</h4>
+                                <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                                     <li>• At least 8 characters long</li>
                                     <li>• Must be different from your current password</li>
                                     <li>• Confirmation must match the new password</li>
@@ -162,26 +170,27 @@
             </div>
 
             @if (auth()->user()->isAdmin())
-                <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="mt-6 bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Admin Settings</h3>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Admin Settings</h3>
                         <div class="space-y-4">
                             <div>
                                 <a href="{{ route('task-statuses.index') }}"
-                                   class="text-sm font-medium text-jira-blue hover:text-blue-700">
+                                   class="text-sm font-medium text-jira-blue hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                     Manage Task Statuses &rarr;
                                 </a>
-                                <p class="mt-1 text-sm text-gray-500">
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     Define the statuses that tasks can be assigned to (e.g., To Do, In Progress, Done).
                                 </p>
                             </div>
-                            <div class="border-t border-gray-200 my-4"></div>
+                            <div class="border-t border-gray-200 dark:border-gray-600 my-4"></div>
                             <div>
                                 <a href="{{ route('task-types.index') }}"
-                                   class="text-sm font-medium text-jira-blue hover:text-blue-700">
+                                   class="text-sm font-medium text-jira-blue hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                     Manage Task Types &rarr;
                                 </a>
-                                <p class="mt-1 text-sm text-gray-500">
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     Define the types of tasks, like Bug, Story, or Epic, each with a unique icon and color.
                                 </p>
                             </div>
@@ -192,10 +201,11 @@
 
             <!-- Delete Account Section -->
             <div class="mt-6">
-                <div class="bg-red-50 border border-red-200 overflow-hidden shadow-sm sm:rounded-lg">
+                <div
+                     class="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-medium text-red-900 mb-4">Danger Zone</h3>
-                        <div class="bg-white p-4 rounded-lg border border-red-200">
+                        <h3 class="text-lg font-medium text-red-900 dark:text-red-100 mb-4">Danger Zone</h3>
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-red-200 dark:border-red-700">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
                                     <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor"
@@ -206,8 +216,8 @@
                                     </svg>
                                 </div>
                                 <div class="ml-3 flex-1">
-                                    <h4 class="text-sm font-medium text-red-900">Delete Account</h4>
-                                    <div class="mt-2 text-sm text-red-700">
+                                    <h4 class="text-sm font-medium text-red-900 dark:text-red-100">Delete Account</h4>
+                                    <div class="mt-2 text-sm text-red-700 dark:text-red-300">
                                         <p>Once you delete your account, all of your data will be permanently removed. This
                                             action cannot be undone.</p>
                                         @if (auth()->user()->isAdmin())
@@ -226,17 +236,19 @@
                         </div>
 
                         <!-- Delete Confirmation Form (Hidden) -->
-                        <div id="delete-form" class="hidden mt-4 bg-white p-4 rounded-lg border border-red-200">
+                        <div id="delete-form"
+                             class="hidden mt-4 bg-white dark:bg-gray-800 p-4 rounded-lg border border-red-200 dark:border-red-700">
                             <form method="POST" action="{{ route('profile.destroy') }}">
                                 @csrf
                                 @method('DELETE')
 
                                 <div class="mb-4">
-                                    <label for="delete_password" class="block text-sm font-medium text-red-900">
+                                    <label for="delete_password"
+                                           class="block text-sm font-medium text-red-900 dark:text-red-100">
                                         Enter your password to confirm deletion <span class="text-red-500">*</span>
                                     </label>
                                     <input type="password" id="delete_password" name="password" required
-                                           class="mt-1 block w-full border-red-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm @error('password') border-red-500 @enderror">
+                                           class="mt-1 block w-full border-red-300 dark:border-red-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm @error('password') border-red-500 @enderror">
                                     @error('password')
                                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                     @enderror

@@ -43,7 +43,11 @@
                                             </span>
                                         </div>
 
-                                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ $project->key }}</p>
+                                        <div class="flex items-center justify-between mb-4">
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $project->key }}</p>
+                                            <a href="{{ route('projects.members', $project) }}"
+                                               class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm px-3">Team</a>
+                                        </div>
 
                                         @if ($project->description)
                                             <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">

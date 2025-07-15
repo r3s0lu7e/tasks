@@ -225,7 +225,7 @@
                                 <ul class="list-disc list-inside space-y-1">
                                     @foreach ($todayTasks->take(3) as $task)
                                         <li>
-                                            <a href="{{ route('tasks.show', $task) }}" class="hover:underline">
+                                            <a href="{{ route('tasks.show', $task->id) }}" class="hover:underline">
                                                 {{ $task->title }}
                                             </a>
                                             @if ($task->assignee)
@@ -264,7 +264,7 @@
                                 <ul class="list-disc list-inside space-y-1">
                                     @foreach ($overdueTasks->take(3) as $task)
                                         <li>
-                                            <a href="{{ route('tasks.show', $task) }}" class="hover:underline">
+                                            <a href="{{ route('tasks.show', $task->id) }}" class="hover:underline">
                                                 {{ $task->title }}
                                             </a>
                                             @if ($task->assignee)
@@ -300,22 +300,20 @@
                                     <div
                                          class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                                         <div class="flex items-center">
-                                            <div class="h-8 w-8 rounded-full flex items-center justify-center"
-                                                 style="background-color: rgba({{ $member->status_color_rgb }}, 0.2)">
-                                                <span class="text-sm font-medium"
-                                                      style="color: {{ $member->status_color }}">
-                                                    {{ $member->getInitials() }}
+                                            <div
+                                                 class="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900">
+                                                <span class="text-sm font-medium text-blue-600 dark:text-blue-200">
+                                                    {{ strtoupper(substr($member->name, 0, 1)) }}
                                                 </span>
                                             </div>
                                             <div class="ml-3">
                                                 <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    <a href="{{ route('team.show', $member) }}"
-                                                       class="hover:text-blue-600 dark:hover:text-blue-400">
+                                                    <span class="hover:text-blue-600 dark:hover:text-blue-400">
                                                         {{ $member->name }}
-                                                    </a>
+                                                    </span>
                                                 </h4>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $member->role }} •
-                                                    {{ $member->position }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ ucfirst($member->status) }}</p>
                                             </div>
                                         </div>
                                         <div class="text-right">
@@ -368,7 +366,7 @@
                                              style="background-color: {{ $project->color }}"></div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                                                <a href="{{ route('projects.show', $project) }}"
+                                                <a href="{{ route('projects.show', $project->id) }}"
                                                    class="hover:text-blue-600 dark:hover:text-blue-400">
                                                     {{ $project->name }}
                                                 </a>
@@ -435,7 +433,7 @@
                                              style="background-color: {{ $task->project->color }}"></div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 dark:text-white">
-                                                <a href="{{ route('tasks.show', $task) }}"
+                                                <a href="{{ route('tasks.show', $task->id) }}"
                                                    class="hover:text-blue-600 dark:hover:text-blue-400">
                                                     {{ Str::limit($task->title, 25) }}
                                                 </a>

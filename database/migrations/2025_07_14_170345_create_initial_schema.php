@@ -56,6 +56,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('color', 7)->default('#8B5CF6');
             $table->string('icon')->nullable();
+            $table->string('icon_color', 7)->default('#FFFFFF');
             $table->timestamps();
         });
 

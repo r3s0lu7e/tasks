@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Add preload class to prevent transitions during initial load
 	document.body.classList.add("preload")
 
-	// Initialize theme first
-	initTheme()
+	// Set the initial state of the theme toggle icon
+	updateThemeToggleIcon()
 
 	// Setup components only if they exist
 	setupThemeToggles()
@@ -18,22 +18,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.body.classList.remove("preload")
 	}, 100)
 })
-
-function initTheme() {
-	try {
-		// Check for saved theme preference or respect OS preference
-		if (localStorage.theme === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-			document.documentElement.classList.add("dark")
-		} else {
-			document.documentElement.classList.remove("dark")
-		}
-
-		// Update icons only if elements exist
-		updateThemeToggleIcon()
-	} catch (error) {
-		console.warn("Theme initialization failed:", error)
-	}
-}
 
 function setupThemeToggles() {
 	try {

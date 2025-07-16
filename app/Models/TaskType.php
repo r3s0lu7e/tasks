@@ -16,6 +16,14 @@ class TaskType extends Model
         'icon_color',
     ];
 
+    /**
+     * Get the tasks that belong to this type.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'task_type_id');
+    }
+
     public function getRgbColorAttribute()
     {
         $hex = ltrim($this->color, '#');

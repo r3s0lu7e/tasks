@@ -16,6 +16,14 @@ class TaskStatus extends Model
         'order',
     ];
 
+    /**
+     * Get the tasks that belong to this status.
+     */
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'task_status_id');
+    }
+
     public function getRgbColorAttribute()
     {
         $hex = ltrim($this->color, '#');

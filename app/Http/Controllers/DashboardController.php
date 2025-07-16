@@ -14,7 +14,20 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = auth()->user();
+
+        $layout = $user->dashboard_layout;
+        if (!is_array($layout)) {
+            $layout = [
+                ['id' => 'stats', 'x' => 0, 'y' => 0, 'w' => 12, 'h' => 2],
+                ['id' => 'projects', 'x' => 0, 'y' => 2, 'w' => 6, 'h' => 4],
+                ['id' => 'today_tasks', 'x' => 6, 'y' => 2, 'w' => 6, 'h' => 2],
+                ['id' => 'overdue_tasks', 'x' => 6, 'y' => 4, 'w' => 6, 'h' => 2],
+                ['id' => 'recent_activity', 'x' => 0, 'y' => 6, 'w' => 6, 'h' => 4],
+                ['id' => 'team_workload', 'x' => 6, 'y' => 6, 'w' => 6, 'h' => 4],
+            ];
+        }
+
 
         // Cache status IDs to avoid repeated queries
         $statusIds = TaskStatus::pluck('id', 'alias');
@@ -226,8 +239,9 @@ class DashboardController extends Controller
             'overdueTasks',
             'todayTasks',
             'teamWorkload',
-            'recentActivity'
-        ))->with('stats', $statsArray);
+            'recentActivity',
+            'layout'
+        ));
     }
 
     /**

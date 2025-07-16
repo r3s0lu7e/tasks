@@ -151,19 +151,24 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Due Date -->
                             <div>
-                                <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Due Date
-                                </label>
-                                <input type="date" id="due_date" name="due_date"
-                                       value="{{ old('due_date', $task->due_date?->format('Y-m-d')) }}"
-                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('due_date') border-red-300 @enderror">
-                                @error('due_date')
-                                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                @enderror
+                                <label for="start_date"
+                                       class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+                                <input type="date" name="start_date" id="start_date"
+                                       value="{{ old('start_date', $task->start_date ? $task->start_date->format('Y-m-d') : '') }}"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-indigo-500">
                             </div>
 
+                            <div>
+                                <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due
+                                    Date</label>
+                                <input type="date" name="due_date" id="due_date"
+                                       value="{{ old('due_date', $task->due_date ? $task->due_date->format('Y-m-d') : '') }}"
+                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Story Points -->
                             <div>
                                 <label for="story_points"

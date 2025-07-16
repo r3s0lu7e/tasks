@@ -17,6 +17,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Project routes
     Route::resource('projects', ProjectController::class);
+    Route::get('/projects/{project}/gantt', [ProjectController::class, 'gantt'])->name('projects.gantt');
     Route::get('/projects/{project}/members', [ProjectController::class, 'members'])->name('projects.members');
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.add-member');
     Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.remove-member');
@@ -80,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::delete('/profile', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/dashboard-layout', [App\Http\Controllers\ProfileController::class, 'updateDashboardLayout'])->name('profile.dashboard-layout');
 
     // Search routes
     Route::get('/search', [App\Http\Controllers\SearchController::class, 'index'])->name('search.index');

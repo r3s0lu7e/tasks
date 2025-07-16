@@ -408,6 +408,16 @@ class DatabaseSeeder extends Seeder
             for ($i = 0; $i < $this->tasksPerProject; $i++) {
                 $taskTitle = $taskTitles[array_rand($taskTitles)] . ' #' . ($i + 1);
 
+                $dueDate = rand(0, 1) ? now()->addDays(rand(-30, 90)) : null;
+                $createdAt = $now;
+
+                $startDate = null;
+                if ($dueDate) {
+                    $startDate = $dueDate->copy()->subDays(rand(1, 30));
+                } else {
+                    $startDate = $createdAt->copy()->subDays(rand(0, 5));
+                }
+
                 $tasks[] = [
                     'title' => $taskTitle,
                     'description' => 'This is a comprehensive task description for ' . $project->name . '. Task: ' . $taskTitle . '. It includes detailed requirements, acceptance criteria, and implementation guidelines. The task is part of the overall project roadmap and contributes to the successful delivery of the project objectives.',
@@ -417,7 +427,8 @@ class DatabaseSeeder extends Seeder
                     'project_id' => $project->id,
                     'creator_id' => $projectMembers->random()->id, // Distribute task creation among project members
                     'assignee_id' => $projectMembers->random()->id,
-                    'due_date' => rand(0, 1) ? now()->addDays(rand(-30, 90))->format('Y-m-d') : null,
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'due_date' => $dueDate ? $dueDate->format('Y-m-d') : null,
                     'story_points' => rand(0, 1) ? rand(1, 13) : null,
                     'estimated_hours' => rand(0, 1) ? rand(1, 40) : null,
                     'created_at' => $now,

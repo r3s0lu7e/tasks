@@ -23,7 +23,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -133,7 +133,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -157,7 +157,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -168,7 +168,8 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date|after_or_equal:today',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
             'story_points' => 'nullable|integer|min:1|max:100',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
@@ -190,6 +191,7 @@ class TaskController extends Controller
             'project_id' => $project->id,
             'creator_id' => Auth::id(),
             'assignee_id' => $request->assignee_id,
+            'start_date' => $request->start_date,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -222,7 +224,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -260,7 +262,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -292,7 +294,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -308,7 +310,8 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
             'story_points' => 'nullable|integer|min:1|max:100',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
@@ -328,6 +331,7 @@ class TaskController extends Controller
             'priority' => $request->priority,
             'task_status_id' => $request->task_status_id,
             'assignee_id' => $request->assignee_id,
+            'start_date' => $request->start_date,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -360,7 +364,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -397,7 +401,7 @@ class TaskController extends Controller
 
         // Check if user has access to this task's project
         $user = Auth::user();
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -429,7 +433,7 @@ class TaskController extends Controller
 
         // Check if user has access to this task's project
         $user = Auth::user();
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -460,7 +464,7 @@ class TaskController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -478,7 +482,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this project
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -518,7 +522,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this project
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -545,7 +549,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -580,7 +584,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -778,14 +782,15 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date|after_or_equal:today',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
             'story_points' => 'nullable|integer|min:1|max:100',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
 
         // Verify user has access to the project
         $project = Project::findOrFail($request->project_id);
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             return back()->withErrors(['project_id' => 'You do not have access to this project.']);
         }
 
@@ -806,6 +811,7 @@ class TaskController extends Controller
             'project_id' => $request->project_id,
             'creator_id' => $user->id,
             'assignee_id' => $request->assignee_id,
+            'start_date' => $request->start_date,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -839,7 +845,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -874,7 +880,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -886,7 +892,8 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
             'story_points' => 'nullable|integer|min:1|max:100',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
@@ -895,7 +902,7 @@ class TaskController extends Controller
         $targetProject = $task->project;
         if ($request->project_id != $task->project_id) {
             $targetProject = Project::findOrFail($request->project_id);
-            if (!$targetProject->hasMember($user)) {
+            if (!$user->isAdmin() && !$targetProject->hasMember($user)) {
                 return back()->withErrors(['project_id' => 'You do not have access to this project.']);
             }
         }
@@ -916,6 +923,7 @@ class TaskController extends Controller
             'task_status_id' => $request->task_status_id,
             'project_id' => $request->project_id,
             'assignee_id' => $request->assignee_id,
+            'start_date' => $request->start_date,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -949,7 +957,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -984,7 +992,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -1020,7 +1028,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -1051,7 +1059,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 
@@ -1063,7 +1071,8 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'task_status_id' => 'required|exists:task_statuses,id',
             'assignee_id' => 'nullable|exists:users,id',
-            'due_date' => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
             'story_points' => 'nullable|integer|min:1|max:100',
             'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,pdf,doc,docx,txt,zip,rar'
         ]);
@@ -1071,7 +1080,7 @@ class TaskController extends Controller
         // Verify user has access to the new project (if changed)
         if ($request->project_id != $task->project_id) {
             $newProject = Project::findOrFail($request->project_id);
-            if (!$newProject->hasMember($user)) {
+            if (!$user->isAdmin() && !$newProject->hasMember($user)) {
                 return back()->withErrors(['project_id' => 'You do not have access to this project.']);
             }
         }
@@ -1084,6 +1093,7 @@ class TaskController extends Controller
             'task_status_id' => $request->task_status_id,
             'project_id' => $request->project_id,
             'assignee_id' => $request->assignee_id,
+            'start_date' => $request->start_date,
             'due_date' => $request->due_date,
             'story_points' => $request->story_points,
         ]);
@@ -1117,7 +1127,7 @@ class TaskController extends Controller
         $user = Auth::user();
 
         // Check if user has access to this task's project
-        if (!$task->project->hasMember($user)) {
+        if (!$user->isAdmin() && !$task->project->hasMember($user)) {
             abort(403, 'You do not have access to this task.');
         }
 

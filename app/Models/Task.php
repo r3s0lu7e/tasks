@@ -58,6 +58,7 @@ class Task extends Model
         'project_id',
         'assignee_id',
         'creator_id',
+        'start_date',
         'due_date',
         'story_points',
         'estimated_hours',
@@ -73,6 +74,7 @@ class Task extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'start_date' => 'date',
         'due_date' => 'date',
         'tags' => 'array',
         'created_at' => 'datetime',
@@ -141,6 +143,11 @@ class Task extends Model
     public function checklistItems()
     {
         return $this->hasMany(ChecklistItem::class)->orderBy('order');
+    }
+
+    public function dependencies()
+    {
+        return $this->hasMany(TaskDependency::class, 'task_id');
     }
 
     /**

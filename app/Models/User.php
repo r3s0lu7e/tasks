@@ -32,6 +32,7 @@ class User extends Authenticatable
         'hourly_rate',
         'hire_date',
         'notes',
+        'dashboard_layout',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'hire_date' => 'date',
         'hourly_rate' => 'decimal:2',
+        'dashboard_layout' => 'array',
     ];
 
     /**

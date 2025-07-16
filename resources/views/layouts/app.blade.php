@@ -18,6 +18,8 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    @stack('styles')
+
     <!-- Prevent dark mode flash -->
     <script>
         // Initialize theme immediately to prevent flash

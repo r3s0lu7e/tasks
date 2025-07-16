@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\TaskStatus;
 use App\Models\TaskType;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -119,10 +120,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        // Check if user has access to this project
-        $user = Auth::user();
-        if (!$project->hasMember($user)) {
-            abort(403, 'You do not have access to this project.');
+        if (!Auth::user()->isAdmin()) {
+            Gate::authorize('view', $project);
         }
 
         $project->load(['tasks.assignee', 'tasks.creator', 'tasks.status', 'tasks.type', 'members', 'owner']);
@@ -154,6 +153,45 @@ class ProjectController extends Controller
         ];
 
         return view('projects.show', compact('project', 'tasksByStatus', 'stats', 'statuses', 'types'));
+    }
+
+    public function gantt(Project $project)
+    {
+        if (!Auth::user()->isAdmin()) {
+            Gate::authorize('view', $project);
+        }
+
+        $tasks = $project->tasks()->with(['status', 'dependencies'])->get();
+
+        $formattedTasks = $tasks->map(function ($task) {
+            $startDate = $task->start_date;
+            $dueDate = $task->due_date;
+
+            if (!$dueDate) {
+                return null;
+            }
+
+            if (!$startDate) {
+                $startDate = $dueDate;
+            }
+
+            return [
+                'id' => 'Task_' . $task->id,
+                'name' => $task->title,
+                'start' => $startDate->format('Y-m-d'),
+                'end' => $dueDate->format('Y-m-d'),
+                'progress' => $task->progress ?? 0,
+                'dependencies' => $task->dependencies->pluck('depends_on_task_id')->map(function ($id) {
+                    return 'Task_' . $id;
+                })->implode(','),
+                'custom_class' => strtolower(str_replace(' ', '-', optional($task->status)->name ?? ''))
+            ];
+        })->filter()->values();
+
+        return view('projects.gantt', [
+            'project' => $project,
+            'tasks' => json_encode($formattedTasks)
+        ]);
     }
 
     /**
@@ -278,7 +316,7 @@ class ProjectController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             abort(403, 'You do not have access to this project.');
         }
 
@@ -299,7 +337,7 @@ class ProjectController extends Controller
     {
         // Check if user has access to this project
         $user = Auth::user();
-        if (!$project->hasMember($user)) {
+        if (!$user->isAdmin() && !$project->hasMember($user)) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 

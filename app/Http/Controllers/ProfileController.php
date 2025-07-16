@@ -149,4 +149,22 @@ class ProfileController extends Controller
 
         return redirect('/')->with('success', 'Your account has been deleted successfully.');
     }
+
+    /**
+     * Update the user's dashboard layout.
+     */
+    public function updateDashboardLayout(Request $request)
+    {
+        $request->validate([
+            'layout' => 'required|array'
+        ]);
+
+        $user = Auth::user();
+
+        $user->update([
+            'dashboard_layout' => $request->layout,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }

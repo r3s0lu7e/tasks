@@ -36,6 +36,11 @@
                                     Edit Project
                                 </a>
                             @endif
+                            <a href="{{ route('projects.gantt', $project) }}"
+                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                               title="Gantt Chart">
+                                Gantt Chart
+                            </a>
                             <a href="{{ route('projects.index') }}"
                                class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                                 Back to Projects
@@ -60,7 +65,8 @@
                                 <div class="text-sm text-green-600 dark:text-green-200">Completed</div>
                             </div>
                             <div class="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
-                                <div class="text-2xl font-bold text-red-600 dark:text-red-200">{{ $stats['overdue_tasks'] }}
+                                <div class="text-2xl font-bold text-red-600 dark:text-red-200">
+                                    {{ $stats['overdue_tasks'] }}
                                 </div>
                                 <div class="text-sm text-red-600 dark:text-red-200">Overdue</div>
                             </div>

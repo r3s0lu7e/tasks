@@ -589,11 +589,11 @@
                     if (currentX + currentWidth <= data.x + 10) {
                         // Current window is on the left (with 10px tolerance for touching)
                         horizontalGap = Math.max(0, data.x - (currentX + currentWidth));
-                        tempIsLeft = true;
+                        tempIsLeft = true; // This window is on the left, so it should show the left half
                     } else if (data.x + data.width <= currentX + 10) {
                         // Current window is on the right (with 10px tolerance for touching)
                         horizontalGap = Math.max(0, currentX - (data.x + data.width));
-                        tempIsLeft = false;
+                        tempIsLeft = false; // This window is on the right, so it should show the right half
                     } else {
                         // Windows are overlapping significantly
                         continue;
@@ -658,7 +658,7 @@
                     // Left window shows left half of heart at right edge - clipped to show only left half
                     heartHalf.innerHTML = `
                     <div class="fixed top-1/2 -translate-y-1/2" style="right: 0; width: 120px; height: 240px; overflow: hidden;">
-                        <svg id="heart-svg" class="absolute" style="right: 0; transform: scale(${scale}); opacity: ${opacity}; width: 240px; height: 240px;" viewBox="0 0 200 220">
+                        <svg id="heart-svg" class="absolute" style="right: -120px; transform: scale(${scale}); opacity: ${opacity}; width: 240px; height: 240px;" viewBox="0 0 200 220">
                             <defs>
                                 <linearGradient id="heartGradientLeft" x1="0%" y1="0%" x2="100%" y2="100%">
                                     <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />

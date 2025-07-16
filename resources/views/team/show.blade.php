@@ -1,6 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- Heart Animation Container -->
+    @if (
+        (auth()->user()->email === 'iva@wuvu.com' && $team->email === 'r3s0lu7e@gmail.com') ||
+            (auth()->user()->email === 'r3s0lu7e@gmail.com' && $team->email === 'iva@wuvu.com'))
+        <div id="heart-container"
+             class="fixed inset-0 pointer-events-none z-[9999] opacity-0 transition-opacity duration-1000"
+             style="overflow: visible !important;">
+            <div id="heart-half" class="relative w-full h-full" style="overflow: visible !important;">
+                <!-- This will be dynamically filled with the appropriate half of the heart -->
+            </div>
+        </div>
+    @endif
+
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Header -->
@@ -197,3 +210,314 @@
         </div>
     </div>
 @endsection
+
+@if (
+    (auth()->user()->email === 'iva@wuvu.com' && $team->email === 'r3s0lu7e@gmail.com') ||
+        (auth()->user()->email === 'r3s0lu7e@gmail.com' && $team->email === 'iva@wuvu.com'))
+    @push('scripts')
+        <script>
+            // Window proximity heart animation
+            (function() {
+                const channel = new BroadcastChannel('team_windows');
+                const windowId = Math.random().toString(36).substr(2, 9);
+                let otherWindows = {};
+                let heartVisible = false;
+                let isLeftHalf = null;
+
+                // Send window position periodically
+                function broadcastPosition() {
+                    const screenX = window.screenX || window.screenLeft || 0;
+                    const screenY = window.screenY || window.screenTop || 0;
+                    const width = window.outerWidth || window.innerWidth;
+                    const height = window.outerHeight || window.innerHeight;
+
+                    channel.postMessage({
+                        type: 'position',
+                        id: windowId,
+                        x: screenX,
+                        y: screenY,
+                        width: width,
+                        height: height,
+                        timestamp: Date.now()
+                    });
+                }
+
+                // Check if windows are close enough
+                function checkProximity() {
+                    const currentX = window.screenX || window.screenLeft || 0;
+                    const currentY = window.screenY || window.screenTop || 0;
+                    const currentWidth = window.outerWidth || window.innerWidth;
+
+                    let closestGap = Infinity;
+                    let closestWindow = null;
+                    let isLeft = false;
+
+                    for (const [id, data] of Object.entries(otherWindows)) {
+                        // Remove stale windows (not updated in last 3 seconds)
+                        if (Date.now() - data.timestamp > 3000) {
+                            delete otherWindows[id];
+                            continue;
+                        }
+
+                        // Calculate distance between window edges
+                        let horizontalGap;
+                        let tempIsLeft = false;
+
+                        if (currentX + currentWidth <= data.x + 50) {
+                            // Current window is on the left (with 50px tolerance for overlapping)
+                            horizontalGap = Math.max(0, data.x - (currentX + currentWidth));
+                            tempIsLeft = true; // This window is on the left, so it should show the left half
+                        } else if (data.x + data.width <= currentX + 50) {
+                            // Current window is on the right (with 50px tolerance for overlapping)
+                            horizontalGap = Math.max(0, currentX - (data.x + data.width));
+                            tempIsLeft = false; // This window is on the right, so it should show the right half
+                        } else {
+                            // Windows are overlapping significantly (more than 50px)
+                            continue;
+                        }
+
+                        const verticalAlignment = Math.abs(currentY - data.y);
+
+                        // Check if windows are aligned vertically and within proximity range
+                        if (horizontalGap < 300 && verticalAlignment < 150) {
+                            if (horizontalGap < closestGap) {
+                                closestGap = horizontalGap;
+                                closestWindow = data;
+                                isLeft = tempIsLeft;
+                            }
+                        }
+                    }
+
+                    if (closestWindow && closestGap < 300) {
+                        // Calculate opacity based on distance (300px to 0px maps to 0.2 to 1.0 opacity)
+                        // When gap is 0-50px, opacity is 1.0 (fully visible)
+                        let opacity;
+                        if (closestGap <= 50) {
+                            opacity = 1; // Fully visible when very close
+                        } else {
+                            opacity = Math.max(0.2, Math.min(1, 1.2 - (closestGap / 250)));
+                        }
+                        const scale = 0.6 + (0.4 * (1 - closestGap / 300)); // Scale from 0.6 to 1.0
+
+                        if (!heartVisible || isLeftHalf !== isLeft) {
+                            showHeart(isLeft, opacity, scale);
+                            isLeftHalf = isLeft;
+                        } else {
+                            // Update opacity and scale
+                            updateHeartAppearance(opacity, scale);
+                        }
+
+                        // Send acknowledgment to ensure both windows show their hearts
+                        channel.postMessage({
+                            type: 'heart_active',
+                            id: windowId,
+                            showingHeart: true,
+                            isLeft: isLeft,
+                            opacity: opacity,
+                            gap: closestGap
+                        });
+                    } else {
+                        // Hide heart if no close windows
+                        if (heartVisible) {
+                            hideHeart();
+                        }
+                    }
+                }
+
+                // Show heart animation
+                function showHeart(isLeft, opacity = 1, scale = 1) {
+                    heartVisible = true;
+                    const container = document.getElementById('heart-container');
+                    const heartHalf = document.getElementById('heart-half');
+
+                    if (!container || !heartHalf) {
+                        return; // Exit if elements don't exist
+                    }
+
+                    // Create the appropriate half of the heart
+                    if (isLeft) {
+                        // Left window shows left half of heart at right edge - clipped to show only left half
+                        heartHalf.innerHTML = `
+                        <div class="fixed top-1/2 -translate-y-1/2" style="right: 0; width: 120px; height: 240px; overflow: hidden;">
+                            <svg id="heart-svg" class="absolute" style="right: -120px; transform: scale(${scale}); opacity: ${opacity}; width: 240px; height: 240px;" viewBox="0 0 200 220">
+                                <defs>
+                                    <linearGradient id="heartGradientLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#ff4458;stop-opacity:1" />
+                                    </linearGradient>
+                                    <filter id="heartGlow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <path d="M 100,60 C 100,30 80,10 50,10 C 20,10 0,30 0,60 C 0,120 50,170 100,220 C 150,170 200,120 200,60 C 200,30 180,10 150,10 C 120,10 100,30 100,60 Z" 
+                                      fill="url(#heartGradientLeft)" 
+                                      filter="url(#heartGlow)" />
+                            </svg>
+                        </div>
+                    `;
+                    } else {
+                        // Right window shows right half of heart at left edge - clipped to show only right half
+                        heartHalf.innerHTML = `
+                        <div class="fixed top-1/2 -translate-y-1/2" style="left: 0; width: 120px; height: 240px; overflow: hidden;">
+                            <svg id="heart-svg" class="absolute" style="left: -120px; transform: scale(${scale}); opacity: ${opacity}; width: 240px; height: 240px;" viewBox="0 0 200 220">
+                                <defs>
+                                    <linearGradient id="heartGradientRight" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ff4458;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#ff006e;stop-opacity:1" />
+                                    </linearGradient>
+                                    <filter id="heartGlow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <path d="M 100,60 C 100,30 80,10 50,10 C 20,10 0,30 0,60 C 0,120 50,170 100,220 C 150,170 200,120 200,60 C 200,30 180,10 150,10 C 120,10 100,30 100,60 Z" 
+                                      fill="url(#heartGradientRight)" 
+                                      filter="url(#heartGlow)" />
+                            </svg>
+                        </div>
+                    `;
+                    }
+
+                    // Only add floating hearts when very close
+                    if (opacity > 0.8) {
+                        createFloatingHearts();
+                    }
+
+                    // Show container
+                    container.style.display = 'block';
+                    container.classList.remove('opacity-0');
+                    container.classList.add('opacity-100');
+                }
+
+                // Update heart appearance without recreating
+                function updateHeartAppearance(opacity, scale) {
+                    const heartSvg = document.getElementById('heart-svg');
+                    if (heartSvg) {
+                        heartSvg.style.opacity = opacity;
+                        heartSvg.style.transform = `scale(${scale})`;
+
+                        // Add floating hearts when very close
+                        if (opacity > 0.8 && document.querySelectorAll('.floating-heart').length === 0) {
+                            createFloatingHearts();
+                        }
+                    }
+                }
+
+                // Hide heart animation
+                function hideHeart() {
+                    heartVisible = false;
+                    isLeftHalf = null;
+                    const container = document.getElementById('heart-container');
+                    if (container) {
+                        container.classList.remove('opacity-100');
+                        container.classList.add('opacity-0');
+                    }
+
+                    // Remove floating hearts
+                    const floatingHearts = document.querySelectorAll('.floating-heart');
+                    floatingHearts.forEach(heart => heart.remove());
+                }
+
+                // Create floating hearts effect
+                function createFloatingHearts() {
+                    const colors = ['#ff006e', '#ff4458', '#ff6b6b', '#ee5a6f'];
+                    const container = document.getElementById('heart-container');
+                    if (!container) return;
+
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'floating-heart absolute pointer-events-none';
+                            heart.style.left = Math.random() * 100 + '%';
+                            heart.style.bottom = '-20px';
+                            heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                            heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                            heart.style.animation = `floatUp ${Math.random() * 3 + 2}s ease-out forwards`;
+                            heart.innerHTML = '❤️';
+
+                            container.appendChild(heart);
+
+                            // Remove after animation
+                            setTimeout(() => heart.remove(), 5000);
+                        }, i * 200);
+                    }
+                }
+
+                // Listen for messages from other windows
+                channel.onmessage = (event) => {
+                    if (event.data.type === 'position' && event.data.id !== windowId) {
+                        otherWindows[event.data.id] = event.data;
+                        checkProximity();
+                    } else if (event.data.type === 'closing' && event.data.id !== windowId) {
+                        delete otherWindows[event.data.id];
+                        checkProximity();
+                    } else if (event.data.type === 'heart_active' && event.data.id !== windowId) {
+                        // Store the other window's heart state
+                        if (otherWindows[event.data.id]) {
+                            otherWindows[event.data.id].showingHeart = event.data.showingHeart;
+                            otherWindows[event.data.id].heartIsLeft = event.data.isLeft;
+                        }
+                    }
+                };
+
+                // Start broadcasting position
+                setInterval(broadcastPosition, 500);
+
+                // Initial broadcast
+                broadcastPosition();
+
+                // Notify when closing
+                window.addEventListener('beforeunload', () => {
+                    channel.postMessage({
+                        type: 'closing',
+                        id: windowId
+                    });
+                });
+
+                // Add CSS for floating hearts animation
+                const style = document.createElement('style');
+                style.textContent = `
+                @keyframes floatUp {
+                    0% {
+                        transform: translateY(0) scale(1);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(-200px) scale(0.5);
+                        opacity: 0;
+                    }
+                }
+                
+                #heart-container {
+                    overflow: visible !important;
+                }
+                
+                #heart-half {
+                    overflow: visible !important;
+                }
+                
+                #heart-svg {
+                    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+                }
+                
+                @keyframes heartbeat {
+                    0%, 100% {
+                        filter: brightness(1);
+                    }
+                    50% {
+                        filter: brightness(1.2);
+                    }
+                }
+            `;
+                document.head.appendChild(style);
+            })();
+        </script>
+    @endpush
+@endif

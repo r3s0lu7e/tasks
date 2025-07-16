@@ -15,8 +15,7 @@ class TeamMemberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('id', '!=', auth()->id()) // Exclude the main user
-            ->withCount(['assignedTasks', 'createdTasks']);
+        $query = User::withCount(['assignedTasks', 'createdTasks']);
 
         // Apply status filter if provided
         if ($request->filled('status')) {
@@ -97,6 +96,15 @@ class TeamMemberController extends Controller
      */
     public function show(User $team)
     {
+        // Special handling for boss lady (ID 1) clicking on herself
+        if (auth()->id() === 1 && $team->id === 1) {
+            // Boss lady viewing herself - ensure we have the correct user
+            $team = User::find(1);
+            if (!$team) {
+                abort(404, 'User not found');
+            }
+        }
+
         $team->load(['assignedTasks.project', 'assignedTasks.status', 'assignedTasks.type', 'createdTasks.project']);
 
         $statuses = TaskStatus::all();
@@ -126,6 +134,15 @@ class TeamMemberController extends Controller
      */
     public function edit(User $team)
     {
+        // Special handling for boss lady (ID 1) editing herself
+        if (auth()->id() === 1 && $team->id === 1) {
+            // Boss lady editing herself - ensure we have the correct user
+            $team = User::find(1);
+            if (!$team) {
+                abort(404, 'User not found');
+            }
+        }
+
         return view('team.edit', [
             'team' => $team,
             'roles' => User::ROLES,
@@ -149,6 +166,16 @@ class TeamMemberController extends Controller
             'hire_date' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
         ]);
+
+        // Check if trying to change admin role
+        if ($team->isAdmin() && $request->role !== $team->role) {
+            // Only allow admin role changes if the current user is also an admin
+            if (!auth()->user()->isAdmin()) {
+                return redirect()->back()
+                    ->withErrors(['role' => 'Only administrators can change admin roles.'])
+                    ->withInput();
+            }
+        }
 
         $team->update($request->only([
             'name',

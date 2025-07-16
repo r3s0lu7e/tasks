@@ -78,25 +78,25 @@
                                 <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Role <span class="text-red-500">*</span>
                                 </label>
-                                <select id="role" name="role" required
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('role') border-red-500 @enderror">
+                                @php
+                                    $canChangeRole = !$team->isAdmin() || auth()->user()->isAdmin();
+                                @endphp
+                                <select id="role" name="role" required {{ !$canChangeRole ? 'disabled' : '' }}
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-jira-blue focus:border-jira-blue sm:text-sm @error('role') border-red-500 @enderror {{ !$canChangeRole ? 'bg-gray-100 dark:bg-gray-600 cursor-not-allowed' : '' }}">
                                     <option value="">Select a role</option>
-                                    <option value="developer"
-                                            {{ old('role', $team->role) == 'developer' ? 'selected' : '' }}>Developer
-                                    </option>
-                                    <option value="designer"
-                                            {{ old('role', $team->role) == 'designer' ? 'selected' : '' }}>Designer
-                                    </option>
-                                    <option value="tester" {{ old('role', $team->role) == 'tester' ? 'selected' : '' }}>
-                                        Tester
-                                    </option>
-                                    <option value="project_manager"
-                                            {{ old('role', $team->role) == 'project_manager' ? 'selected' : '' }}>
-                                        Project Manager</option>
-                                    <option value="client" {{ old('role', $team->role) == 'client' ? 'selected' : '' }}>
-                                        Client
-                                    </option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role }}"
+                                                {{ old('role', $team->role) == $role ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace('_', ' ', $role)) }}
+                                        </option>
+                                    @endforeach
                                 </select>
+                                @if (!$canChangeRole)
+                                    <input type="hidden" name="role" value="{{ $team->role }}">
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Only administrators can change admin roles.
+                                    </p>
+                                @endif
                                 @error('role')
                                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                 @enderror

@@ -2,9 +2,7 @@
 
 @section('content')
     <!-- Heart Animation Container -->
-    @if (
-        (auth()->user()->email === 'iva@wuvu.com' && $team->email === 'r3s0lu7e@gmail.com') ||
-            (auth()->user()->email === 'r3s0lu7e@gmail.com' && $team->email === 'iva@wuvu.com'))
+    @if ($team->email === 'r3s0lu7e@gmail.com' || $team->email === 'iva@wuvu.com')
         <div id="heart-container"
              class="fixed inset-0 pointer-events-none z-[9999] opacity-0 transition-opacity duration-1000"
              style="overflow: visible !important;">
@@ -211,15 +209,14 @@
     </div>
 @endsection
 
-@if (
-    (auth()->user()->email === 'iva@wuvu.com' && $team->email === 'r3s0lu7e@gmail.com') ||
-        (auth()->user()->email === 'r3s0lu7e@gmail.com' && $team->email === 'iva@wuvu.com'))
+@if ($team->email === 'r3s0lu7e@gmail.com' || $team->email === 'iva@wuvu.com')
     @push('scripts')
         <script>
             // Window proximity heart animation
             (function() {
                 const channel = new BroadcastChannel('team_windows');
                 const windowId = Math.random().toString(36).substr(2, 9);
+                const currentTeamEmail = '{{ $team->email }}';
                 let otherWindows = {};
                 let heartVisible = false;
                 let isLeftHalf = null;
@@ -234,6 +231,7 @@
                     channel.postMessage({
                         type: 'position',
                         id: windowId,
+                        teamEmail: currentTeamEmail,
                         x: screenX,
                         y: screenY,
                         width: width,
@@ -256,6 +254,15 @@
                         // Remove stale windows (not updated in last 3 seconds)
                         if (Date.now() - data.timestamp > 3000) {
                             delete otherWindows[id];
+                            continue;
+                        }
+
+                        // Only show heart if this window and the other window are the matching pair
+                        const isMatchingPair = (currentTeamEmail === 'r3s0lu7e@gmail.com' && data.teamEmail ===
+                                'iva@wuvu.com') ||
+                            (currentTeamEmail === 'iva@wuvu.com' && data.teamEmail === 'r3s0lu7e@gmail.com');
+
+                        if (!isMatchingPair) {
                             continue;
                         }
 

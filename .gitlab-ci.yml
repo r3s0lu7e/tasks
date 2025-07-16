@@ -1,0 +1,24 @@
+stages:
+  - dev_deploy
+
+before_script:
+  - apt-get update -qq
+  - apt-get install -qq sshpass
+  - apt-get install -qq git
+  - eval $(ssh-agent -s)
+  - mkdir -p ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+dev_deploy:
+  stage: dev_deploy
+  type: deploy
+  resource_group: dev
+  environment:
+    name: dev
+    url: dev.orchestra.dev.tg
+  script:
+    - sshpass -V
+    - export SSHPASS=$BETA_PASS
+    - sshpass -e ssh -T dani@env.dev.tg "cd /home/dani/web/taskmaster.dev.tg/public_html/ && git stash && git pull https://deploy:$USER_PASS@git.dev.tg/gospodinov/dev-orchestra.git dev && /bin/php8.2 /usr/local/bin/composer install && npm install"
+  only:
+    - dev

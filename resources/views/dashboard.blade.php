@@ -586,16 +586,16 @@
                     let horizontalGap;
                     let tempIsLeft = false;
 
-                    if (currentX + currentWidth <= data.x + 10) {
-                        // Current window is on the left (with 10px tolerance for touching)
+                    if (currentX + currentWidth <= data.x + 50) {
+                        // Current window is on the left (with 20px tolerance for overlapping)
                         horizontalGap = Math.max(0, data.x - (currentX + currentWidth));
                         tempIsLeft = true; // This window is on the left, so it should show the left half
-                    } else if (data.x + data.width <= currentX + 10) {
-                        // Current window is on the right (with 10px tolerance for touching)
+                    } else if (data.x + data.width <= currentX + 50) {
+                        // Current window is on the right (with 20px tolerance for overlapping)
                         horizontalGap = Math.max(0, currentX - (data.x + data.width));
                         tempIsLeft = false; // This window is on the right, so it should show the right half
                     } else {
-                        // Windows are overlapping significantly
+                        // Windows are overlapping significantly (more than 20px)
                         continue;
                     }
 

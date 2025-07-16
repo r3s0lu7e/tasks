@@ -19,8 +19,8 @@ class DatabaseSeeder extends Seeder
     /**
      * Configuration variables for seeding
      */
-    private int $numberOfProjects = 300;
-    private int $tasksPerProject = 1000;
+    private int $numberOfProjects = 10;
+    private int $tasksPerProject = 50;
 
     /**
      * Seed the application's database.
@@ -415,7 +415,7 @@ class DatabaseSeeder extends Seeder
                     'task_status_id' => $taskStatuses->random()->id,
                     'priority' => $taskPriorities[array_rand($taskPriorities)],
                     'project_id' => $project->id,
-                    'creator_id' => $admin->id,
+                    'creator_id' => $projectMembers->random()->id, // Distribute task creation among project members
                     'assignee_id' => $projectMembers->random()->id,
                     'due_date' => rand(0, 1) ? now()->addDays(rand(-30, 90))->format('Y-m-d') : null,
                     'story_points' => rand(0, 1) ? rand(1, 13) : null,

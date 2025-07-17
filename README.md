@@ -46,7 +46,7 @@ A personalized task management system built with Laravel 12, featuring project m
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/r3s0l7e/tasks.git
+   git clone https://github.com/r3s0lu7e/tasks.git
    cd tasks
    ```
 
@@ -90,14 +90,6 @@ A personalized task management system built with Laravel 12, featuring project m
    ```bash
    php artisan serve
    ```
-
-## Default Login Credentials
-
-After running the seeders, you can log in with:
-
-- **Admin User**: 
-  - Email: `iva@wuvu.com`
-  - Password: `password`
 
 ## Project Structure
 
@@ -156,14 +148,6 @@ After running the seeders, you can log in with:
 - `GET /team/{id}` - View team member
 - `PUT /team/{id}` - Update team member
 - `DELETE /team/{id}` - Remove team member
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
 
 ## License
 
